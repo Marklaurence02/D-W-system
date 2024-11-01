@@ -14,34 +14,33 @@
         </thead>
         <tbody>
         <?php
-            include_once "../assets/config.php"; // Ensure the path is correct
+            include_once "../assets/config.php"; // Ensure the correct path
 
-            // Check if orderID is set and valid
+            // Validate and sanitize order ID
             if (!isset($_GET['orderID']) || empty($_GET['orderID']) || !is_numeric($_GET['orderID'])) {
                 echo "<tr><td colspan='8'>Invalid or missing order ID.</td></tr>";
                 exit;
             }
 
-            $ID = intval($_GET['orderID']);  // Sanitize the order ID to ensure it's an integer
+            $ID = intval($_GET['orderID']);  // Sanitize the order ID
 
-            // Query to join orders with order_items, product_items, and product_categories
-            // Group by product_id to sum the quantities and prices for the same product
+            // SQL query to get order details with product and category information
             $sql = "
                 SELECT o.order_id, 
                        pi.product_name AS item_name, 
-                       pc.category_name AS item_type, -- Fetch category_name from product_categories
-                       SUM(oi.price * oi.quantity) AS total_price,  -- Sum the price based on quantity
+                       pc.category_name AS item_type,  -- Fetch category_name from product_categories
+                       SUM(pi.price * oi.quantity) AS total_price,  -- Calculate total price from product_items.price
                        SUM(oi.quantity) AS total_quantity,  -- Sum the quantity
                        o.order_time, 
                        o.feedback
                 FROM orders o
                 JOIN order_items oi ON o.order_id = oi.order_id
                 JOIN product_items pi ON oi.product_id = pi.product_id
-                JOIN product_categories pc ON pi.category_id = pc.category_id  -- Join product_categories for category_name
+                JOIN product_categories pc ON pi.category_id = pc.category_id  -- Join for category_name
                 WHERE o.order_id = ?
                 GROUP BY oi.product_id";  // Group by product to combine quantities
 
-            // Prepare the query
+            // Prepare and execute the query
             if ($stmt = $conn->prepare($sql)) {
                 // Bind the order ID to the query
                 $stmt->bind_param("i", $ID);

@@ -12,7 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newQuantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 0;
 
     // Check if the input values are valid
-    if ($orderItemId > 0 && $newQuantity > 0) {
+    if ($orderItemId > 0) {
+        // Check if quantity is 0 and prompt deletion
+        if ($newQuantity === 0) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Quantity is zero. Please press the delete button to remove this item.'
+            ]);
+            exit; // Stop further execution since we want to prompt for deletion
+        }
+
         // Fetch the product price from the product_items table
         $productQuery = "
             SELECT pi.price 
@@ -46,13 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Execute the statement
             if ($updateStmt->execute()) {
                 // Check if any rows were affected
-                if ($updateStmt->affected_rows > 0) {
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => 'Quantity updated successfully.',
-                        'new_total_price' => number_format($totalPrice, 2)
-                    ]);
-                } else {
+                if ($updateStmt->affected_rows === 0) {
                     echo json_encode([
                         'status' => 'error',
                         'message' => 'No changes made to the quantity.'

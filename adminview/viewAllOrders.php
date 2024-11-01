@@ -22,17 +22,18 @@
 
                     // Query to fetch orders, customer details, and calculate total amount
                     $sql = "
-                        SELECT o.order_id, 
-                               CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
-                               u.contact_number, 
-                               o.order_time, 
-                               SUM(oi.price * oi.quantity) AS total_amount,  /* Calculating the total amount from order_items */
-                               o.status AS order_status, 
-                               o.payment_method  /* Fetch payment method directly from orders table */
-                        FROM orders o
-                        LEFT JOIN users u ON o.user_id = u.user_id
-                        LEFT JOIN order_items oi ON o.order_id = oi.order_id  /* Joining with order_items to calculate total amount */
-                        GROUP BY o.order_id";  // Group by order_id to get one result per order
+                    SELECT o.order_id, 
+                           CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
+                           u.contact_number, 
+                           o.order_time, 
+                           SUM(oi.totalprice * oi.quantity) AS total_amount,  /* Calculating the total amount from order_items */
+                           o.status AS order_status, 
+                           o.payment_method  /* Fetch payment method directly from orders table */
+                    FROM orders o
+                    LEFT JOIN users u ON o.user_id = u.user_id
+                    LEFT JOIN order_items oi ON o.order_id = oi.order_id  /* Joining with order_items to calculate total amount */
+                    GROUP BY o.order_id";  // Group by order_id to get one result per order
+
 
                     $result = $conn->query($sql);
 

@@ -62,9 +62,9 @@ $username = $_SESSION['username'];
 
                     <!-- Table Slide -->
                     <div class="slide-content-box">
-                        <div class="slide-button">
+                        <div class="slide-button" >
                             <div class="title">Table</div>
-                            <button class="select"> 
+                            <button class="select" onclick="reservetable()"> 
                                 <div class="image-box">
                                     <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
                                 </div>

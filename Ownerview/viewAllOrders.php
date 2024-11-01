@@ -26,7 +26,7 @@
                                CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
                                u.contact_number, 
                                o.order_time, 
-                               SUM(oi.price * oi.quantity) AS total_amount,  /* Calculating the total amount from order_items */
+                               SUM(oi.totalprice * oi.quantity) AS total_amount,  /* Calculating the total amount from order_items */
                                o.status AS order_status, 
                                o.payment_method  /* Fetch payment method directly from orders table */
                         FROM orders o
@@ -80,7 +80,7 @@
                                 </td>
                                 <td><?= htmlspecialchars($row["payment_method"]) ?></td> <!-- Display Payment Method -->
                                 <td>
-                                    <a class="btn btn-primary openPopup" data-href="../adminView/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View</a>
+                                    <a class="btn btn-primary openPopup" data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View</a>
                                 </td>
                             </tr>
                             <?php

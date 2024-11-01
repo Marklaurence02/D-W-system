@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 30, 2024 at 12:25 AM
+-- Generation Time: Nov 01, 2024 at 08:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,37 +40,53 @@ CREATE TABLE `activity_logs` (
 --
 
 INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_details`, `created_at`) VALUES
-(205, 12, 'Login', 'user1 logged in', '2024-10-27 11:00:43'),
-(206, 12, 'Logout', 'user1 logged out', '2024-10-27 11:00:48'),
-(207, 10, 'Login', 'jcaringal logged in', '2024-10-27 11:00:54'),
-(208, 10, 'Logout', 'jcaringal logged out', '2024-10-27 11:10:49'),
-(209, 10, 'Login', 'jcaringal logged in', '2024-10-27 11:10:57'),
-(210, 10, 'Login', 'jcaringal logged in', '2024-10-28 00:18:16'),
-(211, 10, 'Logout', 'jcaringal logged out', '2024-10-28 00:20:39'),
-(212, 10, 'Login', 'jcaringal logged in', '2024-10-28 00:20:46'),
-(213, 10, 'Logout', 'jcaringal logged out', '2024-10-28 01:19:21'),
-(214, 10, 'Login', 'jcaringal logged in', '2024-10-28 01:19:32'),
-(215, 10, 'Logout', 'jcaringal logged out', '2024-10-28 01:20:35'),
-(216, 10, 'Login', 'jcaringal logged in', '2024-10-28 01:22:57'),
-(217, 10, 'Logout', 'jcaringal logged out', '2024-10-28 01:59:45'),
-(218, 10, 'Login', 'jcaringal logged in', '2024-10-28 02:06:58'),
-(219, 10, 'Logout', 'jcaringal logged out', '2024-10-28 02:07:28'),
-(220, 12, 'Add Product', 'Added a new product: Pizzasdf (Category ID: 1)', '2024-10-29 03:29:08'),
-(221, 28, 'Login', 'hdsaa logged in', '2024-10-29 03:49:07'),
-(222, 12, 'Add Product', 'Added a new product: Black Coffee (S) (Category ID: 4)', '2024-10-29 04:12:37'),
-(223, 12, 'Add Product', 'Added a new product: Pizzasd (Category ID: 2)', '2024-10-29 04:14:56'),
-(224, 12, 'Logout', 'user1 logged out', '2024-10-29 04:30:06'),
-(225, 10, 'Login', 'jcaringal logged in', '2024-10-29 04:30:12'),
-(226, 10, 'Logout', 'jcaringal logged out', '2024-10-29 04:30:34'),
-(227, 12, 'Login', 'user1 logged in', '2024-10-29 04:30:43'),
-(228, 28, 'Login', 'hdsaa logged in', '2024-10-29 06:19:38'),
-(229, 28, 'Login', 'hdsaa logged in', '2024-10-29 06:24:22'),
-(230, 28, 'Login', 'hdsaa logged in', '2024-10-29 06:24:30'),
-(231, 28, 'Login', 'hdsaa logged in', '2024-10-29 07:11:16'),
-(232, 28, 'Login', 'hdsaa logged in', '2024-10-29 07:42:34'),
-(233, 28, 'Login', 'hdsaa logged in', '2024-10-29 08:00:46'),
 (234, 1, 'Login', 'mcaringal logged in', '2024-10-29 12:15:26'),
-(235, 1, 'Login', 'mcaringal logged in', '2024-10-29 23:20:50');
+(235, 1, 'Login', 'mcaringal logged in', '2024-10-29 23:20:50'),
+(236, 1, 'Login', 'mcaringal logged in', '2024-10-30 01:56:55'),
+(253, 1, 'Login', 'mcaringal logged in', '2024-10-30 05:16:33'),
+(264, 1, 'Login', 'mcaringal logged in', '2024-10-30 07:31:45'),
+(265, 1, 'Login', 'mcaringal logged in', '2024-10-30 23:47:56'),
+(266, 1, 'Login', 'mcaringal logged in', '2024-10-31 01:49:53'),
+(271, 1, 'Login', 'mcaringal logged in', '2024-10-31 05:38:40'),
+(272, 1, 'Login', 'mcaringal logged in', '2024-10-31 05:46:39'),
+(281, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:02:54'),
+(282, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:08:27'),
+(283, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:08:30'),
+(284, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:08:36'),
+(285, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:08:37'),
+(286, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:09:32'),
+(287, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:09:34');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `data_reservations`
+--
+
+CREATE TABLE `data_reservations` (
+  `reservation_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `table_id` int(11) DEFAULT NULL,
+  `reservation_date` date DEFAULT NULL,
+  `reservation_time` time DEFAULT NULL,
+  `status` enum('Pending','Confirmed','Canceled','Rescheduled') DEFAULT 'Pending',
+  `custom_note` varchar(255) DEFAULT NULL,
+  `feedback` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `data_reservations`
+--
+
+INSERT INTO `data_reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2024-10-03', '19:39:00', 'Pending', 'wd', NULL, '2024-10-31 06:40:02', '2024-10-31 06:40:02'),
+(2, 1, 2, '2024-10-17', '16:45:00', 'Pending', '13131', NULL, '2024-10-31 06:42:41', '2024-10-31 06:42:41'),
+(3, 1, 1, '2024-10-31', '15:55:00', 'Pending', '234', NULL, '2024-10-31 06:54:23', '2024-10-31 06:54:23'),
+(4, 1, 1, '2024-10-31', '05:00:00', 'Pending', '213', NULL, '2024-10-31 06:58:52', '2024-10-31 06:58:52'),
+(5, 1, 1, '2024-10-31', '19:13:00', 'Pending', '', NULL, '2024-10-31 10:12:30', '2024-10-31 10:12:30'),
+(6, 1, 1, '2024-10-31', '22:13:00', 'Pending', '', NULL, '2024-10-31 10:12:45', '2024-10-31 10:12:45');
 
 -- --------------------------------------------------------
 
@@ -126,7 +142,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `reservation_id`, `order_details`, `total_amount`, `order_time`, `status`, `feedback`, `created_at`, `updated_at`, `payment_method`) VALUES
-(1, 2, 1, 'Burger - 1, Fries - 1, Coke - 1', 45.50, '2024-10-08 18:30:00', 'Pending', NULL, '2024-10-10 02:37:23', '2024-10-28 01:59:00', 'Credit Card'),
+(1, 2, 1, 'Burger - 1, Fries - 1, Coke - 1', 45.50, '2024-10-08 18:30:00', 'In-Progress', NULL, '2024-10-10 02:37:23', '2024-10-30 06:30:31', 'Credit Card'),
 (2, 2, 1, NULL, 45.50, '2024-10-10 09:50:08', 'In-Progress', NULL, '2024-10-10 02:37:23', '2024-10-25 09:55:57', 'Credit Card');
 
 -- --------------------------------------------------------
@@ -165,7 +181,8 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `user_id`, `product_id`,
 (17, 1, 12, 4, 4, 80.00),
 (20, 1, 12, 1, 4, 240.00),
 (22, 1, 12, 3, 4, 48.00),
-(23, 1, 28, 1, 2, 60.00);
+(62, 1, 29, 1, 1, 60.00),
+(63, 1, 29, 2, 1, 249.00);
 
 -- --------------------------------------------------------
 
@@ -185,7 +202,7 @@ CREATE TABLE `product_categories` (
 INSERT INTO `product_categories` (`category_id`, `category_name`) VALUES
 (1, 'Meal'),
 (2, 'Drink'),
-(3, 'drinks'),
+(3, 'Pizza'),
 (4, 'addons');
 
 -- --------------------------------------------------------
@@ -216,6 +233,35 @@ INSERT INTO `product_items` (`product_id`, `product_name`, `price`, `special_ins
 (3, 'Pizzasdf', 12.00, '', '../Uploads/67205684a0d61_marvelous-city-skyline.jpg', '2024-10-29 03:29:08', '2024-10-29 03:29:08', 1234567, 1),
 (4, 'Black Coffee (S)', 20.00, 'matapang', '../Uploads/672060b50f618_images.jpg', '2024-10-29 04:12:37', '2024-10-29 04:12:37', 3, 4),
 (5, 'Pizzasd', 290.00, '290', '../Uploads/6720614004731_images (2).jpg', '2024-10-29 04:14:56', '2024-10-29 04:14:56', 5, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receipts`
+--
+
+CREATE TABLE `receipts` (
+  `receipt_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `receipt_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_method` varchar(50) DEFAULT 'Credit Card'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receipt_items`
+--
+
+CREATE TABLE `receipt_items` (
+  `receipt_item_id` int(11) NOT NULL,
+  `receipt_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `item_total_price` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -298,8 +344,8 @@ CREATE TABLE `tables` (
 --
 
 INSERT INTO `tables` (`table_id`, `table_number`, `seating_capacity`, `is_available`, `area`) VALUES
-(1, 9, 4, 1, 'Outdoor'),
-(2, 2, 6, 1, 'Outdoor'),
+(1, 9, 4, 0, 'Outdoor'),
+(2, 2, 6, 0, 'Outdoor'),
 (3, 3, 2, 1, 'Indoor'),
 (27, 1, 2, 1, 'Outdoor'),
 (28, 3, 1, 1, 'Outdoor');
@@ -328,7 +374,10 @@ INSERT INTO `table_images` (`image_id`, `table_id`, `image_path`, `uploaded_at`,
 (3, 2, '../uploads/671871dfb1037_images (2).jpg', '2024-10-18 11:00:41', 'back view'),
 (33, 1, '../uploads/6716192d7c308_image.jpg', '2024-10-21 08:43:41', 'left view'),
 (34, 2, '../uploads/671e06a31346a_GyulaiSausage.jpg', '2024-10-27 09:21:25', 'left view'),
-(35, 2, '../uploads/671e069749121_images.jpg', '2024-10-27 09:23:35', 'right view');
+(35, 2, '../uploads/671e069749121_images.jpg', '2024-10-27 09:23:35', 'right view'),
+(36, 3, '../uploads/672317b33d1ef_marvelous-city-skyline.jpg', '2024-10-31 05:37:55', 'back view'),
+(37, 27, '../uploads/672317bd527e1_marvelous-city-skyline.jpg', '2024-10-31 05:38:05', 'back view'),
+(38, 28, '../uploads/672317c95c4da_images (2).jpg', '2024-10-31 05:38:17', 'back view');
 
 -- --------------------------------------------------------
 
@@ -365,12 +414,7 @@ INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `su
 (5, 'Mark james', 'l', 'last3', '', '12345678908', 'haha1@gmail.com', 'place', '45345', 'mlast3', '$2y$10$mMacmmxWCYvFDcnJWrRh.Oka5uaIcGGWaDIQBdcf9hMbJw.QjYIWW', 'General User', '2024-10-19 11:04:08', '2024-10-19 11:04:08', NULL),
 (6, 'Jack', 'N', 'Jill', '', '12345678901', 'Jack@gmail.com', 'place', '1234', 'jjill', '$2y$10$3bQxRoIXBSv5SUm05bH3luhvlCzHzAkvwtkk/i7BBWh5jeVeKO/3C', 'General User', '2024-10-20 22:57:10', '2024-10-20 22:57:10', NULL),
 (9, 'Jack', 'N', 'Jill', 'jr', '12345678901', 'ha@gmail.com', 'place', '1234', 'jjill2', '$2y$10$WCeduJTp2/rnAYOb6fxiZuTB0zbO25tbUpUWXKe4uKoRYHQWIvrBO', 'General User', '2024-10-20 23:05:58', '2024-10-20 23:05:58', NULL),
-(10, 'Jack ja', 'l', 'caringal', '', '12345678901', 'ha22@gmail.com', 'place', '1234', 'jcaringal', '$2y$10$s6yPImq4oGkVTK5M0mn6ru2BwvADYTkNAiX7FlsV0IycOYmfdsmb.', 'Owner', '2024-10-21 03:31:27', '2024-10-25 02:43:31', NULL),
-(12, 'Mark Laurence', NULL, 'Caringal', NULL, '09999999999', 'mk12@gmail.com', NULL, NULL, 'user1', '$2y$10$9r7ey09l5HQpu9vx8HG2LuE.0gw3076KS.s0pp0rFiEFwv5oEJHY6', 'Admin', '2024-10-25 03:58:06', '2024-10-27 09:45:24', NULL),
-(24, 'Mark Laurence', NULL, 'Caringal', NULL, '09999999999', 'hatdog11@gmail.com', NULL, NULL, 'user11', '$2y$10$FjHm53884HxQgj8YmboVU.ZshiOxJnoH8SrheUJxToXEiZGBM.xBq', 'Staff', '2024-10-25 08:27:51', '2024-10-25 08:27:51', NULL),
-(25, 'Mark Laurence', 'l', 'caringal', 'jr', '346', 'ha11@gmail.com', 'place', '1234', 'mcaringal3', '$2y$10$QiWhXKiBjCe.Lg51N0Wx1OD1HK/koDR0tA8vJm2yKOujhIFy4Bdi6', 'General User', '2024-10-28 01:22:11', '2024-10-28 01:22:11', NULL),
-(27, 'Mark Laurence', 'l', 'caringal', 'wq', '09345678901', 'ha121@gmail.com', 'place', '1234', 'mcaringal4', '$2y$10$LNnmuf/OolCYLsoH/wGH.e2uVTJkvKTxj49.aR2xafDryhLk2ZaXK', 'General User', '2024-10-28 02:14:56', '2024-10-28 02:14:56', NULL),
-(28, 'hala', 's', 'dsaa', 'sad', '09876543231', 'jen@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$U8F0Kl8CU7Y8RHbJtZULOOrZQ2Gl70Up1429ZXLMwPjTjGU2mI09S', 'General User', '2024-10-29 03:48:59', '2024-10-29 03:48:59', NULL);
+(29, 'hala', 's', 'dsaa', 'sad', '09876543231', 'jen@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$Sbroj/CGoR/h.fb8AKRodugAejJgK5MlykI6mxvfsDVdH1RryrFLm', 'General User', '2024-11-01 07:02:43', '2024-11-01 07:02:43', NULL);
 
 --
 -- Indexes for dumped tables
@@ -382,6 +426,12 @@ INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `su
 ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`log_id`),
   ADD KEY `action_by` (`action_by`);
+
+--
+-- Indexes for table `data_reservations`
+--
+ALTER TABLE `data_reservations`
+  ADD PRIMARY KEY (`reservation_id`);
 
 --
 -- Indexes for table `error_logs`
@@ -431,6 +481,22 @@ ALTER TABLE `product_categories`
 ALTER TABLE `product_items`
   ADD PRIMARY KEY (`product_id`),
   ADD KEY `fk_category` (`category_id`);
+
+--
+-- Indexes for table `receipts`
+--
+ALTER TABLE `receipts`
+  ADD PRIMARY KEY (`receipt_id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `receipt_items`
+--
+ALTER TABLE `receipt_items`
+  ADD PRIMARY KEY (`receipt_item_id`),
+  ADD KEY `receipt_id` (`receipt_id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `reservations`
@@ -484,7 +550,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=288;
+
+--
+-- AUTO_INCREMENT for table `data_reservations`
+--
+ALTER TABLE `data_reservations`
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `error_logs`
@@ -514,7 +586,7 @@ ALTER TABLE `order_cancellations`
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
@@ -527,6 +599,18 @@ ALTER TABLE `product_categories`
 --
 ALTER TABLE `product_items`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `receipts`
+--
+ALTER TABLE `receipts`
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `receipt_items`
+--
+ALTER TABLE `receipt_items`
+  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reservations`
@@ -556,13 +640,13 @@ ALTER TABLE `tables`
 -- AUTO_INCREMENT for table `table_images`
 --
 ALTER TABLE `table_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Constraints for dumped tables
@@ -593,6 +677,20 @@ ALTER TABLE `order_cancellations`
 --
 ALTER TABLE `product_items`
   ADD CONSTRAINT `fk_category` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`category_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `receipts`
+--
+ALTER TABLE `receipts`
+  ADD CONSTRAINT `receipts_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `receipts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `receipt_items`
+--
+ALTER TABLE `receipt_items`
+  ADD CONSTRAINT `receipt_items_ibfk_1` FOREIGN KEY (`receipt_id`) REFERENCES `receipts` (`receipt_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `receipt_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_items` (`product_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

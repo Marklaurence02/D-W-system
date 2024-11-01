@@ -11,7 +11,7 @@ include_once "assets/config.php";
 <div class="sidebar" id="mySidebar">
     <div class="side-header">
         <img src="./images/admin.png" width="120" height="120" alt="Dine&Watch">
-        <h5 style="margin-top:10px;">
+        <h5 style="margin-top:100px;">
             <?php
                 // Check if the user is logged in
                 if (isset($_SESSION['user_id'])) {
@@ -38,9 +38,10 @@ include_once "assets/config.php";
     
     <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="Admin-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
+    <a href="owner-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
     <a href="#orders" onclick="showOrders()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
     <a href="#reservation" onclick="showReservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
+    <a href="#category" onclick="showCategory()"><i class="fa fa-line-chart"></i> Category</a>
     <a href="#products" onclick="showProductItems()"><i class="fa fa-th-list"></i> Products</a>
     <a href="#tables" onclick="showTableViews()"><i class="fa fa-th"></i> Tables</a>
     <a href="#users" onclick="showUser()"><i class="fa fa-users"></i> Users</a>

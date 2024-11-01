@@ -61,28 +61,28 @@ $username = $_SESSION['username'];
                     </div>
 
                     <!-- Table Slide -->
-                    <div class="slide-content-box">
-                        <div class="slide-button" >
-                            <div class="title">Table</div>
-                            <button class="select" onclick="reservetable()"> 
-                                <div class="image-box">
-                                    <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
+<div class="slide-content-box">
+    <div class="slide-button">
+        <div class="title">Table</div>
+        <button class="select" id="tableButton" onclick="reservetable()">
+            <div class="image-box">
+                <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
+            </div>
+        </button>
+    </div>
+</div>
 
                     <!-- Payment Slide -->
-                    <div class="slide-content-box">
-                        <div class="slide-button">
-                            <div class="title">Payment</div>
-                            <button class="select">
-                                <div class="image-box">
-                                    <i class="fa fa-credit-card big" aria-hidden="true"></i>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
+<div class="slide-content-box">
+    <div class="slide-button">
+        <div class="title">Payment</div>
+        <button class="select" onclick="paymentlist()" id="paymentButton">
+            <div class="image-box">
+                <i class="fa fa-credit-card big" aria-hidden="true"></i>
+            </div>
+        </button>
+    </div>
+</div>
 
                     <!-- Empty Slide for spacing -->
                     <div class="slide-content-box empty-slide"></div>
@@ -107,3 +107,44 @@ $username = $_SESSION['username'];
     <script src="Js/Userpanel.js"></script>
 </body>
 </html>
+
+<script>
+$(document).ready(function() {
+    // AJAX call to disabletable.php to check if orders and reservations exist
+    $.ajax({
+        url: '/Usercontrol/disabletable.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                // Disable Table button if no orders exist
+                if (!response.has_orders) {
+                    $('#tableButton').attr('disabled', true).css({
+                        'cursor': 'not-allowed',
+                        'opacity': '0.5'
+                    }).on('click', function(e) {
+                        e.preventDefault();
+                        alert("Please add an order before reserving a table.");
+                    });
+                }
+                
+                // Disable Payment button if no reservations exist
+                if (!response.has_reservations) {
+                    $('#paymentButton').attr('disabled', true).css({
+                        'cursor': 'not-allowed',
+                        'opacity': '0.5'
+                    }).on('click', function(e) {
+                        e.preventDefault();
+                        alert("Please reserve a table before proceeding to payment.");
+                    });
+                }
+            } else {
+                console.error("Error:", response.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error:", textStatus, errorThrown);
+        }
+    });
+});
+</script>

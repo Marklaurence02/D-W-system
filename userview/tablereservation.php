@@ -149,7 +149,7 @@ function getTableImages($conn, $tableId) {
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="tableAlertModalLabel">Alert</h5>
+                <h5 class="modal-title" id="tableAlertModalLabel">Notification</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -198,10 +198,37 @@ function getTableImages($conn, $tableId) {
     });
 
     function showAlertModal(message, type = 'success') {
-        const modalMessage = document.getElementById('tableAlertModalMessage');
-        modalMessage.innerHTML = message;
-        $('#tableAlertModal').modal('show');
+    const modalMessage = document.getElementById('tableAlertModalMessage');
+    const modalBody = document.querySelector('#tableAlertModal .modal-body');
+
+    // Define icon and background color based on the type of alert
+    let icon;
+    let bgColor;
+    
+    if (type === 'success') {
+        icon = '<i class="fa fa-calendar-plus-o" text-success fa-3x mr-2" aria-hidden="true"></i>';
+        bgColor = '#d4edda';  // Light green background for success
+    } else if (type === 'error') {
+        icon = '<i class="fa fa-calendar-times-o" text-danger fa-3x mr-2" aria-hidden="true"></i>';
+        bgColor = '#f8d7da';  // Light red background for errors
+    } else if (type === 'info') {
+        icon = '<i class="fa fa-info-circle text-info fa-3x mr-2" aria-hidden="true"></i>';
+        bgColor = '#d1ecf1';  // Light blue background for info
+    } else {
+        icon = '<i class="fa fa-exclamation-circle text-warning fa-3x mr-2" aria-hidden="true"></i>';
+        bgColor = '#fff3cd';  // Light yellow background for warnings
     }
+
+    // Apply background color to modal body
+    modalBody.style.backgroundColor = bgColor;
+
+    // Set message content with icon
+    modalMessage.innerHTML = `${icon} <span style="font-size: 1.25rem;">${message}</span>`;
+
+    // Show the modal
+    $('#tableAlertModal').modal('show');
+}
+
 </script>
 
 <style>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 include_once "../assets/config.php";
 
@@ -44,9 +44,11 @@ function getTableImages($conn, $tableId) {
             while ($row = $result->fetch_assoc()) {
                 $isAvailable = $row['is_available'] ? 'Available' : 'Not Available';
                 $images = getTableImages($conn, $row['table_id']);
+                $disabledClass = !$row['is_available'] ? 'disabled' : '';
+                $disabledAttr = !$row['is_available'] ? 'disabled' : '';
                 ?>
                 <div class="table-box col-md-3 table-item" data-availability="<?php echo $row['is_available']; ?>" data-area="<?php echo htmlspecialchars($row['area']); ?>">
-                    <button class="table-btn" data-toggle="modal" data-target="#tableModal<?php echo $row['table_id']; ?>">
+                    <button class="table-btn <?php echo $disabledClass; ?>" data-toggle="modal" data-target="#tableModal<?php echo $row['table_id']; ?>" <?php echo $disabledAttr; ?>>
                         <img src="<?php echo htmlspecialchars($images[0] ?? '/path/to/default/image.jpg'); ?>" alt="Table <?php echo htmlspecialchars($row['table_number']); ?>" class="img-fluid rounded">
                     </button>
                     <h6 class="mt-2">Table <?php echo htmlspecialchars($row['table_number']); ?> - <?php echo htmlspecialchars($row['area']); ?></h6>
@@ -86,8 +88,7 @@ function getTableImages($conn, $tableId) {
                                     <p><strong>Seating Capacity:</strong> <?php echo htmlspecialchars($row['seating_capacity']); ?></p>
                                     <p><strong>Area:</strong> <?php echo htmlspecialchars($row['area']); ?></p>
                                     <p><strong>Status:</strong> <?php echo $isAvailable; ?></p>
-                                    <button class="btn btn-primary" onclick="openReservationForm(<?php echo $row['table_id']; ?>)">Reserve Table</button>
-                        
+                                    <button class="btn btn-primary" onclick="openReservationForm(<?php echo $row['table_id']; ?>)" <?php echo $disabledAttr; ?>>Reserve Table</button>
                                 </div>
                             </div>
                         </div>
@@ -102,14 +103,15 @@ function getTableImages($conn, $tableId) {
     </div>
 
     <div class="containers mt-4">
-    <div class="d-flex justify-content-end">     
-        <form action="User-panel.php" method="post">
-            <button type="submit" class="btn proceed-button">Home</button>
-        </form>
-        <button class="btn proceed-button ml-2" onclick="savedreservation()">Proceed</button>   
+        <div class="d-flex justify-content-end">
+            <form action="User-panel.php" method="post">
+                <button type="submit" class="btn proceed-button">Home</button>
+            </form>
+            <button class="btn proceed-button ml-2" onclick="savedreservation()">Proceed</button>
+        </div>
     </div>
 </div>
-</div>
+
 
 <!-- Reservation Form Modal -->
 <div class="modal fade" id="reservationFormModal" tabindex="-1" role="dialog" aria-labelledby="reservationFormModalLabel" aria-hidden="true">
@@ -122,23 +124,26 @@ function getTableImages($conn, $tableId) {
                 </button>
             </div>
             <div class="modal-body">
-                <form id="reservationForm">
-                    <input type="hidden" id="tableId" name="table_id">
-                    <div class="form-group">
-                        <label for="reservationDate">Date</label>
-                        <input type="date" class="form-control" id="reservationDate" name="reservation_date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reservationTime">Time</label>
-                        <input type="time" class="form-control" id="reservationTime" name="reservation_time" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="customNote">Custom Note</label>
-                        <textarea class="form-control" id="customNote" name="custom_note" placeholder="Special requests or notes"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Confirm Reservation</button>
-                </form>
-            </div>
+    <form id="reservationForm">
+        <input type="hidden" id="tableId" name="table_id">
+        <div class="form-group">
+            <label for="reservationDate">Date</label>
+            <input type="date" class="form-control" id="reservationDate" name="reservation_date" required onchange="loadAvailableTimes()">
+        </div>
+        <div class="form-group">
+            <label for="reservationTime">Time</label>
+            <select class="form-control" id="reservationTime" name="reservation_time" required>
+                <option value="">Select a time</option>
+                <!-- Time options will be dynamically populated here -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="customNote">Custom Note</label>
+            <textarea class="form-control" id="customNote" name="custom_note" placeholder="Special requests or notes"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirm Reservation</button>
+    </form>
+</div>
         </div>
     </div>
 </div>
@@ -165,13 +170,76 @@ function getTableImages($conn, $tableId) {
 </div>
 
 <script>
+function loadAvailableTimes() {
+    const tableId = document.getElementById('tableId').value;
+    const date = document.getElementById('reservationDate').value;
 
+    if (date) {
+        fetch(`/Usercontrol/getAvailableTimes.php?table_id=${tableId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                const timeSelect = document.getElementById('reservationTime');
+                timeSelect.innerHTML = '<option value="">Select a time</option>'; // Clear previous options
 
-    function openReservationForm(tableId) {
+                // Generate all times from 7:00 AM to 6:00 PM at 15-minute intervals
+                const allTimes = [];
+                for (let hour = 7; hour <= 18; hour++) {
+                    for (let minutes = 0; minutes < 60; minutes += 15) {
+                        const hourString = hour < 10 ? `0${hour}` : `${hour}`;
+                        const minuteString = minutes < 10 ? `0${minutes}` : `${minutes}`;
+                        const time24 = `${hourString}:${minuteString}`;
+                        allTimes.push(time24);
+                    }
+                }
+
+                // Create a set of unavailable times including the 1-hour window
+                const unavailableSet = new Set();
+                data.unavailable.forEach(time => {
+                    // Add the unavailable time itself
+                    unavailableSet.add(time);
+
+                    // Add the 1-hour window (at 1-minute increments) after the unavailable time
+                    const [hour, minute] = time.split(':').map(Number);
+                    let currentTime = new Date(0, 0, 0, hour, minute);
+
+                    for (let i = 0; i < 60; i++) {
+                        currentTime.setMinutes(currentTime.getMinutes() + 1);
+                        const currentHour = currentTime.getHours().toString().padStart(2, '0');
+                        const currentMinute = currentTime.getMinutes().toString().padStart(2, '0');
+                        unavailableSet.add(`${currentHour}:${currentMinute}`);
+                    }
+                });
+
+                // Filter available times
+                const availableTimes = allTimes.filter(time => !unavailableSet.has(time));
+
+                if (availableTimes.length > 0) {
+                    availableTimes.forEach(time24 => {
+                        const [hour, minute] = time24.split(':');
+                        let hour12 = hour % 12 || 12; // Convert 24-hour time to 12-hour format
+                        const amPm = hour < 12 ? 'AM' : 'PM';
+                        const time12 = `${hour12}:${minute} ${amPm}`;
+
+                        const option = document.createElement('option');
+                        option.value = time24;
+                        option.textContent = time12;
+                        timeSelect.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.textContent = 'No available times';
+                    option.disabled = true;
+                    timeSelect.appendChild(option);
+                }
+            })
+            .catch(() => alert('Error fetching available times. Please try again.'));
+    }
+}
+function openReservationForm(tableId) {
         $('#tableModal' + tableId).modal('hide');
         document.getElementById('tableId').value = tableId;
         $('#reservationFormModal').modal('show');
-    }
+    } 
 
     document.getElementById('reservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -264,6 +332,19 @@ function getTableImages($conn, $tableId) {
     border-color: #007bff;
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
 }
+
+.table-box[data-availability="0"] {
+    pointer-events: none;
+    opacity: 0.5;
+    border: 1px solid #fff;
+    box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.75); /* Red glow effect */
+}
+
+.time-slot.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

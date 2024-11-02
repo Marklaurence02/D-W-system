@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Basic validation
     if (!empty($email) && !empty($password)) {
         // Prepare the SQL statement for General Users only
-        $sql = "SELECT password_hash, role, username, user_id FROM users WHERE email = ? AND role = 'General User'";
+        $sql = "SELECT user_id, first_name, middle_initial, last_name, suffix, username, password_hash, role FROM users WHERE email = ? AND role = 'General User'";
         $stmt = $conn->prepare($sql);
 
         // Check for errors in preparing the statement
@@ -34,16 +34,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // User found, now check the password
             $row = $result->fetch_assoc();
             $hashedPassword = $row['password_hash'];
+            $user_id = $row['user_id'];
             $role = $row['role'];
-            $username = $row['username'];
-            $user_id = $row['user_id']; // Capture user_id
+            $username = $row['username']; // Fallback if full name is not constructed
+
+            // Construct the full name if available
+            if (!empty($row['first_name']) && !empty($row['last_name'])) {
+                $username = $row['first_name'];
+                if (!empty($row['middle_initial'])) {
+                    $username .= ' ' . $row['middle_initial'] . '.';
+                }
+                $username .= ' ' . $row['last_name'];
+                if (!empty($row['suffix'])) {
+                    $username .= ' ' . $row['suffix'];
+                }
+            }
 
             // Verify the entered password against the hashed password
             if (password_verify($password, $hashedPassword)) {
                 // Store user info in session
                 $_SESSION['email'] = $email;
                 $_SESSION['role'] = $role;
-                $_SESSION['username'] = $username; // Store username for welcome message
+                $_SESSION['username'] = $username; // Store full name if available
                 $_SESSION['user_id'] = $user_id; // Store user_id
 
                 // Log the login activity

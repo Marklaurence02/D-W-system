@@ -3,7 +3,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include 'assets/config.php';
+
+// Use session variables directly for displaying user info
+$first_name = htmlspecialchars($_SESSION['first_name'] ?? 'User');
+$role = htmlspecialchars($_SESSION['role'] ?? 'User');
+
 ?>
 
 <header class="custom-header d-flex justify-content-between align-items-center p-3">
@@ -21,25 +25,7 @@ include 'assets/config.php';
     <div class="side-header text-center">
         <img src="Images/user.png" width="100" height="100" alt="User" class="rounded-circle">
         <h5 class="mt-3">
-            <?php
-                if (isset($_SESSION['user_id'])) {
-                    $user_id = $_SESSION['user_id'];
-                    $sql = "SELECT first_name FROM users WHERE user_id = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param('i', $user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $user = $result->fetch_assoc();
-
-                    if ($user) {
-                        echo '<div class="welc">Welcome, ' . htmlspecialchars($user['first_name']) . ' (' . htmlspecialchars($_SESSION['role']) . ')</div>';
-                    } else {
-                        echo "Hello, User";
-                    }
-                } else {
-                    echo "Hello, Guest";
-                }
-            ?>
+            <div class="welc">Welcome, <?= $first_name; ?> (<?= $role; ?>)</div>
         </h5>
     </div>
     <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
@@ -59,7 +45,7 @@ function toggleSidebar() {
 }
 </script>
 <style>
-    /* Sidebar styling */
+/* Sidebar styling */
 .sidebar {
     height: 100%;
     width: 0;
@@ -124,5 +110,4 @@ function toggleSidebar() {
     top: 10px;
     right: 10px;
 }
-
 </style>

@@ -17,13 +17,8 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
     $reservation_time = $_POST['reservation_time'];
     $custom_note = isset($_POST['custom_note']) ? trim($_POST['custom_note']) : null;
 
-    // Define reservation start and end times
-    $start_time = new DateTime("$reservation_date $reservation_time");
-    $end_time = (clone $start_time)->modify('+1 hour');
-
-    // Format start and end times for SQL query
-    $reservation_time_formatted = $start_time->format('H:i:s');
-    $end_time_formatted = $end_time->format('H:i:s');
+    // Format reservation time for SQL query
+    $reservation_time_formatted = (new DateTime("$reservation_date $reservation_time"))->format('H:i:s');
 
     // Check for time conflicts
     $conflictCheckQuery = "
@@ -31,12 +26,9 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
         FROM data_reservations 
         WHERE table_id = ? 
           AND reservation_date = ? 
-          AND (
-                (reservation_time >= ? AND reservation_time < ?) OR 
-                (ADDTIME(reservation_time, '01:00:00') > ? AND reservation_time <= ?)
-              )";
+          AND reservation_time = ?";
     $stmt = $conn->prepare($conflictCheckQuery);
-    $stmt->bind_param("isssss", $table_id, $reservation_date, $reservation_time_formatted, $end_time_formatted, $reservation_time_formatted, $end_time_formatted);
+    $stmt->bind_param("iss", $table_id, $reservation_date, $reservation_time_formatted);
     $stmt->execute();
     $result = $stmt->get_result();
     $conflict = $result->fetch_assoc();

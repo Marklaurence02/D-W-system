@@ -1,16 +1,34 @@
 <?php
 session_start();
+include 'assets/config.php';
 
-// Check if user is logged in
+// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login if not logged in
+    header("Location: login.php");
     exit();
 }
 
-// Get the user_id and username from the session
-$user_id = $_SESSION['user_id'];
-$username = $_SESSION['username'];
+// Set session variables if they are not already set
+if (!isset($_SESSION['first_name'])) {
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT username, first_name FROM users WHERE user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+
+    if ($user) {
+        $_SESSION['first_name'] = $user['first_name'];
+        $_SESSION['username'] = $user['username'];
+    }
+}
+
+// Use the session-stored first name or username
+$username = htmlspecialchars($_SESSION['username'] ?? 'User');
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,12 +42,12 @@ $username = $_SESSION['username'];
     <link rel="stylesheet" href="css/Lpage.css">
 </head>
 <body>
-    <?php include "Header_nav/Userheader.php"; ?>
+
+<?php include "Header_nav/Userheader.php"; ?>
 
     <!-- Main Content Section -->
     <div id="main-content" class="container allContent-section py-4 center-content">
-        <h1 class="text-center">Welcome, <?= htmlspecialchars($username); ?>!</h1>
-        <p class="text-center">Your User ID: <?= htmlspecialchars($user_id); ?></p>
+        <h1 class="text-center">Welcome, <?= $username; ?>!</h1>
         <h1 class="text-center">Delicious starts here!</h1>
 
         <!-- Table Navigation -->
@@ -61,28 +79,28 @@ $username = $_SESSION['username'];
                     </div>
 
                     <!-- Table Slide -->
-<div class="slide-content-box">
-    <div class="slide-button">
-        <div class="title">Table</div>
-        <button class="select" id="tableButton" onclick="reservetable()">
-            <div class="image-box">
-                <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
-            </div>
-        </button>
-    </div>
-</div>
+                    <div class="slide-content-box">
+                        <div class="slide-button">
+                            <div class="title">Table</div>
+                            <button class="select" id="tableButton" onclick="reservetable()">
+                                <div class="image-box">
+                                    <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Payment Slide -->
-<div class="slide-content-box">
-    <div class="slide-button">
-        <div class="title">Payment</div>
-        <button class="select" onclick="paymentlist()" id="paymentButton">
-            <div class="image-box">
-                <i class="fa fa-credit-card big" aria-hidden="true"></i>
-            </div>
-        </button>
-    </div>
-</div>
+                    <div class="slide-content-box">
+                        <div class="slide-button">
+                            <div class="title">Payment</div>
+                            <button class="select" onclick="paymentlist()" id="paymentButton">
+                                <div class="image-box">
+                                    <i class="fa fa-credit-card big" aria-hidden="true"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Empty Slide for spacing -->
                     <div class="slide-content-box empty-slide"></div>

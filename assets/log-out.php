@@ -5,11 +5,10 @@ session_start(); // Start the session
 include '../assets/config.php';
 
 // Check if the user is logged in
-if (isset($_SESSION['username']) && isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
+if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
     // Capture user details from the session
     $username = $_SESSION['username'];
     $user_id = $_SESSION['user_id'];
-    $role = $_SESSION['role'];
 
     // Log the logout activity
     $action_type = "Logout";
@@ -26,16 +25,12 @@ if (isset($_SESSION['username']) && isset($_SESSION['user_id']) && isset($_SESSI
     // Destroy the session
     session_destroy();
 
-    // Redirect based on user role
-    if (in_array($role, ['Owner', 'Admin', 'Staff'])) {
-        header("Location: ../ad-sign-in.php");
-    } else {
-        header("Location: ../index.php");
-    }
+    // Redirect all users to the home page
+    header("Location: ../index.php");
     exit();
 } else {
-    // If the user is not logged in, redirect directly to the index page
-    header("Location: ../ad-sign-in.php");
+    // If the user is not logged in, redirect directly to the home page
+    header("Location: ../index.php");
     exit();
 }
 ?>

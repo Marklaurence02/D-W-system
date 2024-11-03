@@ -49,6 +49,7 @@ include_once "assets/config.php"; // Database connection
     ?>
 
     <div id="main-content" class="container allContent-section py-4">
+        <h1 class="text-center">Dashboard</h1>
         <div class="row">
             <!-- Total Sales -->
             <div class="col-sm-3 mb-4">

@@ -20,12 +20,10 @@ function fetchSingleValue($conn, $query, &$variable, $label) {
     return true;
 }
 
-// Fetch total sales
+// Fetch total sales using receipt_items table
 if (!fetchSingleValue($conn, "
-    SELECT SUM(receipts.total_amount) AS totalSales 
-    FROM receipts 
-    JOIN orders ON receipts.order_id = orders.order_id 
-    WHERE orders.status IN ('Completed', 'paid in advance')
+    SELECT SUM(receipt_items.item_total_price) AS totalSales 
+    FROM receipt_items
 ", $totalSales, 'totalSales')) {
     echo json_encode(['error' => 'Failed to fetch total sales']);
     $conn->close();
@@ -34,9 +32,9 @@ if (!fetchSingleValue($conn, "
 
 // Fetch total orders
 if (!fetchSingleValue($conn, "
-    SELECT COUNT(orders.order_id) AS totalOrders 
+    SELECT COUNT(order_id) AS totalOrders 
     FROM orders 
-    WHERE orders.status != 'Canceled'
+    WHERE status != 'Canceled'
 ", $totalOrders, 'totalOrders')) {
     echo json_encode(['error' => 'Failed to fetch total orders']);
     $conn->close();
@@ -47,8 +45,7 @@ if (!fetchSingleValue($conn, "
 if (!fetchSingleValue($conn, "
     SELECT SUM(receipt_items.quantity) AS totalSold 
     FROM receipt_items 
-    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
-    JOIN orders ON receipts.order_id = orders.order_id 
+    JOIN orders ON receipt_items.receipt_id = orders.order_id 
     WHERE orders.status IN ('Completed', 'paid in advance')
 ", $totalSold, 'totalSold')) {
     echo json_encode(['error' => 'Failed to fetch total sold']);
@@ -58,7 +55,7 @@ if (!fetchSingleValue($conn, "
 
 // Fetch total customers
 if (!fetchSingleValue($conn, "
-    SELECT COUNT(DISTINCT orders.user_id) AS totalCustomers 
+    SELECT COUNT(DISTINCT user_id) AS totalCustomers 
     FROM orders
 ", $totalCustomers, 'totalCustomers')) {
     echo json_encode(['error' => 'Failed to fetch total customers']);
@@ -66,7 +63,25 @@ if (!fetchSingleValue($conn, "
     exit;
 }
 
-// Prepare data for chart (e.g., sales by month)
+// Fetch order distribution data
+$orderStatuses = [];
+$orderCounts = [];
+$sql = "
+    SELECT status, COUNT(*) AS count 
+    FROM orders 
+    GROUP BY status
+";
+$result = $conn->query($sql);
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $orderStatuses[] = $row['status'];
+        $orderCounts[] = $row['count'];
+    }
+} else {
+    error_log("Error fetching order distribution data: " . $conn->error);
+}
+
+// Fetch monthly sales data for chart
 $chartLabels = [];
 $chartData = [];
 $sql = "
@@ -94,6 +109,8 @@ echo json_encode([
     'totalOrders' => $totalOrders,
     'totalSold' => $totalSold,
     'totalCustomers' => $totalCustomers,
+    'orderStatuses' => $orderStatuses,
+    'orderCounts' => $orderCounts,
     'chartLabels' => $chartLabels,
     'chartData' => $chartData
 ]);

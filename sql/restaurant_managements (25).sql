@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2024 at 01:50 AM
+-- Generation Time: Nov 03, 2024 at 09:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -88,7 +88,13 @@ INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_detai
 (344, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 10:30:26'),
 (345, 30, 'Logout', 'hdsaa logged out', '2024-11-02 10:30:32'),
 (346, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 10:30:36'),
-(347, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 00:09:37');
+(347, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 00:09:37'),
+(348, 31, 'Logout', 'jdsaa logged out', '2024-11-03 03:04:58'),
+(349, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 03:05:48'),
+(350, 5, 'Login', 'mlast3 logged in', '2024-11-03 03:34:59'),
+(351, 5, 'Logout', 'mlast3 logged out', '2024-11-03 03:48:18'),
+(352, 5, 'Login', 'mlast3 logged in', '2024-11-03 03:48:33'),
+(353, 5, 'Logout', 'mlast3 logged out', '2024-11-03 05:52:53');
 
 -- --------------------------------------------------------
 
@@ -108,13 +114,6 @@ CREATE TABLE `data_reservations` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `data_reservations`
---
-
-INSERT INTO `data_reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(16, 31, 1, '2024-11-03', '13:15:00', 'Pending', '', NULL, '2024-11-03 00:22:20', '2024-11-03 00:22:20');
 
 -- --------------------------------------------------------
 
@@ -170,20 +169,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `reservation_id`, `order_details`, `total_amount`, `order_time`, `status`, `feedback`, `created_at`, `updated_at`, `payment_method`) VALUES
-(1, 31, 1, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 20:55:17', 'paid in advance', NULL, '2024-11-02 12:55:17', '2024-11-02 12:55:17', 'Credit Card'),
-(2, 31, 3, 'Product ID: 1 | Quantity: 2 | Price: 120.00', 120.00, '2024-11-02 21:01:28', 'paid in advance', NULL, '2024-11-02 13:01:28', '2024-11-02 13:01:28', 'Credit Card'),
-(3, 31, 4, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:04:01', 'paid in advance', NULL, '2024-11-02 13:04:01', '2024-11-02 13:04:01', 'Credit Card'),
-(4, 31, 5, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:11:44', 'paid in advance', NULL, '2024-11-02 13:11:44', '2024-11-02 13:11:44', 'Credit Card'),
-(5, 31, 6, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:16:05', 'paid in advance', NULL, '2024-11-02 13:16:05', '2024-11-02 13:16:05', 'Credit Card'),
-(6, 31, 7, 'Product ID: 5 | Quantity: 1 | Price: 290.00', 290.00, '2024-11-02 21:19:42', 'paid in advance', NULL, '2024-11-02 13:19:42', '2024-11-02 13:19:42', 'Credit Card'),
-(7, 31, 8, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:23:43', 'paid in advance', NULL, '2024-11-02 13:23:43', '2024-11-02 13:23:43', 'Credit Card'),
-(8, 31, 9, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:26:27', 'paid in advance', NULL, '2024-11-02 13:26:27', '2024-11-02 13:26:27', 'Credit Card'),
-(9, 31, 10, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:29:01', 'paid in advance', NULL, '2024-11-02 13:29:01', '2024-11-02 13:29:01', 'Credit Card'),
-(10, 31, 11, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:40:59', 'paid in advance', NULL, '2024-11-02 13:40:59', '2024-11-02 13:40:59', 'Credit Card'),
-(11, 31, 12, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:43:29', 'paid in advance', NULL, '2024-11-02 13:43:29', '2024-11-02 13:43:29', 'Credit Card'),
-(12, 31, 13, 'Product ID: 5 | Quantity: 1 | Price: 290.00', 290.00, '2024-11-02 21:45:40', 'paid in advance', NULL, '2024-11-02 13:45:40', '2024-11-02 13:45:40', 'Credit Card'),
-(13, 31, 14, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:48:19', 'paid in advance', NULL, '2024-11-02 13:48:19', '2024-11-02 13:48:19', 'Credit Card'),
-(14, 31, 15, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:50:25', 'paid in advance', NULL, '2024-11-02 13:50:25', '2024-11-02 13:50:25', 'Credit Card');
+(1, 31, 1, 'Product ID: 1 | Quantity: 4 | Price: 240.00', 240.00, '2024-11-03 10:58:47', 'paid in advance', NULL, '2024-11-03 02:58:47', '2024-11-03 02:58:47', 'Credit Card'),
+(2, 31, 2, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-03 11:17:51', 'paid in advance', NULL, '2024-11-03 03:17:51', '2024-11-03 03:17:51', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -207,18 +194,12 @@ CREATE TABLE `order_cancellations` (
 CREATE TABLE `order_items` (
   `order_item_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
+  `reservation_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `totalprice` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`order_item_id`, `order_id`, `user_id`, `product_id`, `quantity`, `totalprice`) VALUES
-(15, 1, 31, 1, 1, 60.00);
 
 -- --------------------------------------------------------
 
@@ -290,115 +271,9 @@ CREATE TABLE `receipts` (
 --
 
 INSERT INTO `receipts` (`receipt_id`, `order_id`, `user_id`, `total_amount`, `receipt_date`, `payment_method`) VALUES
-(1, 1, 31, 60.00, '2024-11-02 12:55:17', 'Credit Card'),
-(2, 1, 31, 120.00, '2024-11-02 13:01:28', 'Credit Card'),
-(3, 2, 31, 120.00, '2024-11-02 13:01:28', 'Credit Card'),
-(5, 1, 31, 120.00, '2024-11-02 13:01:41', 'Credit Card'),
-(6, 2, 31, 120.00, '2024-11-02 13:01:41', 'Credit Card'),
-(8, 1, 31, 120.00, '2024-11-02 13:01:48', 'Credit Card'),
-(9, 2, 31, 120.00, '2024-11-02 13:01:48', 'Credit Card'),
-(11, 1, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
-(12, 2, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
-(13, 3, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
-(14, 1, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
-(15, 2, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
-(16, 3, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
-(17, 4, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
-(21, 1, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
-(22, 2, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
-(23, 3, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
-(24, 4, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
-(25, 5, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
-(28, 1, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(29, 2, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(30, 3, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(31, 4, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(32, 5, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(33, 6, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
-(35, 1, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(36, 2, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(37, 3, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(38, 4, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(39, 5, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(40, 6, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(41, 7, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
-(42, 1, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(43, 2, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(44, 3, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(45, 4, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(46, 5, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(47, 6, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(48, 7, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(49, 8, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
-(57, 1, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(58, 2, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(59, 3, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(60, 4, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(61, 5, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(62, 6, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(63, 7, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(64, 8, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(65, 9, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
-(72, 1, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(73, 2, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(74, 3, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(75, 4, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(76, 5, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(77, 6, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(78, 7, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(79, 8, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(80, 9, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(81, 10, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
-(87, 1, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(88, 2, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(89, 3, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(90, 4, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(91, 5, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(92, 6, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(93, 7, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(94, 8, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(95, 9, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(96, 10, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(97, 11, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
-(102, 1, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(103, 2, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(104, 3, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(105, 4, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(106, 5, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(107, 6, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(108, 7, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(109, 8, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(110, 9, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(111, 10, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(112, 11, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(113, 12, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
-(117, 1, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(118, 2, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(119, 3, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(120, 4, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(121, 5, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(122, 6, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(123, 7, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(124, 8, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(125, 9, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(126, 10, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(127, 11, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(128, 12, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(129, 13, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
-(132, 1, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(133, 2, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(134, 3, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(135, 4, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(136, 5, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(137, 6, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(138, 7, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(139, 8, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(140, 9, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(141, 10, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(142, 11, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(143, 12, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(144, 13, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
-(145, 14, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card');
+(1, 1, 31, 240.00, '2024-11-03 02:58:47', 'Credit Card'),
+(2, 1, 31, 60.00, '2024-11-03 03:17:51', 'Credit Card'),
+(3, 2, 31, 60.00, '2024-11-03 03:17:51', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -409,6 +284,8 @@ INSERT INTO `receipts` (`receipt_id`, `order_id`, `user_id`, `total_amount`, `re
 CREATE TABLE `receipt_items` (
   `receipt_item_id` int(11) NOT NULL,
   `receipt_id` int(11) NOT NULL,
+  `reservation_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `item_total_price` decimal(10,2) NOT NULL
@@ -418,21 +295,9 @@ CREATE TABLE `receipt_items` (
 -- Dumping data for table `receipt_items`
 --
 
-INSERT INTO `receipt_items` (`receipt_item_id`, `receipt_id`, `product_id`, `quantity`, `item_total_price`) VALUES
-(1, 1, 1, 1, 60.00),
-(2, 2, 1, 2, 120.00),
-(3, 11, 1, 1, 60.00),
-(4, 14, 1, 1, 60.00),
-(5, 21, 1, 1, 60.00),
-(6, 28, 5, 1, 290.00),
-(7, 35, 1, 1, 60.00),
-(8, 42, 1, 1, 60.00),
-(9, 57, 1, 1, 60.00),
-(10, 72, 1, 1, 60.00),
-(11, 87, 1, 1, 60.00),
-(12, 102, 5, 1, 290.00),
-(13, 117, 1, 1, 60.00),
-(14, 132, 1, 1, 60.00);
+INSERT INTO `receipt_items` (`receipt_item_id`, `receipt_id`, `reservation_id`, `user_id`, `product_id`, `quantity`, `item_total_price`) VALUES
+(1, 1, 1, 31, 1, 4, 240.00),
+(2, 2, 2, 31, 1, 1, 60.00);
 
 -- --------------------------------------------------------
 
@@ -458,20 +323,8 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(1, 31, 1, '2024-11-02', '08:15:00', 'Paid', '', NULL, '2024-11-02 12:54:35', '2024-11-02 12:55:17'),
-(2, 31, 1, '2024-11-15', '07:15:00', 'Paid', '12', NULL, '2024-11-02 13:00:54', '2024-11-02 13:01:28'),
-(3, 31, 1, '2024-11-27', '07:30:00', 'Paid', '1233', NULL, '2024-11-02 13:03:33', '2024-11-02 13:04:01'),
-(4, 31, 1, '2024-11-02', '07:30:00', 'Paid', '123', NULL, '2024-11-02 13:08:53', '2024-11-02 13:09:16'),
-(5, 31, 1, '2024-11-03', '07:30:00', 'Paid', '1243', NULL, '2024-11-02 13:15:12', '2024-11-02 13:16:05'),
-(6, 31, 1, '2024-11-02', '07:00:00', 'Paid', '231', NULL, '2024-11-02 13:19:15', '2024-11-02 13:19:42'),
-(7, 31, 1, '2024-11-03', '08:45:00', 'Paid', '', NULL, '2024-11-02 13:23:06', '2024-11-02 13:23:43'),
-(8, 31, 1, '2024-11-03', '07:15:00', 'Paid', '123', NULL, '2024-11-02 13:26:00', '2024-11-02 13:26:27'),
-(9, 31, 1, '2024-11-03', '07:00:00', 'Paid', '', NULL, '2024-11-02 13:28:08', '2024-11-02 13:29:01'),
-(10, 31, 1, '2024-11-03', '10:00:00', 'Paid', '123', NULL, '2024-11-02 13:39:52', '2024-11-02 13:40:59'),
-(11, 31, 3, '2024-11-02', '07:15:00', 'Paid', '12321', NULL, '2024-11-02 13:42:49', '2024-11-02 13:43:29'),
-(12, 31, 1, '2024-11-02', '09:30:00', 'Paid', '', NULL, '2024-11-02 13:44:29', '2024-11-02 13:45:40'),
-(13, 31, 1, '2024-11-03', '12:00:00', 'Paid', '1312', NULL, '2024-11-02 13:47:39', '2024-11-02 13:48:19'),
-(14, 31, 1, '2024-11-03', '11:15:00', 'Paid', '2131', NULL, '2024-11-02 13:49:46', '2024-11-02 13:50:25');
+(1, 31, 1, '2024-11-11', '07:00:00', 'Paid', '213', NULL, '2024-11-03 02:58:22', '2024-11-03 02:58:47'),
+(2, 31, 1, '2024-11-04', '07:30:00', 'Paid', '', NULL, '2024-11-03 03:17:28', '2024-11-03 03:17:51');
 
 -- --------------------------------------------------------
 
@@ -687,7 +540,8 @@ ALTER TABLE `receipts`
 ALTER TABLE `receipt_items`
   ADD PRIMARY KEY (`receipt_item_id`),
   ADD KEY `receipt_id` (`receipt_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `fk_user_id` (`user_id`);
 
 --
 -- Indexes for table `reservations`
@@ -744,13 +598,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=354;
 
 --
 -- AUTO_INCREMENT for table `data_reservations`
 --
 ALTER TABLE `data_reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `error_logs`
@@ -768,7 +622,7 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `order_cancellations`
@@ -780,7 +634,7 @@ ALTER TABLE `order_cancellations`
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
@@ -798,19 +652,19 @@ ALTER TABLE `product_items`
 -- AUTO_INCREMENT for table `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `receipt_items`
 --
 ALTER TABLE `receipt_items`
-  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `reservation_reschedule`
@@ -882,6 +736,7 @@ ALTER TABLE `receipts`
 -- Constraints for table `receipt_items`
 --
 ALTER TABLE `receipt_items`
+  ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `receipt_items_ibfk_1` FOREIGN KEY (`receipt_id`) REFERENCES `receipts` (`receipt_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `receipt_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_items` (`product_id`) ON DELETE CASCADE;
 COMMIT;

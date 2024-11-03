@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Messenger-Style Chat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #18191a;
+            color: #e4e6eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chat-app {
+            width: 450px;
+            height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background-color: #242526;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #bubble-heads {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px;
+            background-color: #3a3b3c;
+            border-bottom: 1px solid #3e4042;
+        }
+        .bubble {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #4a4b4d;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .bubble:hover {
+            background-color: #606266;
+        }
+        #chat-box {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .sender {
+            background-color: #0084ff;
+            color: #fff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .receiver {
+            background-color: #3e4042;
+            color: #e4e6eb;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        #message-form {
+            display: flex;
+            background-color: #3a3b3c;
+            border-top: 1px solid #3e4042;
+            padding: 10px;
+        }
+        #message {
+            flex-grow: 1;
+            border: none;
+            border-radius: 20px;
+            padding: 10px;
+            margin-right: 10px;
+            outline: none;
+            background-color: #4a4b4d;
+            color: #fff;
+        }
+        #send-message {
+            border: none;
+            background-color: #0084ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+        }
+        #send-message:hover {
+            background-color: #006bb3;
+        }
+        #logout {
+            border: none;
+            background-color: #3a3b3c;
+            color: #e4e6eb;
+            padding: 10px 15px;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+        }
+        #logout:hover {
+            background-color: #4a4b4d;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-app">
+        <button id="logout">Logout</button>
+        <div id="bubble-heads">
+            <!-- Bubble heads for selecting users -->
+        </div>
+        <div id="chat-box"></div>
+        <form id="message-form">
+            <input type="text" id="message" placeholder="Type a message..." required>
+            <button type="button" id="send-message">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatBox = document.getElementById('chat-box');
+            const sendMessageBtn = document.getElementById('send-message');
+            const messageInput = document.getElementById('message');
+            const logoutBtn = document.getElementById('logout');
+            const bubbleHeads = document.getElementById('bubble-heads');
+            let currentUser = null;
+            let selectedUser = null;
+
+            // Fetch current user from session or backend
+            const getCurrentUser = async () => {
+                try {
+                    const response = await fetch('get_current_user.php');
+                    const result = await response.json();
+                    if (result.username) {
+                        currentUser = result.username;
+                        loadUsers();
+                    } else {
+                        alert('User not authenticated.');
+                        window.location.href = 'login.html'; // Redirect to login if not authenticated
+                    }
+                } catch (error) {
+                    console.error('Error fetching current user:', error);
+                }
+            };
+
+            // Load available users as bubbles, excluding the current user
+            const loadUsers = async () => {
+                try {
+                    const response = await fetch('get_users.php');
+                    const users = await response.json();
+                    bubbleHeads.innerHTML = '';
+
+                    users.forEach(user => {
+                        if (user.username !== currentUser) {
+                            const bubble = document.createElement('div');
+                            bubble.classList.add('bubble');
+                            bubble.textContent = user.username[0].toUpperCase();
+                            bubble.title = user.username;
+
+                            bubble.addEventListener('click', () => {
+                                selectedUser = user.username;
+                                loadMessages();
+                            });
+
+                            bubbleHeads.appendChild(bubble);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                }
+            };
+
+            // Load messages between the current user and the selected user
+            const loadMessages = async () => {
+                if (selectedUser) {
+                    try {
+                        const response = await fetch(`get_messages.php?receiver=${selectedUser}`);
+                        const messages = await response.json();
+                        chatBox.innerHTML = '';
+
+                        messages.reverse().forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.classList.add('chat-message');
+                            messageDiv.classList.add(msg.sender === currentUser ? 'sender' : 'receiver');
+                            messageDiv.textContent = msg.message;
+                            chatBox.appendChild(messageDiv);
+                        });
+
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    } catch (error) {
+                        console.error('Error loading messages:', error);
+                    }
+                }
+            };
+
+            // Send a new message
+            sendMessageBtn.addEventListener('click', async () => {
+                if (selectedUser) {
+                    const message = messageInput.value.trim();
+                    if (message) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('receiver', selectedUser);
+                            formData.append('message', message);
+
+                            const response = await fetch('post_message.php', { method: 'POST', body: formData });
+                            const result = await response.json();
+
+                            if (result.status === 'success') {
+                                messageInput.value = '';
+                                loadMessages();
+                            } else {
+                                console.error('Error sending message:', result.message);
+                            }
+                        } catch (error) {
+                            console.error('Error sending message:', error);
+                        }
+                    } else {
+                        alert('Please enter a message.');
+                    }
+                } else {
+                    alert('Please select a user to chat with.');
+                }
+            });
+
+            // Logout functionality
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('logout.php', { method: 'POST' });
+                    if (response.ok) {
+                        window.location.href = 'login.html';
+                    }
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                }
+            });
+
+            // Initialize the chat app by fetching the current user
+            getCurrentUser();
+            setInterval(loadMessages, 2000); // Auto-refresh messages every 2 seconds
+        });
+    </script>
+</body>
+</html>

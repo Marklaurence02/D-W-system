@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2024 at 08:32 AM
+-- Generation Time: Nov 03, 2024 at 01:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,22 +40,55 @@ CREATE TABLE `activity_logs` (
 --
 
 INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_details`, `created_at`) VALUES
-(234, 1, 'Login', 'mcaringal logged in', '2024-10-29 12:15:26'),
-(235, 1, 'Login', 'mcaringal logged in', '2024-10-29 23:20:50'),
-(236, 1, 'Login', 'mcaringal logged in', '2024-10-30 01:56:55'),
-(253, 1, 'Login', 'mcaringal logged in', '2024-10-30 05:16:33'),
-(264, 1, 'Login', 'mcaringal logged in', '2024-10-30 07:31:45'),
-(265, 1, 'Login', 'mcaringal logged in', '2024-10-30 23:47:56'),
-(266, 1, 'Login', 'mcaringal logged in', '2024-10-31 01:49:53'),
-(271, 1, 'Login', 'mcaringal logged in', '2024-10-31 05:38:40'),
-(272, 1, 'Login', 'mcaringal logged in', '2024-10-31 05:46:39'),
-(281, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:02:54'),
-(282, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:08:27'),
-(283, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:08:30'),
-(284, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:08:36'),
-(285, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:08:37'),
-(286, 29, 'Logout', 'hdsaa logged out', '2024-11-01 07:09:32'),
-(287, 29, 'Login', 'hdsaa logged in', '2024-11-01 07:09:34');
+(291, 5, 'Login', 'mlast3 logged in', '2024-11-01 22:25:29'),
+(292, 5, 'Logout', 'mlast3 logged out', '2024-11-01 22:28:44'),
+(301, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:39:17'),
+(302, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:40:51'),
+(303, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:41:21'),
+(304, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:42:36'),
+(305, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:46:02'),
+(306, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:46:27'),
+(307, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:46:30'),
+(308, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:51:47'),
+(309, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:51:49'),
+(310, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:55:42'),
+(311, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 22:55:57'),
+(312, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:55:59'),
+(313, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 22:58:02'),
+(314, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:58:05'),
+(315, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:06:29'),
+(316, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:06:31'),
+(317, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:07:52'),
+(318, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:07:53'),
+(319, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:09:46'),
+(320, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:09:48'),
+(321, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:21:06'),
+(322, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:21:08'),
+(323, 30, 'Logout', 'hdsaa logged out', '2024-11-01 23:26:40'),
+(324, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:26:42'),
+(325, 30, 'Logout', 'hdsaa logged out', '2024-11-02 00:00:03'),
+(326, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 00:00:07'),
+(327, 31, 'Logout', 'jdsaa logged out', '2024-11-02 01:40:21'),
+(328, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 01:40:28'),
+(329, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 01:40:31'),
+(330, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-02 02:05:22'),
+(331, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 02:05:24'),
+(332, 30, 'Logout', 'hdsaa logged out', '2024-11-02 02:38:17'),
+(333, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 02:38:33'),
+(334, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 02:38:38'),
+(335, 31, 'Logout', 'jack j. dsaa sad logged out', '2024-11-02 05:07:32'),
+(336, 5, 'Login', 'mlast3 logged in', '2024-11-02 05:08:14'),
+(337, 5, '', 'Updated table ID: 1 with table number: 9', '2024-11-02 05:08:42'),
+(338, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:48:33'),
+(339, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:50:34'),
+(340, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:52:31'),
+(341, 31, 'Logout', 'jack j. dsaa sad logged out', '2024-11-02 09:37:16'),
+(342, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 09:37:20'),
+(343, 30, 'Logout', 'hdsaa logged out', '2024-11-02 10:30:24'),
+(344, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 10:30:26'),
+(345, 30, 'Logout', 'hdsaa logged out', '2024-11-02 10:30:32'),
+(346, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 10:30:36'),
+(347, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 00:09:37');
 
 -- --------------------------------------------------------
 
@@ -69,7 +102,7 @@ CREATE TABLE `data_reservations` (
   `table_id` int(11) DEFAULT NULL,
   `reservation_date` date DEFAULT NULL,
   `reservation_time` time DEFAULT NULL,
-  `status` enum('Pending','Confirmed','Canceled','Rescheduled') DEFAULT 'Pending',
+  `status` enum('Pending','Complete','Canceled','Rescheduled','Paid') DEFAULT 'Pending',
   `custom_note` varchar(255) DEFAULT NULL,
   `feedback` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -81,12 +114,7 @@ CREATE TABLE `data_reservations` (
 --
 
 INSERT INTO `data_reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '2024-10-03', '19:39:00', 'Pending', 'wd', NULL, '2024-10-31 06:40:02', '2024-10-31 06:40:02'),
-(2, 1, 2, '2024-10-17', '16:45:00', 'Pending', '13131', NULL, '2024-10-31 06:42:41', '2024-10-31 06:42:41'),
-(3, 1, 1, '2024-10-31', '15:55:00', 'Pending', '234', NULL, '2024-10-31 06:54:23', '2024-10-31 06:54:23'),
-(4, 1, 1, '2024-10-31', '05:00:00', 'Pending', '213', NULL, '2024-10-31 06:58:52', '2024-10-31 06:58:52'),
-(5, 1, 1, '2024-10-31', '19:13:00', 'Pending', '', NULL, '2024-10-31 10:12:30', '2024-10-31 10:12:30'),
-(6, 1, 1, '2024-10-31', '22:13:00', 'Pending', '', NULL, '2024-10-31 10:12:45', '2024-10-31 10:12:45');
+(16, 31, 1, '2024-11-03', '13:15:00', 'Pending', '', NULL, '2024-11-03 00:22:20', '2024-11-03 00:22:20');
 
 -- --------------------------------------------------------
 
@@ -130,7 +158,7 @@ CREATE TABLE `orders` (
   `order_details` text DEFAULT NULL,
   `total_amount` decimal(10,2) DEFAULT NULL,
   `order_time` datetime DEFAULT current_timestamp(),
-  `status` enum('Pending','In-Progress','Completed','Canceled') DEFAULT 'Pending',
+  `status` enum('Pending','In-Progress','Completed','Canceled','paid in advance') DEFAULT 'Pending',
   `feedback` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -142,8 +170,20 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `reservation_id`, `order_details`, `total_amount`, `order_time`, `status`, `feedback`, `created_at`, `updated_at`, `payment_method`) VALUES
-(1, 2, 1, 'Burger - 1, Fries - 1, Coke - 1', 45.50, '2024-10-08 18:30:00', 'In-Progress', NULL, '2024-10-10 02:37:23', '2024-10-30 06:30:31', 'Credit Card'),
-(2, 2, 1, NULL, 45.50, '2024-10-10 09:50:08', 'In-Progress', NULL, '2024-10-10 02:37:23', '2024-10-25 09:55:57', 'Credit Card');
+(1, 31, 1, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 20:55:17', 'paid in advance', NULL, '2024-11-02 12:55:17', '2024-11-02 12:55:17', 'Credit Card'),
+(2, 31, 3, 'Product ID: 1 | Quantity: 2 | Price: 120.00', 120.00, '2024-11-02 21:01:28', 'paid in advance', NULL, '2024-11-02 13:01:28', '2024-11-02 13:01:28', 'Credit Card'),
+(3, 31, 4, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:04:01', 'paid in advance', NULL, '2024-11-02 13:04:01', '2024-11-02 13:04:01', 'Credit Card'),
+(4, 31, 5, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:11:44', 'paid in advance', NULL, '2024-11-02 13:11:44', '2024-11-02 13:11:44', 'Credit Card'),
+(5, 31, 6, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:16:05', 'paid in advance', NULL, '2024-11-02 13:16:05', '2024-11-02 13:16:05', 'Credit Card'),
+(6, 31, 7, 'Product ID: 5 | Quantity: 1 | Price: 290.00', 290.00, '2024-11-02 21:19:42', 'paid in advance', NULL, '2024-11-02 13:19:42', '2024-11-02 13:19:42', 'Credit Card'),
+(7, 31, 8, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:23:43', 'paid in advance', NULL, '2024-11-02 13:23:43', '2024-11-02 13:23:43', 'Credit Card'),
+(8, 31, 9, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:26:27', 'paid in advance', NULL, '2024-11-02 13:26:27', '2024-11-02 13:26:27', 'Credit Card'),
+(9, 31, 10, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:29:01', 'paid in advance', NULL, '2024-11-02 13:29:01', '2024-11-02 13:29:01', 'Credit Card'),
+(10, 31, 11, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:40:59', 'paid in advance', NULL, '2024-11-02 13:40:59', '2024-11-02 13:40:59', 'Credit Card'),
+(11, 31, 12, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:43:29', 'paid in advance', NULL, '2024-11-02 13:43:29', '2024-11-02 13:43:29', 'Credit Card'),
+(12, 31, 13, 'Product ID: 5 | Quantity: 1 | Price: 290.00', 290.00, '2024-11-02 21:45:40', 'paid in advance', NULL, '2024-11-02 13:45:40', '2024-11-02 13:45:40', 'Credit Card'),
+(13, 31, 14, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:48:19', 'paid in advance', NULL, '2024-11-02 13:48:19', '2024-11-02 13:48:19', 'Credit Card'),
+(14, 31, 15, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-02 21:50:25', 'paid in advance', NULL, '2024-11-02 13:50:25', '2024-11-02 13:50:25', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -178,11 +218,7 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `user_id`, `product_id`, `quantity`, `totalprice`) VALUES
-(17, 1, 12, 4, 4, 80.00),
-(20, 1, 12, 1, 4, 240.00),
-(22, 1, 12, 3, 4, 48.00),
-(62, 1, 29, 1, 1, 60.00),
-(63, 1, 29, 2, 1, 249.00);
+(15, 1, 31, 1, 1, 60.00);
 
 -- --------------------------------------------------------
 
@@ -249,6 +285,121 @@ CREATE TABLE `receipts` (
   `payment_method` varchar(50) DEFAULT 'Credit Card'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `receipts`
+--
+
+INSERT INTO `receipts` (`receipt_id`, `order_id`, `user_id`, `total_amount`, `receipt_date`, `payment_method`) VALUES
+(1, 1, 31, 60.00, '2024-11-02 12:55:17', 'Credit Card'),
+(2, 1, 31, 120.00, '2024-11-02 13:01:28', 'Credit Card'),
+(3, 2, 31, 120.00, '2024-11-02 13:01:28', 'Credit Card'),
+(5, 1, 31, 120.00, '2024-11-02 13:01:41', 'Credit Card'),
+(6, 2, 31, 120.00, '2024-11-02 13:01:41', 'Credit Card'),
+(8, 1, 31, 120.00, '2024-11-02 13:01:48', 'Credit Card'),
+(9, 2, 31, 120.00, '2024-11-02 13:01:48', 'Credit Card'),
+(11, 1, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
+(12, 2, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
+(13, 3, 31, 60.00, '2024-11-02 13:04:01', 'Credit Card'),
+(14, 1, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
+(15, 2, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
+(16, 3, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
+(17, 4, 31, 60.00, '2024-11-02 13:11:44', 'Credit Card'),
+(21, 1, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
+(22, 2, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
+(23, 3, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
+(24, 4, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
+(25, 5, 31, 60.00, '2024-11-02 13:16:05', 'Credit Card'),
+(28, 1, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(29, 2, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(30, 3, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(31, 4, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(32, 5, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(33, 6, 31, 290.00, '2024-11-02 13:19:42', 'Credit Card'),
+(35, 1, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(36, 2, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(37, 3, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(38, 4, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(39, 5, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(40, 6, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(41, 7, 31, 60.00, '2024-11-02 13:23:43', 'Credit Card'),
+(42, 1, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(43, 2, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(44, 3, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(45, 4, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(46, 5, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(47, 6, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(48, 7, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(49, 8, 31, 60.00, '2024-11-02 13:26:27', 'Credit Card'),
+(57, 1, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(58, 2, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(59, 3, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(60, 4, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(61, 5, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(62, 6, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(63, 7, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(64, 8, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(65, 9, 31, 60.00, '2024-11-02 13:29:01', 'Credit Card'),
+(72, 1, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(73, 2, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(74, 3, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(75, 4, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(76, 5, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(77, 6, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(78, 7, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(79, 8, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(80, 9, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(81, 10, 31, 60.00, '2024-11-02 13:40:59', 'Credit Card'),
+(87, 1, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(88, 2, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(89, 3, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(90, 4, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(91, 5, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(92, 6, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(93, 7, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(94, 8, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(95, 9, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(96, 10, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(97, 11, 31, 60.00, '2024-11-02 13:43:29', 'Credit Card'),
+(102, 1, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(103, 2, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(104, 3, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(105, 4, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(106, 5, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(107, 6, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(108, 7, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(109, 8, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(110, 9, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(111, 10, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(112, 11, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(113, 12, 31, 290.00, '2024-11-02 13:45:40', 'Credit Card'),
+(117, 1, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(118, 2, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(119, 3, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(120, 4, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(121, 5, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(122, 6, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(123, 7, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(124, 8, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(125, 9, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(126, 10, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(127, 11, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(128, 12, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(129, 13, 31, 60.00, '2024-11-02 13:48:19', 'Credit Card'),
+(132, 1, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(133, 2, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(134, 3, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(135, 4, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(136, 5, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(137, 6, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(138, 7, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(139, 8, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(140, 9, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(141, 10, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(142, 11, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(143, 12, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(144, 13, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card'),
+(145, 14, 31, 60.00, '2024-11-02 13:50:25', 'Credit Card');
+
 -- --------------------------------------------------------
 
 --
@@ -263,6 +414,26 @@ CREATE TABLE `receipt_items` (
   `item_total_price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `receipt_items`
+--
+
+INSERT INTO `receipt_items` (`receipt_item_id`, `receipt_id`, `product_id`, `quantity`, `item_total_price`) VALUES
+(1, 1, 1, 1, 60.00),
+(2, 2, 1, 2, 120.00),
+(3, 11, 1, 1, 60.00),
+(4, 14, 1, 1, 60.00),
+(5, 21, 1, 1, 60.00),
+(6, 28, 5, 1, 290.00),
+(7, 35, 1, 1, 60.00),
+(8, 42, 1, 1, 60.00),
+(9, 57, 1, 1, 60.00),
+(10, 72, 1, 1, 60.00),
+(11, 87, 1, 1, 60.00),
+(12, 102, 5, 1, 290.00),
+(13, 117, 1, 1, 60.00),
+(14, 132, 1, 1, 60.00);
+
 -- --------------------------------------------------------
 
 --
@@ -275,7 +446,7 @@ CREATE TABLE `reservations` (
   `table_id` int(11) DEFAULT NULL,
   `reservation_date` date DEFAULT NULL,
   `reservation_time` time DEFAULT NULL,
-  `status` enum('Pending','Confirmed','Canceled','Rescheduled') DEFAULT 'Pending',
+  `status` enum('Pending','Complete','Canceled','Rescheduled','Paid') DEFAULT 'Pending',
   `custom_note` varchar(255) DEFAULT NULL,
   `feedback` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -287,7 +458,30 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(2, 2, 1, '2024-10-10', '19:00:00', 'Rescheduled', 'Please prepare the table for a birthday.', 'Looking forward to a good meal.', '2024-10-09 08:13:16', '2024-10-28 00:28:00');
+(1, 31, 1, '2024-11-02', '08:15:00', 'Paid', '', NULL, '2024-11-02 12:54:35', '2024-11-02 12:55:17'),
+(2, 31, 1, '2024-11-15', '07:15:00', 'Paid', '12', NULL, '2024-11-02 13:00:54', '2024-11-02 13:01:28'),
+(3, 31, 1, '2024-11-27', '07:30:00', 'Paid', '1233', NULL, '2024-11-02 13:03:33', '2024-11-02 13:04:01'),
+(4, 31, 1, '2024-11-02', '07:30:00', 'Paid', '123', NULL, '2024-11-02 13:08:53', '2024-11-02 13:09:16'),
+(5, 31, 1, '2024-11-03', '07:30:00', 'Paid', '1243', NULL, '2024-11-02 13:15:12', '2024-11-02 13:16:05'),
+(6, 31, 1, '2024-11-02', '07:00:00', 'Paid', '231', NULL, '2024-11-02 13:19:15', '2024-11-02 13:19:42'),
+(7, 31, 1, '2024-11-03', '08:45:00', 'Paid', '', NULL, '2024-11-02 13:23:06', '2024-11-02 13:23:43'),
+(8, 31, 1, '2024-11-03', '07:15:00', 'Paid', '123', NULL, '2024-11-02 13:26:00', '2024-11-02 13:26:27'),
+(9, 31, 1, '2024-11-03', '07:00:00', 'Paid', '', NULL, '2024-11-02 13:28:08', '2024-11-02 13:29:01'),
+(10, 31, 1, '2024-11-03', '10:00:00', 'Paid', '123', NULL, '2024-11-02 13:39:52', '2024-11-02 13:40:59'),
+(11, 31, 3, '2024-11-02', '07:15:00', 'Paid', '12321', NULL, '2024-11-02 13:42:49', '2024-11-02 13:43:29'),
+(12, 31, 1, '2024-11-02', '09:30:00', 'Paid', '', NULL, '2024-11-02 13:44:29', '2024-11-02 13:45:40'),
+(13, 31, 1, '2024-11-03', '12:00:00', 'Paid', '1312', NULL, '2024-11-02 13:47:39', '2024-11-02 13:48:19'),
+(14, 31, 1, '2024-11-03', '11:15:00', 'Paid', '2131', NULL, '2024-11-02 13:49:46', '2024-11-02 13:50:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation_ids`
+--
+
+CREATE TABLE `reservation_ids` (
+  `reservation_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -344,7 +538,7 @@ CREATE TABLE `tables` (
 --
 
 INSERT INTO `tables` (`table_id`, `table_number`, `seating_capacity`, `is_available`, `area`) VALUES
-(1, 9, 4, 0, 'Outdoor'),
+(1, 9, 4, 1, 'Outdoor'),
 (2, 2, 6, 0, 'Outdoor'),
 (3, 3, 2, 1, 'Indoor'),
 (27, 1, 2, 1, 'Outdoor'),
@@ -408,13 +602,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `suffix`, `contact_number`, `email`, `address`, `zip_code`, `username`, `password_hash`, `role`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Mark Laurence', 'l', 'caringal', 'wq', '12345678901', 'ha1@gmail.com', 'place', '1234', 'mcaringal', '$2y$10$rXv6Cf2lAyz8v6iW.VI0Yeg06J013.ee2YQH/UiHr6s1.A6IeLPJq', 'General User', '2024-10-08 14:42:51', '2024-10-10 02:55:27', NULL),
-(2, 'Mark Laurence1', 'l', 'caringal1', 'wq', '12345678901', 'ha2@gmail.com', 'place', '1234', 'mcaringal1', '$2y$10$QGqVj62jsTWdoBykgGQ7Oud.BcYJb.H2sWyB0.OgAqMTYKVwA4k5S', 'General User', '2024-10-08 14:47:12', '2024-10-08 14:47:12', NULL),
 (4, 'Jhon Carl1', '', 'last2', '', '09999999999', 'as22@gmail.com', '', '', 'jlast2', '$2y$10$xc3ncPQ6b73XHDhGRhUhJOtG3VpdieA9wxWJWjKI4QOlZ53XI9oHi', 'Staff', '2024-10-19 09:44:43', '2024-10-25 09:52:11', NULL),
-(5, 'Mark james', 'l', 'last3', '', '12345678908', 'haha1@gmail.com', 'place', '45345', 'mlast3', '$2y$10$mMacmmxWCYvFDcnJWrRh.Oka5uaIcGGWaDIQBdcf9hMbJw.QjYIWW', 'General User', '2024-10-19 11:04:08', '2024-10-19 11:04:08', NULL),
-(6, 'Jack', 'N', 'Jill', '', '12345678901', 'Jack@gmail.com', 'place', '1234', 'jjill', '$2y$10$3bQxRoIXBSv5SUm05bH3luhvlCzHzAkvwtkk/i7BBWh5jeVeKO/3C', 'General User', '2024-10-20 22:57:10', '2024-10-20 22:57:10', NULL),
-(9, 'Jack', 'N', 'Jill', 'jr', '12345678901', 'ha@gmail.com', 'place', '1234', 'jjill2', '$2y$10$WCeduJTp2/rnAYOb6fxiZuTB0zbO25tbUpUWXKe4uKoRYHQWIvrBO', 'General User', '2024-10-20 23:05:58', '2024-10-20 23:05:58', NULL),
-(29, 'hala', 's', 'dsaa', 'sad', '09876543231', 'jen@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$Sbroj/CGoR/h.fb8AKRodugAejJgK5MlykI6mxvfsDVdH1RryrFLm', 'General User', '2024-11-01 07:02:43', '2024-11-01 07:02:43', NULL);
+(5, 'Mark james', 'l', 'last3', '', '12345678908', 'haha1@gmail.com', 'place', '45345', 'mlast3', '$2y$10$mMacmmxWCYvFDcnJWrRh.Oka5uaIcGGWaDIQBdcf9hMbJw.QjYIWW', 'Owner', '2024-10-19 11:04:08', '2024-11-01 22:24:54', NULL),
+(30, 'hala', 's', 'dsaa', 'sad', '09876543231', 'jen@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$9zf8CID.Nvx/dUMjL9uxFOcopU1X5U23shPX9br1o81LLUjBE0AkC', 'General User', '2024-11-01 22:38:40', '2024-11-01 22:38:40', NULL),
+(31, 'jack', 'j', 'dsaa', 'sad', '09876543231', 'jen1@gmail.com', 'asd', '1231', 'jdsaa', '$2y$10$jpp79JoLLFKxmu16/bzPSe36M1v.SVXEGZkWvVLt9YFRtPIQHgnl2', 'General User', '2024-11-01 22:39:11', '2024-11-01 22:39:11', NULL);
 
 --
 -- Indexes for dumped tables
@@ -502,10 +693,13 @@ ALTER TABLE `receipt_items`
 -- Indexes for table `reservations`
 --
 ALTER TABLE `reservations`
-  ADD PRIMARY KEY (`reservation_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `table_id` (`table_id`),
-  ADD KEY `idx_reservations_date` (`reservation_date`);
+  ADD PRIMARY KEY (`reservation_id`);
+
+--
+-- Indexes for table `reservation_ids`
+--
+ALTER TABLE `reservation_ids`
+  ADD PRIMARY KEY (`reservation_id`);
 
 --
 -- Indexes for table `reservation_reschedule`
@@ -550,13 +744,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=288;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
 
 --
 -- AUTO_INCREMENT for table `data_reservations`
 --
 ALTER TABLE `data_reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `error_logs`
@@ -574,7 +768,7 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `order_cancellations`
@@ -586,7 +780,7 @@ ALTER TABLE `order_cancellations`
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
@@ -604,19 +798,19 @@ ALTER TABLE `product_items`
 -- AUTO_INCREMENT for table `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
 
 --
 -- AUTO_INCREMENT for table `receipt_items`
 --
 ALTER TABLE `receipt_items`
-  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `reservation_reschedule`
@@ -646,7 +840,7 @@ ALTER TABLE `table_images`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Constraints for dumped tables
@@ -663,7 +857,6 @@ ALTER TABLE `activity_logs`
 --
 ALTER TABLE `feedback`
   ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`reservation_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `feedback_ibfk_3` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE SET NULL;
 
 --

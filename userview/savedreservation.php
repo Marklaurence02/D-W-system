@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Fetch reservations
 $query = "
     SELECT reservation_id, table_id, reservation_date, reservation_time, status, custom_note 
     FROM data_reservations
@@ -21,8 +22,9 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-echo '<div class="container p-4 d-flex flex-column align-items-center text-center reservation-container">';
-echo '<h4>Your Reservations</h4>';
+echo '<div class="container my-4">';
+echo '<h4 class="text-center">Your Reservations</h4>';
+echo '    <div class="row p-3" style="background-color: #D9D9D9; border-radius: 10px;  justify-content: space-evenly">';
 
 if ($result->num_rows > 0) {
     while ($reservation = $result->fetch_assoc()) {
@@ -39,25 +41,35 @@ if ($result->num_rows > 0) {
             $reservationTime12 = $time ? $time->format('g:i A') : $reservationTime24;
         }
 
-        echo '<div class="reservation-card my-3 p-3 border rounded w-100" style="max-width: 500px;" data-reservation-id="' . $reservationId . '">';
+        // Reservation card with necessary data attributes
+        echo '<div class="col-md-6 col-lg-3 mb-4">';
+        echo '<div class="reservation-card p-3 border rounded" 
+              data-reservation-id="' . $reservationId . '"
+              data-table-id="' . htmlspecialchars($reservation['table_id']) . '"
+              data-reservation-date="' . $reservationDate . '"
+              data-reservation-time="' . $reservationTime24 . '"
+              data-custom-note="' . $customNote . '">';
         echo '<h5>Reservation ID: ' . $reservationId . '</h5>';
         echo '<p><strong>Date:</strong> ' . $reservationDate . '</p>';
         echo '<p><strong>Time:</strong> ' . $reservationTime12 . '</p>';
         echo '<p><strong>Status:</strong> ' . $status . '</p>';
         echo '<p><strong>Note:</strong> ' . $customNote . '</p>';
-        echo '<button class="btn btn-primary edit-btn mr-2" onclick="openEditReservation(this)">Edit</button>';
-        echo '<button class="btn btn-danger delete-btn" onclick="openDeleteConfirmation(' . $reservationId . ')">Delete</button>';
+        echo '<button class="btn btn-primary edit-btn" onclick="openEditReservation(this)">Edit</button>';
+        echo '<button class="btn btn-danger delete-btn ml-2" onclick="openDeleteConfirmation(' . $reservationId . ')">Delete</button>';
+        echo '</div>';
         echo '</div>';
     }
 } else {
-    echo '<p class="mt-4">No reservations found.</p>';
+    echo '<p class="col-12 text-center mt-4">No reservations found.</p>';
 }
 
-echo '</div>';
+echo '</div>'; // End row
+echo '</div>'; // End container
 
 $stmt->close();
 $conn->close();
 ?>
+
 <!-- button-->
 <div class="container mt-4">
     <div class="d-flex justify-content-end">
@@ -100,33 +112,34 @@ $conn->close();
             </div>
             <div class="modal-body">
                 <form id="editReservationForm" action="/Usercontrol/updatereservation.php" method="POST">
-    <input type="hidden" id="editReservationId" name="reservation_id">
-    <input type="hidden" id="editTableId" name="table_id">
-    
-    <input type="hidden" id="originalReservationDate" name="original_reservation_date">
-    <input type="hidden" id="originalReservationTime" name="original_reservation_time">
-    <input type="hidden" id="originalCustomNote" name="original_custom_note">
-    
-    <div class="form-group">
-        <label for="editReservationDate">Date</label>
-        <input type="date" class="form-control" id="editReservationDate" name="reservation_date">
-    </div>
-    <div class="form-group">
-        <label for="editReservationTime">Time</label>
-        <input type="time" class="form-control" id="editReservationTime" name="reservation_time">
-    </div>
-    <div class="form-group">
-        <label for="editCustomNote">Custom Note</label>
-        <textarea class="form-control" id="editCustomNote" name="custom_note"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Update Reservation</button>
-</form>
+                    <input type="hidden" id="editReservationId" name="reservation_id">
+                    <input type="hidden" id="editTableId" name="table_id">
 
+                    <input type="hidden" id="originalReservationDate" name="original_reservation_date">
+                    <input type="hidden" id="originalReservationTime" name="original_reservation_time">
+                    <input type="hidden" id="originalCustomNote" name="original_custom_note">
+
+                    <div class="form-group">
+                        <label for="editReservationDate">Date</label>
+                        <input type="date" class="form-control" id="editReservationDate" name="reservation_date" onchange="loadAvailableTimesForEdit()">
+                    </div>
+                    <div class="form-group">
+                        <label for="editReservationTime">Time</label>
+                        <select class="form-control" id="editReservationTime" name="reservation_time" required>
+                            <option value="">Select a time</option>
+                            <!-- Time options will be dynamically populated here -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCustomNote">Custom Note</label>
+                        <textarea class="form-control" id="editCustomNote" name="custom_note"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Reservation</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -150,60 +163,6 @@ $conn->close();
 </div>
 
 <script>
-function openEditReservation(button) {
-    const reservationCard = button.closest('.reservation-card');
-    
-    const dataMapping = {
-        'data-reservation-id': 'editReservationId',
-        'data-table-id': 'editTableId',
-        'data-reservation-date': 'editReservationDate',
-        'data-reservation-time': 'editReservationTime',
-        'data-custom-note': 'editCustomNote'
-    };
-
-    for (const [dataAttr, fieldId] of Object.entries(dataMapping)) {
-        const value = reservationCard.getAttribute(dataAttr);
-        if (value !== null) {
-            document.getElementById(fieldId).value = value;
-        }
-    }
-    
-    // Set both visible and hidden time fields
-    const reservationTime = reservationCard.getAttribute('data-reservation-time');
-    if (reservationTime) {
-        document.getElementById('editReservationTime').value = reservationTime;
-        document.getElementById('originalReservationTime').value = reservationTime;
-    }
-
-    $('#editReservationModal').modal('show');
-}
-
-document.getElementById('editReservationForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission
-
-    const formData = new FormData(this);
-
-    fetch('/Usercontrol/updatereservation.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            showNotificationModal('Reservation updated successfully.', 'success');
-            $('#editReservationModal').modal('hide'); // Close the modal on success
-        } else if (data.status === 'info') {
-            showNotificationModal('No changes were made.', 'info');
-            $('#editReservationModal').modal('hide'); // Close the modal on "No changes"
-        } else {
-            showNotificationModal('Failed to update reservation: ' + (data.message || 'Unknown error.'), 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotificationModal('An error occurred while updating the reservation.', 'error');
-    });
-});
 
 function openDeleteConfirmation(reservationId) {
     document.getElementById('confirmDeleteModal').dataset.reservationId = reservationId;
@@ -253,23 +212,171 @@ function confirmDeleteReservation() {
     });
 }
 
+// Function to open the Edit Reservation Modal
+function openEditReservation(button) {
+    const reservationCard = button.closest('.reservation-card');
 
+    if (!reservationCard) {
+        console.error('Error: Unable to find reservation card.');
+        return;
+    }
 
+    // Populate form fields with data attributes from the card
+    document.getElementById('editReservationId').value = reservationCard.getAttribute('data-reservation-id');
+    document.getElementById('editTableId').value = reservationCard.getAttribute('data-table-id');
+    document.getElementById('editReservationDate').value = reservationCard.getAttribute('data-reservation-date');
+    document.getElementById('editCustomNote').value = reservationCard.getAttribute('data-custom-note');
 
+    // Retrieve and set the time
+    const originalTime = reservationCard.getAttribute('data-reservation-time');
+    if (originalTime) {
+        document.getElementById('editReservationTime').value = originalTime;
+        document.getElementById('originalReservationTime').value = originalTime;
+    } else {
+        document.getElementById('editReservationTime').value = ''; // Clear if no time is set
+    }
 
+    // Load available times and highlight the current reservation time if necessary
+    loadAvailableTimesForEdit(originalTime);
+
+    // Show the modal
+    $('#editReservationModal').modal('show');
+}
+
+// Event listener for submitting the edit form
+document.getElementById('editReservationForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(this);
+    const reservationId = document.getElementById('editReservationId').value;
+
+    // Get current form values
+    const newDate = document.getElementById('editReservationDate').value;
+    const newTime = document.getElementById('editReservationTime').value;
+    const newNote = document.getElementById('editCustomNote').value.trim();
+
+    // Get original values from hidden fields
+    const originalDate = document.getElementById('originalReservationDate').value;
+    const originalTime = document.getElementById('originalReservationTime').value;
+    const originalNote = document.getElementById('originalCustomNote').value.trim();
+
+    // Enhanced change detection logic
+    const hasChanges = newDate !== originalDate || newTime !== originalTime || newNote !== originalNote;
+
+    if (hasChanges) {
+        fetch('/Usercontrol/updatereservation.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showNotificationModal('Reservation updated successfully.', 'success');
+                $('#editReservationModal').modal('hide'); // Close the modal on success
+
+                // Update the reservation card without reloading
+                const reservationCard = document.querySelector(`.reservation-card[data-reservation-id="${reservationId}"]`);
+                if (reservationCard) {
+                    // Update card details
+                    reservationCard.querySelector('p:nth-child(2)').innerHTML = `<strong>Date:</strong> ${newDate}`;
+                    reservationCard.querySelector('p:nth-child(3)').innerHTML = `<strong>Time:</strong> ${newTime}`;
+                    reservationCard.querySelector('p:nth-child(5)').innerHTML = `<strong>Note:</strong> ${newNote}`;
+                }
+            } else {
+                const message = data.message || 'Failed to update reservation. Please try again.';
+                showNotificationModal(message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotificationModal('An error occurred while updating the reservation. Please check your network and try again.', 'error');
+        });
+    } else {
+        showNotificationModal('No changes detected. Please modify at least one field before submitting.', 'info');
+    }
+});
+
+// Function to load available times for editing
+function loadAvailableTimesForEdit(currentTime) {
+    const tableId = document.getElementById('editTableId').value;
+    const date = document.getElementById('editReservationDate').value;
+
+    if (date) {
+        fetch(`/Usercontrol/getAvailableTimes.php?table_id=${tableId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                const timeSelect = document.getElementById('editReservationTime');
+                timeSelect.innerHTML = '<option value="">Select a time</option>'; // Clear previous options
+
+                const allTimes = [];
+                for (let hour = 7; hour <= 18; hour++) {
+                    for (let minutes = 0; minutes < 60; minutes += 15) {
+                        const hourString = hour < 10 ? `0${hour}` : `${hour}`;
+                        const minuteString = minutes < 10 ? `0${minutes}` : `${minutes}`;
+                        const time24 = `${hourString}:${minuteString}`;
+                        allTimes.push(time24);
+                    }
+                }
+
+                const unavailableSet = new Set();
+                data.unavailable.forEach(time => {
+                    unavailableSet.add(time);
+                    const [hour, minute] = time.split(':').map(Number);
+                    let currentTimeIncrement = new Date(0, 0, 0, hour, minute);
+
+                    for (let i = 0; i < 60; i++) {
+                        currentTimeIncrement.setMinutes(currentTimeIncrement.getMinutes() + 1);
+                        const currentHour = currentTimeIncrement.getHours().toString().padStart(2, '0');
+                        const currentMinute = currentTimeIncrement.getMinutes().toString().padStart(2, '0');
+                        unavailableSet.add(`${currentHour}:${currentMinute}`);
+                    }
+                });
+
+                const availableTimes = allTimes.filter(time => !unavailableSet.has(time));
+
+                if (availableTimes.length > 0) {
+                    availableTimes.forEach(time24 => {
+                        const [hour, minute] = time24.split(':');
+                        let hour12 = hour % 12 || 12;
+                        const amPm = hour < 12 ? 'AM' : 'PM';
+                        const time12 = `${hour12}:${minute} ${amPm}`;
+
+                        const option = document.createElement('option');
+                        option.value = time24;
+                        option.textContent = time12;
+
+                        // Highlight the current time
+                        if (time24 === currentTime) {
+                            option.selected = true;
+                        }
+
+                        timeSelect.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.textContent = 'No available times';
+                    option.disabled = true;
+                    timeSelect.appendChild(option);
+                }
+            })
+            .catch(() => alert('Error fetching available times. Please try again.'));
+    }
+}
+
+// Function to show the notification modal
 function showNotificationModal(message, type) {
     const notificationMessage = document.getElementById('notificationMessage');
     const modalBody = document.querySelector('#notificationModal .modal-body');
 
     // Clear any existing content and classes
-    notificationMessage.innerHTML = ''; 
+    notificationMessage.innerHTML = '';
     modalBody.classList.remove('bg-success', 'bg-danger');
 
     // Set icon and background based on message type
     let iconHtml = '';
     if (type === 'success' || type === 'info') {
         modalBody.classList.add('bg-success');
-        iconHtml = '<i class="fa fa-check-circle-o"  style="font-size: 24px; margin-right: 8px; aria-hidden="true"></i>';
+        iconHtml = '<i class="fa fa-check-circle-o" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
     } else if (type === 'error') {
         modalBody.classList.add('bg-danger');
         iconHtml = '<i class="fas fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;"></i>';
@@ -278,96 +385,65 @@ function showNotificationModal(message, type) {
     // Inject icon and message
     notificationMessage.innerHTML = `${iconHtml}<span>${message}</span>`;
 
-    // Show the notification modal
+    // Show the modal
     $('#notificationModal').modal('show');
 
     // Auto-hide the modal after 3 seconds
     setTimeout(() => $('#notificationModal').modal('hide'), 3000);
 }
 
+
+
 </script>
 
 
 <style>
-    /* Reservation Container Styling */
 .reservation-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    gap: 15px;
     background-color: #f8f9fa;
-    padding: 30px;
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
-/* Reservation Card Styling */
 .reservation-card {
-    width: 100%;
-    max-width: 300px;
-    background-color: #ffffff;
+    background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
+    border: 1px solid #dee2e6;
+    min-height: 250px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
 }
 
 .reservation-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.reservation-card h5 {
-    font-size: 1.2rem;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-.reservation-card p {
-    font-size: 0.95rem;
-    color: #495057;
-    margin: 5px 0;
-}
-
-/* Button Styling */
 .edit-btn, .delete-btn {
-    font-size: 0.85rem;
-    padding: 8px 15px;
-    border-radius: 5px;
+    font-size: 0.8rem;
     margin-top: 10px;
-    margin-right: 5px;
-    width: 45%;
-    transition: background-color 0.3s ease;
-}
-
-.edit-btn {
-    background-color: #007bff;
-    border: none;
-    color: #ffffff;
-}
-
-.edit-btn:hover {
-    background-color: #0056b3;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-    border: none;
-    color: #ffffff;
-}
-
-.delete-btn:hover {
-    background-color: #c82333;
+    width: 48%;
 }
 
 /* Responsive Styling */
+@media (max-width: 992px) {
+    .reservation-card {
+        flex: 1 1 calc(33% - 15px);
+    }
+}
+
 @media (max-width: 768px) {
     .reservation-card {
-        width: 100%;
+        flex: 1 1 calc(50% - 15px);
     }
-    .edit-btn, .delete-btn {
-        width: 100%;
+}
+
+@media (max-width: 576px) {
+    .reservation-card {
+        flex: 1 1 100%;
     }
 }
 

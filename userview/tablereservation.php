@@ -159,7 +159,7 @@ function getTableImages($conn, $tableId) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body d-flex align-items-center justify-content-center">
                 <p id="tableAlertModalMessage"></p>
             </div>
             <div class="modal-footer">
@@ -235,6 +235,9 @@ function loadAvailableTimes() {
             .catch(() => alert('Error fetching available times. Please try again.'));
     }
 }
+
+
+
 function openReservationForm(tableId) {
         $('#tableModal' + tableId).modal('hide');
         document.getElementById('tableId').value = tableId;
@@ -269,33 +272,36 @@ function openReservationForm(tableId) {
     const modalMessage = document.getElementById('tableAlertModalMessage');
     const modalBody = document.querySelector('#tableAlertModal .modal-body');
 
-    // Define icon and background color based on the type of alert
-    let icon;
-    let bgColor;
-    
+    // Clear any existing content and classes
+    modalMessage.innerHTML = '';
+    modalBody.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+
+    // Set icon and background based on message type
+    let iconHtml = '';
     if (type === 'success') {
-        icon = '<i class="fa fa-calendar-plus-o" text-success fa-3x mr-2" aria-hidden="true"></i>';
-        bgColor = '#d4edda';  // Light green background for success
+        modalBody.classList.add('bg-success');
+        iconHtml = '<i class="fa fa-check-circle-o" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
     } else if (type === 'error') {
-        icon = '<i class="fa fa-calendar-times-o" text-danger fa-3x mr-2" aria-hidden="true"></i>';
-        bgColor = '#f8d7da';  // Light red background for errors
+        modalBody.classList.add('bg-danger');
+        iconHtml = '<i class="fas fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
     } else if (type === 'info') {
-        icon = '<i class="fa fa-info-circle text-info fa-3x mr-2" aria-hidden="true"></i>';
-        bgColor = '#d1ecf1';  // Light blue background for info
+        modalBody.classList.add('bg-warning');
+        iconHtml = '<i class="fa fa-info-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
     } else {
-        icon = '<i class="fa fa-exclamation-circle text-warning fa-3x mr-2" aria-hidden="true"></i>';
-        bgColor = '#fff3cd';  // Light yellow background for warnings
+        modalBody.classList.add('bg-warning');
+        iconHtml = '<i class="fa fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
     }
 
-    // Apply background color to modal body
-    modalBody.style.backgroundColor = bgColor;
-
-    // Set message content with icon
-    modalMessage.innerHTML = `${icon} <span style="font-size: 1.25rem;">${message}</span>`;
+    // Inject icon and message
+    modalMessage.innerHTML = `${iconHtml}<span>${message}</span>`;
 
     // Show the modal
     $('#tableAlertModal').modal('show');
+
+    // Auto-hide the modal after 3 seconds
+    setTimeout(() => $('#tableAlertModal').modal('hide'), 3000);
 }
+
 
 </script>
 
@@ -307,7 +313,7 @@ function openReservationForm(tableId) {
     gap: 20px;
     justify-content: center;
     padding: 20px;
-    background-color: #f8f9fa; /* Light background for the table selection area */
+    background-color: #D9D9D9; /* Light background for the table selection area */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow around the container */
 }

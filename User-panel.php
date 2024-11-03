@@ -27,6 +27,24 @@ if (!isset($_SESSION['first_name'])) {
 
 // Use the session-stored first name or username
 $username = htmlspecialchars($_SESSION['username'] ?? 'User');
+
+// Fetch the first reservation with table details
+$query_reservation = "
+    SELECT dr.*, t.table_number, t.seating_capacity
+    FROM data_reservations dr
+    JOIN tables t ON dr.table_id = t.table_id
+    ORDER BY dr.reservation_id ASC
+    LIMIT 1
+";
+$result_reservation = $conn->query($query_reservation);
+$first_reservation = $result_reservation->fetch_assoc();
+
+// Format the reservation time in 12-hour format with AM/PM
+if ($first_reservation && $first_reservation['reservation_time']) {
+    $formatted_time = 'Time: ' . date('g:i A', strtotime($first_reservation['reservation_time']));
+} else {
+    $formatted_time = 'Time:';
+}
 ?>
 
 
@@ -50,12 +68,12 @@ $username = htmlspecialchars($_SESSION['username'] ?? 'User');
         <h1 class="text-center">Welcome, <?= $username; ?>!</h1>
         <h1 class="text-center">Delicious starts here!</h1>
 
-        <!-- Table Navigation -->
-        <div class="table_nav">
-            <button class="table-nav">Reservation</button>
-            <button class="table-nav">No of Guests</button>
-            <button class="table-nav">Date</button>
-            <button class="table-nav">Time</button>
+          <!-- Table Navigation with dynamic labels -->
+          <div class="table_nav">
+            <button class="table-nav"><?= $first_reservation ? 'Table Number: ' . $first_reservation['table_number'] : 'Table Number'; ?></button>
+            <button class="table-nav"><?= $first_reservation ? 'Capacity: ' . $first_reservation['seating_capacity'] : 'Capacity'; ?></button>
+            <button class="table-nav"><?= $formatted_time; ?></button>
+            <button class="table-nav"><?= $first_reservation ? 'Date: ' . $first_reservation['reservation_date'] : 'Date'; ?></button>
         </div>
 
         <!-- Slider Section -->

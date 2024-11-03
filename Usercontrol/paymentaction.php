@@ -2,10 +2,13 @@
 include_once "../assets/config.php";
 session_start();
 
-// Enable error reporting for debugging
+// Enable error reporting for debugging (remove or set to 0 in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+// Start output buffering to prevent any accidental output before JSON response
+ob_start();
 
 function findFirstMissingReservationID($conn) {
     $missingIDQuery = "
@@ -26,11 +29,11 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
 
     try {
         $firstMissingReservationID = findFirstMissingReservationID($conn);
-        if ($firstMissingReservationID !== null) {
-            echo "First missing reservation ID: " . $firstMissingReservationID . "\n";
-        } else {
-            echo "No missing ID found in reservations.\n";
-        }
+        
+        // Ensure no direct echo statements for debug output
+        // Comment out or remove any debug output like below:
+        // echo "First missing reservation ID: " . $firstMissingReservationID . "\n";
+        // echo "No missing ID found in reservations.\n";
 
         $updateStatusQuery = "UPDATE data_reservations SET status = 'Paid' WHERE user_id = ? AND status = 'Pending'";
         $stmt = $conn->prepare($updateStatusQuery);
@@ -107,9 +110,11 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->close();
 
         $conn->commit();
+        ob_end_clean(); // Clean the buffer to ensure only JSON is sent
         echo json_encode(['status' => 'success', 'message' => 'Payment processed, status updated, and data transferred successfully.']);
     } catch (Exception $e) {
         $conn->rollback();
+        ob_end_clean(); // Clean the buffer to ensure only JSON is sent
         echo json_encode(['status' => 'error', 'message' => 'An error occurred: ' . $e->getMessage()]);
     }
 }
@@ -121,9 +126,11 @@ if (isset($_POST['user_id']) && isset($_POST['totalPayment'])) {
     if ($user_id > 0 && $totalPayment > 0) {
         handleSuccessfulPayment($conn, $user_id, $totalPayment);
     } else {
+        ob_end_clean(); // Clean the buffer to ensure only JSON is sent
         echo json_encode(['status' => 'error', 'message' => 'Invalid data provided.']);
     }
 } else {
+    ob_end_clean(); // Clean the buffer to ensure only JSON is sent
     echo json_encode(['status' => 'error', 'message' => 'Required data missing.']);
 }
 

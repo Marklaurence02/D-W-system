@@ -132,13 +132,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <h2 class="text-center mb-4">Payment Receipt</h2>
 
     <!-- Order Items Section -->
-    <div class="card mb-4">
+    <div class="card mb-4" style="background-color: #D9D9D9; border-radius: 10px;">
         <div class="card-header">
             <h4>Your Orders</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body ">
             <?php if (count($orders) > 0): ?>
-                <table class="table table-bordered">
+                <table class="table table-bordered " >
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 
     <!-- Reservation Details Section -->
-    <div class="card mb-4">
+    <div class="card mb-4"style="background-color: #D9D9D9; border-radius: 10px;">
         <div class="card-header">
             <h4>Your Reservation</h4>
         </div>
@@ -322,7 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </label>
                 </div>
                 <!-- Pay Button -->
-                <button type="button" class="btn btn-success btn-sm" id="payButton" onclick="submitPayment()" disabled>Pay</button>
+                <button type="button" class="btn btn-success btn-sm" id="payButton" onclick="showPasswordModal()" disabled>Pay</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Go Back</button>
             </div>
         </div>
@@ -354,10 +354,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 </div>
 
+<!-- Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="passwordModalLabel">Enter Password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="userPassword" class="small">Password</label>
+                        <input type="password" class="form-control" id="userPassword" placeholder="Enter your password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="validatePassword()">Submit</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-
-
+<!-- Custom Loader -->
+<div id="customLoader" class="loader-overlay">
+    <div class="loader"></div>
+</div>
 
 <!-- Payment Modal with Card Options -->
 <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
@@ -418,72 +445,132 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 </div>
 
+<?php $conn->close(); ?>
+
+
+<!-- Alert Modal -->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="alertMessage">
+                <!-- Dynamic alert message will be shown here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+    function showAlert(message, type = 'info') {
+        const alertModalLabel = document.getElementById('alertModalLabel');
+        const alertModalHeader = document.querySelector('#alertModal .modal-header');
+        const alertMessage = document.getElementById('alertMessage');
+
+        // Customize the modal header based on alert type
+        switch (type) {
+            case 'success':
+                alertModalHeader.className = 'modal-header bg-success text-white';
+                alertModalLabel.textContent = 'Success';
+                break;
+            case 'error':
+                alertModalHeader.className = 'modal-header bg-danger text-white';
+                alertModalLabel.textContent = 'Error';
+                break;
+            default:
+                alertModalHeader.className = 'modal-header bg-info text-white';
+                alertModalLabel.textContent = 'Notification';
+        }
+
+        // Set the alert message
+        alertMessage.textContent = message;
+
+        // Show the modal
+        $('#alertModal').modal('show');
+    }
+
     function updateCardDetails() {
-    const cardTypeSelect = document.getElementById("cardType");
-    const selectedOption = cardTypeSelect.options[cardTypeSelect.selectedIndex];
-    
-    const selectedCardImage = document.getElementById("selectedCardImage");
-    const cardNumberInput = document.getElementById("cardNumber");
-    const cvvInput = document.getElementById("cvv");
+        const cardTypeSelect = document.getElementById("cardType");
+        const selectedOption = cardTypeSelect.options[cardTypeSelect.selectedIndex];
+        
+        const selectedCardImage = document.getElementById("selectedCardImage");
+        const cardNumberInput = document.getElementById("cardNumber");
+        const cvvInput = document.getElementById("cvv");
 
-    // Update the card image, card number, and CVV based on selected option's data attributes
-    selectedCardImage.src = selectedOption.getAttribute("data-image") || "../Images/visa.png";
-    cardNumberInput.value = selectedOption.getAttribute("data-card-number") || "";
-    cvvInput.value = selectedOption.getAttribute("data-cvv") || "";
-}
-
-function validatePaymentForm() {
-    let isValid = true;
-    const cardNumber = document.getElementById("cardNumber").value;
-    const expiryDate = document.getElementById("expiryDate").value;
-    const cvv = document.getElementById("cvv").value;
-
-    // Regular expressions for validation
-    const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
-    const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-    const cvvRegex = /^\d{3,4}$/;
-
-    // Validate card number
-    if (!cardNumberRegex.test(cardNumber)) {
-        document.getElementById("cardNumberError").innerText = "Enter a valid 16-digit card number.";
-        isValid = false;
-    } else {
-        document.getElementById("cardNumberError").innerText = "";
+        selectedCardImage.src = selectedOption.getAttribute("data-image") || "../Images/visa.png";
+        cardNumberInput.value = selectedOption.getAttribute("data-card-number") || "";
+        cvvInput.value = selectedOption.getAttribute("data-cvv") || "";
     }
 
-    // Validate expiry date
-    if (!expiryDateRegex.test(expiryDate)) {
-        document.getElementById("expiryDateError").innerText = "Enter a valid expiry date in MM/YY format.";
-        isValid = false;
-    } else {
-        document.getElementById("expiryDateError").innerText = "";
+    function validatePaymentForm() {
+        let isValid = true;
+        const cardNumber = document.getElementById("cardNumber").value;
+        const expiryDate = document.getElementById("expiryDate").value;
+        const cvv = document.getElementById("cvv").value;
+
+        const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
+        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        const cvvRegex = /^\d{3,4}$/;
+
+        if (!cardNumberRegex.test(cardNumber)) {
+            document.getElementById("cardNumberError").textContent = "Enter a valid 16-digit card number.";
+            isValid = false;
+        } else {
+            document.getElementById("cardNumberError").textContent = "";
+        }
+
+        if (!expiryDateRegex.test(expiryDate)) {
+            document.getElementById("expiryDateError").textContent = "Enter a valid expiry date in MM/YY format.";
+            isValid = false;
+        } else {
+            document.getElementById("expiryDateError").textContent = "";
+        }
+
+        if (!cvvRegex.test(cvv)) {
+            document.getElementById("cvvError").textContent = "Enter a valid 3 or 4-digit CVV.";
+            isValid = false;
+        } else {
+            document.getElementById("cvvError").textContent = "";
+        }
+
+        if (!isValid) {
+            showAlert("Please correct the highlighted errors in the form.", 'error');
+        }
+
+        return isValid;
     }
 
-    // Validate CVV
-    if (!cvvRegex.test(cvv)) {
-        document.getElementById("cvvError").innerText = "Enter a valid 3 or 4-digit CVV.";
-        isValid = false;
-    } else {
-        document.getElementById("cvvError").innerText = "";
+    function showPasswordModal() {
+        $('#passwordModal').modal('show');
     }
 
-    // Show alert if there are errors
-    if (!isValid) {
-        alert("Please correct the highlighted errors in the form.");
+    function validatePassword() {
+        const password = document.getElementById('userPassword').value;
+        if (password.length > 0) {
+            // Perform password validation (optional: send to server for verification)
+            $('#passwordModal').modal('hide');
+            submitPayment();
+        } else {
+            alert("Please enter your password.");
+        }
     }
 
-    return isValid;
-}
-
-function submitPayment() {
+    function submitPayment() {
     if (validatePaymentForm()) {
-        // Gather required data
+        showAlert("Processing your payment, please wait...", 'info');
+        showLoadingAnimation(); // Show the loading animation before making the AJAX request
+
+        // Ensure these variables are sanitized and safe for embedding in JavaScript
         const userId = <?= json_encode($user_id) ?>;
         const totalPayment = <?= json_encode($totalPayment) ?>;
 
-        // AJAX request to call the PHP function
         $.ajax({
             url: '/Usercontrol/paymentaction.php',
             type: 'POST',
@@ -493,84 +580,110 @@ function submitPayment() {
                 totalPayment: totalPayment
             },
             success: function(response) {
-                console.log("Server response:", response);
-                let jsonResponse = JSON.parse(response);
-                if (jsonResponse.status === 'success') {
-                    alert(jsonResponse.message);
-                    $('#paymentModal').modal('hide'); // Hide the payment modal
-                    $('#receiptModal').modal('show'); // Show the receipt modal
-                } else {
-                    alert(jsonResponse.message);
+                console.log("Server response:", response); // Log the raw response for inspection
+                try {
+                    const jsonResponse = JSON.parse(response);
+                    // Keep the loading animation for 10 seconds before hiding and showing the alert
+                    setTimeout(() => {
+                        hideLoadingAnimation(); // Hide the loading animation after 10 seconds
+                        if (jsonResponse.status === 'success') {
+                            showAlert(jsonResponse.message, 'success');
+                            $('#paymentModal').modal('hide');
+                            $('#receiptModal').modal('show');
+                            setTimeout(() => {
+                                redirectToUserPanel();
+                            }, 3000); // Adjust the delay as needed
+                        } else {
+                            showAlert(jsonResponse.message, 'error');
+                        }
+                    }, 10000); // Delay of 10 seconds
+                } catch (error) {
+                    console.error("Response parsing error:", error);
+                    setTimeout(() => {
+                        hideLoadingAnimation();
+                        showAlert("Unexpected response format from the server.", 'error');
+                    }, 10000); // Delay of 10 seconds
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error("AJAX error: ", textStatus, errorThrown);
-                alert("An error occurred while processing the payment. Please try again.");
+                console.error("AJAX error:", textStatus, errorThrown);
+                setTimeout(() => {
+                    hideLoadingAnimation();
+                    showAlert("An error occurred while processing the payment. Please try again.", 'error');
+                }, 10000); // Delay of 10 seconds
             }
         });
     }
 }
 
-function showReceiptModal() {
-    if (validatePaymentForm()) {
-        // Hide payment modal and show receipt modal
-        $('#paymentModal').modal('hide');
-        $('#receiptModal').modal('show');
-    }
-}
 
-$(document).ready(function() {
-    // Ensure the receipt modal is not shown when the payment modal is closed with the "X" button
-    $('#paymentModal').on('hidden.bs.modal', function(e) {
-        if ($(e.target).hasClass('show')) {
-            return; // Only act if modal is manually closed, not by code
+function showReceiptModal() {
+        if (validatePaymentForm()) {
+            $('#paymentModal').modal('hide');
+            $('#receiptModal').modal('show');
+        }
+    }
+
+    let policyRead = false;
+
+    function markPolicyRead() {
+        policyRead = true;
+    }
+
+    function togglePayButton() {
+        const policyCheck = document.getElementById('policyCheck');
+        const payButton = document.getElementById('payButton');
+
+        if (policyRead) {
+            policyCheck.disabled = false;
+            payButton.disabled = !policyCheck.checked;
+        } else {
+            policyCheck.checked = false;
+            payButton.disabled = true;
+        }
+    }
+
+    $('#policyModal').on('hidden.bs.modal', function () {
+        if (policyRead) {
+            document.getElementById('policyCheck').disabled = false;
         }
     });
-
-    // Function to handle the "Check Receipt" button click in the receipt modal
-    $('#receiptModal .btn-success').on('click', function() {
-        alert('Receipt confirmed. Thank you!');
-        $('#receiptModal').modal('hide'); // Hide the receipt modal
-        window.location.href = "User-panel.php"; // Redirect to user panel or another page
-    });
-
-    // Function to handle the "Go Back" button click in the receipt modal
-    $('#receiptModal .btn-secondary').on('click', function() {
-        $('#receiptModal').modal('hide');
-    });
-});
-
-
-let policyRead = false; // Flag to track if policy was opened
-
-// Function to mark policy as read
-function markPolicyRead() {
-    policyRead = true;
-}
-
-// Function to enable/disable Pay button based on checkbox state and policy read
-function togglePayButton() {
-    const policyCheck = document.getElementById('policyCheck');
-    const payButton = document.getElementById('payButton');
-
-    if (policyRead) {
-        policyCheck.disabled = false; // Enable checkbox if policy has been read
-        payButton.disabled = !policyCheck.checked; // Enable Pay button only if checkbox is checked
+    
+    function showLoadingAnimation() {
+    const loader = document.getElementById('customLoader');
+    if (loader) {
+        loader.style.display = 'flex'; // Show the loader
+        console.log("Loader displayed."); // Debug log
     } else {
-        policyCheck.checked = false;
-        payButton.disabled = true;
+        console.error("Loader element not found.");
     }
 }
 
-// Listen for the No Return Policy modal close event
-$('#policyModal').on('hidden.bs.modal', function () {
-    if (policyRead) {
-        document.getElementById('policyCheck').disabled = false; // Enable checkbox after modal is closed
+function hideLoadingAnimation() {
+    const loader = document.getElementById('customLoader');
+    if (loader) {
+        loader.style.display = 'none'; // Hide the loader
+        console.log("Loader hidden."); // Debug log
+    } else {
+        console.error("Loader element not found.");
     }
+}
+
+// Example usage: call showLoadingAnimation() and hideLoadingAnimation() during page load or AJAX calls
+document.addEventListener('DOMContentLoaded', () => {
+    showLoadingAnimation();
+    setTimeout(hideLoadingAnimation, 10000); // Simulate loading and hide after 3 seconds
 });
+
+
+// Redirect to the user panel
+function redirectToUserPanel() {
+    window.location.href = 'User-panel.php'; // Adjust the path as needed
+}
+
+
 </script>
 
-<?php $conn->close(); ?>
 
 <style>
    /* Styling for the card image */
@@ -599,4 +712,35 @@ $('#policyModal').on('hidden.bs.modal', function () {
     .modal-title {
         font-size: 1rem;
     }
+
+    .loader-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid blue;
+    border-right: 16px solid green;
+    border-bottom: 16px solid red;
+    border-left: 16px solid pink;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 </style>

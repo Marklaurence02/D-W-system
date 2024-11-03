@@ -1,66 +1,89 @@
 <?php
 include 'config.php';
 
-// Initialize variables
+// Initialize variables with default values
 $totalSales = 0;
 $totalOrders = 0;
 $totalSold = 0;
 $totalCustomers = 0;
 
-// Fetch total sales (only for completed orders by General Users)
-$result = $conn->query("
-    SELECT SUM(total_amount) AS totalSales 
+// Function to execute a query and return the result or log an error
+function fetchSingleValue($conn, $query, &$variable, $label) {
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $variable = $row ? ($row[$label] ?? 0) : 0;
+    } else {
+        error_log("Error fetching $label: " . $conn->error);
+        return false;
+    }
+    return true;
+}
+
+// Fetch total sales
+if (!fetchSingleValue($conn, "
+    SELECT SUM(receipts.total_amount) AS totalSales 
+    FROM receipts 
+    JOIN orders ON receipts.order_id = orders.order_id 
+    WHERE orders.status IN ('Completed', 'paid in advance')
+", $totalSales, 'totalSales')) {
+    echo json_encode(['error' => 'Failed to fetch total sales']);
+    $conn->close();
+    exit;
+}
+
+// Fetch total orders
+if (!fetchSingleValue($conn, "
+    SELECT COUNT(orders.order_id) AS totalOrders 
     FROM orders 
-    JOIN users u ON orders.user_id = u.user_id 
-    WHERE status = 'Completed' AND u.role = 'General User'
-");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $totalSales = $row['totalSales'] ?? 0; // Handle null
-} else {
-    error_log("Error fetching total sales: " . $conn->error);
+    WHERE orders.status != 'Canceled'
+", $totalOrders, 'totalOrders')) {
+    echo json_encode(['error' => 'Failed to fetch total orders']);
+    $conn->close();
+    exit;
 }
 
-// Fetch total orders (only for General Users)
-$result = $conn->query("
-    SELECT COUNT(*) AS totalOrders 
-    FROM orders 
-    JOIN users u ON orders.user_id = u.user_id 
-    WHERE u.role = 'General User'
-");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $totalOrders = $row['totalOrders'] ?? 0;
-} else {
-    error_log("Error fetching total orders: " . $conn->error);
+// Fetch total items sold
+if (!fetchSingleValue($conn, "
+    SELECT SUM(receipt_items.quantity) AS totalSold 
+    FROM receipt_items 
+    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
+    JOIN orders ON receipts.order_id = orders.order_id 
+    WHERE orders.status IN ('Completed', 'paid in advance')
+", $totalSold, 'totalSold')) {
+    echo json_encode(['error' => 'Failed to fetch total sold']);
+    $conn->close();
+    exit;
 }
 
-// Fetch total items sold (for General Users)
-$result = $conn->query("
-    SELECT SUM(order_items.quantity) AS totalSold 
-    FROM order_items 
-    JOIN orders ON order_items.order_id = orders.order_id 
-    JOIN users u ON orders.user_id = u.user_id 
-    WHERE u.role = 'General User'
-");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $totalSold = $row['totalSold'] ?? 0;
-} else {
-    error_log("Error fetching total sold: " . $conn->error);
+// Fetch total customers
+if (!fetchSingleValue($conn, "
+    SELECT COUNT(DISTINCT orders.user_id) AS totalCustomers 
+    FROM orders
+", $totalCustomers, 'totalCustomers')) {
+    echo json_encode(['error' => 'Failed to fetch total customers']);
+    $conn->close();
+    exit;
 }
 
-// Fetch total customers (All General Users)
-$result = $conn->query("
-    SELECT COUNT(*) AS totalCustomers 
-    FROM users 
-    WHERE role = 'General User'
-");
+// Prepare data for chart (e.g., sales by month)
+$chartLabels = [];
+$chartData = [];
+$sql = "
+    SELECT MONTHNAME(receipts.receipt_date) AS month, SUM(receipt_items.item_total_price) AS total_sales 
+    FROM receipt_items 
+    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
+    GROUP BY month 
+    ORDER BY MONTH(receipts.receipt_date)
+";
+$result = $conn->query($sql);
 if ($result) {
-    $row = $result->fetch_assoc();
-    $totalCustomers = $row['totalCustomers'] ?? 0;
+    while ($row = $result->fetch_assoc()) {
+        $chartLabels[] = $row['month'];
+        $chartData[] = $row['total_sales'];
+    }
 } else {
-    error_log("Error fetching total customers: " . $conn->error);
+    error_log("Error fetching chart data: " . $conn->error);
 }
 
 $conn->close();
@@ -70,6 +93,8 @@ echo json_encode([
     'totalSales' => $totalSales,
     'totalOrders' => $totalOrders,
     'totalSold' => $totalSold,
-    'totalCustomers' => $totalCustomers
+    'totalCustomers' => $totalCustomers,
+    'chartLabels' => $chartLabels,
+    'chartData' => $chartData
 ]);
 ?>

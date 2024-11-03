@@ -28,22 +28,17 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
     $conn->begin_transaction();
 
     try {
-        $firstMissingReservationID = findFirstMissingReservationID($conn);
-        
-        // Ensure no direct echo statements for debug output
-        // Comment out or remove any debug output like below:
-        // echo "First missing reservation ID: " . $firstMissingReservationID . "\n";
-        // echo "No missing ID found in reservations.\n";
-
+        // Update the status of data_reservations
         $updateStatusQuery = "UPDATE data_reservations SET status = 'Paid' WHERE user_id = ? AND status = 'Pending'";
         $stmt = $conn->prepare($updateStatusQuery);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $stmt->close();
 
+        // Transfer reservations to the reservations table and keep track of the original reservation_id
         $transferReservationsQuery = "
-            INSERT INTO reservations (user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at)
-            SELECT user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at
+            INSERT INTO reservations (reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at)
+            SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at
             FROM data_reservations
             WHERE user_id = ? AND status = 'Paid'
         ";
@@ -52,6 +47,7 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->execute();
         $stmt->close();
 
+        // Transfer order details to the orders table using reservation_id from data_reservations
         $transferOrdersQuery = "
             INSERT INTO orders (user_id, reservation_id, order_details, total_amount, order_time, status, created_at, updated_at, payment_method)
             SELECT 
@@ -65,15 +61,16 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
                 NOW(),
                 'Credit Card'
             FROM order_items oi
-            LEFT JOIN data_reservations dr ON oi.user_id = dr.user_id
+            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
             WHERE oi.user_id = ?
-            GROUP BY oi.order_id
+            GROUP BY dr.reservation_id
         ";
         $stmt = $conn->prepare($transferOrdersQuery);
         $stmt->bind_param("di", $totalPayment, $user_id);
         $stmt->execute();
         $stmt->close();
 
+        // Insert into the receipts table and get the new receipt_id
         $receiptQuery = "
             INSERT INTO receipts (order_id, user_id, total_amount, payment_method)
             SELECT DISTINCT o.order_id, o.user_id, ?, 'Credit Card'
@@ -86,17 +83,23 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $receipt_id = $stmt->insert_id;
         $stmt->close();
 
+        // Insert into receipt_items with reservation_id from data_reservations
         $receiptItemsQuery = "
-            INSERT INTO receipt_items (receipt_id, product_id, quantity, item_total_price)
-            SELECT ?, oi.product_id, oi.quantity, oi.totalprice
+            INSERT INTO receipt_items (receipt_id, reservation_id, product_id, quantity, item_total_price, user_id)
+            SELECT ?, dr.reservation_id, oi.product_id, oi.quantity, oi.totalprice, oi.user_id
             FROM order_items oi
+            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
             WHERE oi.user_id = ?
         ";
         $stmt = $conn->prepare($receiptItemsQuery);
         $stmt->bind_param("ii", $receipt_id, $user_id);
         $stmt->execute();
+        if ($stmt->affected_rows === 0) {
+            throw new Exception("No receipt items were inserted.");
+        }
         $stmt->close();
 
+        // Clear order_items and data_reservations after successful insertion
         $clearOrderItemsQuery = "DELETE FROM order_items WHERE user_id = ?";
         $stmt = $conn->prepare($clearOrderItemsQuery);
         $stmt->bind_param("i", $user_id);

@@ -33,6 +33,7 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
     <a href="User-Panel.php"><i class="fa fa-home"></i> Home</a>
     <a href="#orders" onclick="order_list()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
     <a href="#reservation" onclick="savedreservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
+    <a href="#reservation" onclick="recieptrecords()"><i class="fa fa-calendar-check-o"></i> Receipt</a>
     <a href="User-settings.php"><i class="fa fa-cog"></i> Settings</a>
     <a href="assets/log-out.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>

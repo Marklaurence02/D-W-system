@@ -3,7 +3,7 @@
 session_start();
 
 // Include the database connection configuration
-include 'assets/config.php';
+include 'config.php';
 
 // Initialize message and error variables
 $message = '';
@@ -84,4 +84,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Close the database connection
 $conn->close();
-?>

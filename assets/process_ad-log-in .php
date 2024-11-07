@@ -1,9 +1,11 @@
 <?php
-// Start the session
-session_start();
+// Start the session if it's not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include the database connection configuration
-include 'assets/config.php';
+include 'config.php';
 
 // Initialize message and error variables
 $message = '';
@@ -40,6 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Verify the entered password against the hashed password
             if (password_verify($password, $hashedPassword)) {
+                // Update the user's status to 'online'
+                $status_sql = "UPDATE users SET status = 'online' WHERE user_id = ?";
+                $status_stmt = $conn->prepare($status_sql);
+                $status_stmt->bind_param('i', $user_id);
+                $status_stmt->execute();
+                $status_stmt->close(); // Close the statement
+
                 // Store user info in session
                 $_SESSION['email'] = $email;
                 $_SESSION['role'] = $role;
@@ -66,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     case 'Staff':
                         header('Location: Staff-panel.php');
                         break;
-
                     default:
                         $error = "Unknown role. Please contact support.";
                 }
@@ -85,4 +93,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Close the database connection
 $conn->close();
-?>
+

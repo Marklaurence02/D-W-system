@@ -1081,3 +1081,16 @@ function refreshCategoryList() {
 }
 
 
+function showmessage() {
+    $.ajax({
+        url: "Ownerview/message.php",
+        method: "post",
+        data: { record: 1 },
+        success: function(data) {
+            $('.allContent-section').html(data);
+        },
+        error: function() {
+            alert("Error.");
+        }
+    });
+}

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once "assets/config.php";
+include_once "./assets/config.php";
 ?>
 
 <!-- nav -->
@@ -11,25 +11,19 @@ include_once "assets/config.php";
 
     <div class="welc">
         <?php
-        // Default message for guest
         $welcomeMessage = "Welcome, Guest";
 
-        // Check if the user is logged in
         if (isset($_SESSION['user_id'])) {
-            // Use the session variable for role directly
             $role = $_SESSION['role'];
-            $username = $_SESSION['username'] ?? 'User'; // Fallback in case username is not set
+            $username = $_SESSION['username'] ?? 'User';
 
-            // Set the welcome message based on user role
             $welcomeMessage = "Welcome, " . htmlspecialchars($username) . " (" . htmlspecialchars($role) . ")";
         }
 
-        // Display the welcome message
         echo $welcomeMessage;
         ?>
     </div>
 
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
-    
-
 </nav>
+

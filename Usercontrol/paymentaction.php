@@ -48,27 +48,34 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->close();
 
         // Transfer order details to the orders table using reservation_id from data_reservations
-        $transferOrdersQuery = "
-            INSERT INTO orders (user_id, reservation_id, order_details, total_amount, order_time, status, created_at, updated_at, payment_method)
-            SELECT 
-                oi.user_id,
-                dr.reservation_id,
-                GROUP_CONCAT(CONCAT('Product ID: ', oi.product_id, ' | Quantity: ', oi.quantity, ' | Price: ', oi.totalprice) SEPARATOR '; ') AS order_details,
-                ?,
-                NOW(),
-                'paid in advance',
-                NOW(),
-                NOW(),
-                'Credit Card'
-            FROM order_items oi
-            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
-            WHERE oi.user_id = ?
-            GROUP BY dr.reservation_id
-        ";
-        $stmt = $conn->prepare($transferOrdersQuery);
-        $stmt->bind_param("di", $totalPayment, $user_id);
-        $stmt->execute();
-        $stmt->close();
+       // Transfer order details to the orders table using reservation_id from data_reservations
+$transferOrdersQuery = "
+INSERT INTO orders (user_id, reservation_id, order_details, total_amount, order_time, status, created_at, updated_at, payment_method)
+SELECT 
+    oi.user_id,
+    dr.reservation_id,
+    GROUP_CONCAT(
+        CONCAT(
+            'Product Name: ', pi.product_name, ' | Quantity: ', oi.quantity, ' | Price: ', oi.totalprice
+        ) SEPARATOR '; '
+    ) AS order_details,
+    ?,
+    NOW(),
+    'paid in advance',
+    NOW(),
+    NOW(),
+    'Credit Card'
+FROM order_items oi
+JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
+JOIN product_items pi ON oi.product_id = pi.product_id
+WHERE oi.user_id = ?
+GROUP BY dr.reservation_id
+";
+$stmt = $conn->prepare($transferOrdersQuery);
+$stmt->bind_param("di", $totalPayment, $user_id);
+$stmt->execute();
+$stmt->close();
+
 
         // Insert into the receipts table and get the new receipt_id
         $receiptQuery = "

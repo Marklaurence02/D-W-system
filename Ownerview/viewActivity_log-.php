@@ -1,6 +1,12 @@
 <?php
 include_once "../assets/config.php";
 
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+
+
 // Get the search term sent from JavaScript (if any)
 $search = isset($_POST['search']) ? $conn->real_escape_string($_POST['search']) : '';
 
@@ -51,4 +57,3 @@ if ($result->num_rows > 0) {
 } else {
     echo "<p>No activity logs found.</p>";
 }
-?>

@@ -1,9 +1,12 @@
 <?php
 // addAdmin.php
 
-include_once "../assets/config.php";  // Ensure the path to the config file is correct
+include_once "../assets/config.php"; // Ensure the path to the config file is correct
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Debugging line: uncomment to check received POST data
+    // var_dump($_POST);
+
     // Check if all necessary fields are set
     if (!empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['username']) 
         && !empty($_POST['password']) && !empty($_POST['role']) && !empty($_POST['contact_number']) 
@@ -19,20 +22,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = htmlspecialchars(trim($_POST['email']));
 
         // Check if email or username already exists in the database
-        $check_sql = "SELECT user_id FROM users WHERE email = ? OR username = ?";
+        $check_sql = "SELECT user_id, email, username FROM users WHERE email = ? OR username = ?";
         $check_stmt = $conn->prepare($check_sql);
         if ($check_stmt === false) {
             error_log("MySQL prepare error: " . $conn->error);
             echo json_encode(['status' => 'error', 'message' => 'Database preparation error while checking uniqueness.']);
             exit;
         }
+        
         $check_stmt->bind_param("ss", $email, $username);
         $check_stmt->execute();
         $check_stmt->store_result();
 
         if ($check_stmt->num_rows > 0) {
-            // If a row is returned, it means the email or username already exists
-            echo json_encode(['status' => 'error', 'message' => 'Email or Username already exists. Please choose another.']);
+            $check_stmt->bind_result($existing_user_id, $existing_email, $existing_username);
+            $check_stmt->fetch();
+            if ($existing_email === $email) {
+                echo json_encode(['status' => 'error', 'message' => 'Email already exists. Please choose another.']);
+            } elseif ($existing_username === $username) {
+                echo json_encode(['status' => 'error', 'message' => 'Username already exists. Please choose another.']);
+            }
             $check_stmt->close();
             exit;
         }

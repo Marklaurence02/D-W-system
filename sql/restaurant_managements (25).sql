@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2024 at 09:51 AM
+-- Generation Time: Nov 07, 2024 at 04:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,61 +40,32 @@ CREATE TABLE `activity_logs` (
 --
 
 INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_details`, `created_at`) VALUES
-(291, 5, 'Login', 'mlast3 logged in', '2024-11-01 22:25:29'),
-(292, 5, 'Logout', 'mlast3 logged out', '2024-11-01 22:28:44'),
-(301, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:39:17'),
-(302, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:40:51'),
-(303, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:41:21'),
-(304, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:42:36'),
-(305, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:46:02'),
-(306, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:46:27'),
-(307, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:46:30'),
-(308, 31, 'Logout', 'jdsaa logged out', '2024-11-01 22:51:47'),
-(309, 31, 'Login', 'jdsaa logged in', '2024-11-01 22:51:49'),
-(310, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:55:42'),
-(311, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 22:55:57'),
-(312, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:55:59'),
-(313, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 22:58:02'),
-(314, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 22:58:05'),
-(315, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:06:29'),
-(316, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:06:31'),
-(317, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:07:52'),
-(318, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:07:53'),
-(319, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:09:46'),
-(320, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:09:48'),
-(321, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-01 23:21:06'),
-(322, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:21:08'),
-(323, 30, 'Logout', 'hdsaa logged out', '2024-11-01 23:26:40'),
-(324, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-01 23:26:42'),
-(325, 30, 'Logout', 'hdsaa logged out', '2024-11-02 00:00:03'),
-(326, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 00:00:07'),
-(327, 31, 'Logout', 'jdsaa logged out', '2024-11-02 01:40:21'),
-(328, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 01:40:28'),
-(329, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 01:40:31'),
-(330, 30, 'Logout', 'hala s. dsaa sad logged out', '2024-11-02 02:05:22'),
-(331, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 02:05:24'),
-(332, 30, 'Logout', 'hdsaa logged out', '2024-11-02 02:38:17'),
-(333, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 02:38:33'),
-(334, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 02:38:38'),
-(335, 31, 'Logout', 'jack j. dsaa sad logged out', '2024-11-02 05:07:32'),
-(336, 5, 'Login', 'mlast3 logged in', '2024-11-02 05:08:14'),
-(337, 5, '', 'Updated table ID: 1 with table number: 9', '2024-11-02 05:08:42'),
-(338, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:48:33'),
-(339, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:50:34'),
-(340, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 06:52:31'),
-(341, 31, 'Logout', 'jack j. dsaa sad logged out', '2024-11-02 09:37:16'),
-(342, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 09:37:20'),
-(343, 30, 'Logout', 'hdsaa logged out', '2024-11-02 10:30:24'),
-(344, 30, 'Login', 'hala s. dsaa sad logged in', '2024-11-02 10:30:26'),
-(345, 30, 'Logout', 'hdsaa logged out', '2024-11-02 10:30:32'),
-(346, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-02 10:30:36'),
-(347, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 00:09:37'),
-(348, 31, 'Logout', 'jdsaa logged out', '2024-11-03 03:04:58'),
-(349, 31, 'Login', 'jack j. dsaa sad logged in', '2024-11-03 03:05:48'),
-(350, 5, 'Login', 'mlast3 logged in', '2024-11-03 03:34:59'),
-(351, 5, 'Logout', 'mlast3 logged out', '2024-11-03 03:48:18'),
-(352, 5, 'Login', 'mlast3 logged in', '2024-11-03 03:48:33'),
-(353, 5, 'Logout', 'mlast3 logged out', '2024-11-03 05:52:53');
+(3, 1, 'Login', 'Mark Laurence l. caringal jr logged in', '2024-11-07 01:01:05'),
+(4, 6, 'Login', 'jcaringal logged in', '2024-11-07 01:04:49'),
+(5, 6, 'Add Product', 'Added a new product: Pizzasdf (Category ID: 1)', '2024-11-07 01:06:11'),
+(6, 6, 'Add Product', 'Added a new product: pepsi (Category ID: 2)', '2024-11-07 01:06:45'),
+(7, 6, 'Logout', 'jcaringal logged out', '2024-11-07 01:11:11'),
+(8, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 01:11:50'),
+(9, 7, 'Logout', 'mcaringal1 logged out', '2024-11-07 01:21:03'),
+(10, 6, 'Login', 'jcaringal logged in', '2024-11-07 01:21:31'),
+(11, 6, 'Logout', 'jcaringal logged out', '2024-11-07 01:22:29'),
+(12, 6, 'Login', 'jcaringal logged in', '2024-11-07 01:26:29'),
+(13, 8, 'Login', 'hdsaa logged in', '2024-11-07 02:47:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chat_messages`
+--
+
+CREATE TABLE `chat_messages` (
+  `id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_group_message` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -169,8 +140,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `reservation_id`, `order_details`, `total_amount`, `order_time`, `status`, `feedback`, `created_at`, `updated_at`, `payment_method`) VALUES
-(1, 31, 1, 'Product ID: 1 | Quantity: 4 | Price: 240.00', 240.00, '2024-11-03 10:58:47', 'paid in advance', NULL, '2024-11-03 02:58:47', '2024-11-03 02:58:47', 'Credit Card'),
-(2, 31, 2, 'Product ID: 1 | Quantity: 1 | Price: 60.00', 60.00, '2024-11-03 11:17:51', 'paid in advance', NULL, '2024-11-03 03:17:51', '2024-11-03 03:17:51', 'Credit Card');
+(1, 7, 2, 'Product Name: Pizzasdf | Quantity: 1 | Price: 12.00', 12.00, '2024-11-07 09:13:28', 'paid in advance', NULL, '2024-11-07 01:13:28', '2024-11-07 01:13:28', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -217,10 +187,8 @@ CREATE TABLE `product_categories` (
 --
 
 INSERT INTO `product_categories` (`category_id`, `category_name`) VALUES
-(1, 'Meal'),
-(2, 'Drink'),
-(3, 'Pizza'),
-(4, 'addons');
+(1, 'pizza'),
+(2, 'drinks');
 
 -- --------------------------------------------------------
 
@@ -245,11 +213,8 @@ CREATE TABLE `product_items` (
 --
 
 INSERT INTO `product_items` (`product_id`, `product_name`, `price`, `special_instructions`, `product_image`, `created_at`, `updated_at`, `quantity`, `category_id`) VALUES
-(1, 'Black Coffee', 60.00, 'Coffee brewed in a large batch using hot water and ground KAPENG BARAKO beans.', '../Uploads/671458170c418_images.jpg', '2024-10-07 10:35:00', '2024-10-23 03:45:42', 20, 2),
-(2, 'Bacon Cheeseburger The BCB (M)', 249.00, 'House marinara, mozzarella cheese, special cheese sauce, bell pepper, onions, ground beef, and bacon.', '../Uploads/671458be593cc_images (1).jpg', '2024-10-07 10:35:00', '2024-10-19 17:27:25', 20, 2),
-(3, 'Pizzasdf', 12.00, '', '../Uploads/67205684a0d61_marvelous-city-skyline.jpg', '2024-10-29 03:29:08', '2024-10-29 03:29:08', 1234567, 1),
-(4, 'Black Coffee (S)', 20.00, 'matapang', '../Uploads/672060b50f618_images.jpg', '2024-10-29 04:12:37', '2024-10-29 04:12:37', 3, 4),
-(5, 'Pizzasd', 290.00, '290', '../Uploads/6720614004731_images (2).jpg', '2024-10-29 04:14:56', '2024-10-29 04:14:56', 5, 2);
+(1, 'Pizzasdf', 12.00, '213', '../Uploads/672c128367284_hawwiean.jpg', '2024-11-07 01:06:11', '2024-11-07 01:06:11', 231, 1),
+(2, 'pepsi', 213.00, '', '../Uploads/672c12a5ee9a4_images.jpg', '2024-11-07 01:06:45', '2024-11-07 01:06:45', 4, 2);
 
 -- --------------------------------------------------------
 
@@ -271,9 +236,7 @@ CREATE TABLE `receipts` (
 --
 
 INSERT INTO `receipts` (`receipt_id`, `order_id`, `user_id`, `total_amount`, `receipt_date`, `payment_method`) VALUES
-(1, 1, 31, 240.00, '2024-11-03 02:58:47', 'Credit Card'),
-(2, 1, 31, 60.00, '2024-11-03 03:17:51', 'Credit Card'),
-(3, 2, 31, 60.00, '2024-11-03 03:17:51', 'Credit Card');
+(1, 1, 7, 12.00, '2024-11-07 01:13:28', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -296,8 +259,7 @@ CREATE TABLE `receipt_items` (
 --
 
 INSERT INTO `receipt_items` (`receipt_item_id`, `receipt_id`, `reservation_id`, `user_id`, `product_id`, `quantity`, `item_total_price`) VALUES
-(1, 1, 1, 31, 1, 4, 240.00),
-(2, 2, 2, 31, 1, 1, 60.00);
+(1, 1, 2, 7, 1, 1, 12.00);
 
 -- --------------------------------------------------------
 
@@ -323,8 +285,7 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(1, 31, 1, '2024-11-11', '07:00:00', 'Paid', '213', NULL, '2024-11-03 02:58:22', '2024-11-03 02:58:47'),
-(2, 31, 1, '2024-11-04', '07:30:00', 'Paid', '', NULL, '2024-11-03 03:17:28', '2024-11-03 03:17:51');
+(2, 7, 1, '2024-11-08', '07:15:00', 'Pending', '1234', NULL, '2024-11-07 01:12:53', '2024-11-07 01:21:56');
 
 -- --------------------------------------------------------
 
@@ -365,13 +326,6 @@ CREATE TABLE `sessions` (
   `expires_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `sessions`
---
-
-INSERT INTO `sessions` (`session_id`, `user_id`, `session_token`, `created_at`, `expires_at`) VALUES
-(1, 2, 'random_secure_token_123', '2024-10-09 08:13:26', '2024-12-10 19:00:00');
-
 -- --------------------------------------------------------
 
 --
@@ -391,11 +345,8 @@ CREATE TABLE `tables` (
 --
 
 INSERT INTO `tables` (`table_id`, `table_number`, `seating_capacity`, `is_available`, `area`) VALUES
-(1, 9, 4, 1, 'Outdoor'),
-(2, 2, 6, 0, 'Outdoor'),
-(3, 3, 2, 1, 'Indoor'),
-(27, 1, 2, 1, 'Outdoor'),
-(28, 3, 1, 1, 'Outdoor');
+(1, 9, 2, 1, 'Indoor'),
+(2, 9, 12, 1, 'Outdoor');
 
 -- --------------------------------------------------------
 
@@ -416,15 +367,11 @@ CREATE TABLE `table_images` (
 --
 
 INSERT INTO `table_images` (`image_id`, `table_id`, `image_path`, `uploaded_at`, `position`) VALUES
-(1, 1, '../uploads/67161da98506b_images (2).jpg', '2024-10-18 11:00:41', 'back view'),
-(2, 1, '../uploads/671871c0da28a_images (2).jpg', '2024-10-18 11:00:41', 'front view'),
-(3, 2, '../uploads/671871dfb1037_images (2).jpg', '2024-10-18 11:00:41', 'back view'),
-(33, 1, '../uploads/6716192d7c308_image.jpg', '2024-10-21 08:43:41', 'left view'),
-(34, 2, '../uploads/671e06a31346a_GyulaiSausage.jpg', '2024-10-27 09:21:25', 'left view'),
-(35, 2, '../uploads/671e069749121_images.jpg', '2024-10-27 09:23:35', 'right view'),
-(36, 3, '../uploads/672317b33d1ef_marvelous-city-skyline.jpg', '2024-10-31 05:37:55', 'back view'),
-(37, 27, '../uploads/672317bd527e1_marvelous-city-skyline.jpg', '2024-10-31 05:38:05', 'back view'),
-(38, 28, '../uploads/672317c95c4da_images (2).jpg', '2024-10-31 05:38:17', 'back view');
+(1, 1, '../uploads/672c12c9aad00_image.jpg', '2024-11-07 01:07:21', 'front view'),
+(2, 1, '../uploads/672c12c9ab7a8_image.jpg', '2024-11-07 01:07:21', 'back view'),
+(3, 1, '../uploads/672c12c9ac18d_image.jpg', '2024-11-07 01:07:21', 'left view'),
+(4, 2, '../uploads/672c12e59a8f7_marvelous-city-skyline.jpg', '2024-11-07 01:07:49', 'front view'),
+(5, 2, '../uploads/672c12e59b9e1_dramatic-river-views.jpg', '2024-11-07 01:07:49', 'back view');
 
 -- --------------------------------------------------------
 
@@ -447,18 +394,20 @@ CREATE TABLE `users` (
   `role` enum('Owner','Admin','Staff','General User') NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `deleted_at` timestamp NULL DEFAULT NULL
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `status` enum('online','offline') NOT NULL DEFAULT 'offline'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `suffix`, `contact_number`, `email`, `address`, `zip_code`, `username`, `password_hash`, `role`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(4, 'Jhon Carl1', '', 'last2', '', '09999999999', 'as22@gmail.com', '', '', 'jlast2', '$2y$10$xc3ncPQ6b73XHDhGRhUhJOtG3VpdieA9wxWJWjKI4QOlZ53XI9oHi', 'Staff', '2024-10-19 09:44:43', '2024-10-25 09:52:11', NULL),
-(5, 'Mark james', 'l', 'last3', '', '12345678908', 'haha1@gmail.com', 'place', '45345', 'mlast3', '$2y$10$mMacmmxWCYvFDcnJWrRh.Oka5uaIcGGWaDIQBdcf9hMbJw.QjYIWW', 'Owner', '2024-10-19 11:04:08', '2024-11-01 22:24:54', NULL),
-(30, 'hala', 's', 'dsaa', 'sad', '09876543231', 'jen@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$9zf8CID.Nvx/dUMjL9uxFOcopU1X5U23shPX9br1o81LLUjBE0AkC', 'General User', '2024-11-01 22:38:40', '2024-11-01 22:38:40', NULL),
-(31, 'jack', 'j', 'dsaa', 'sad', '09876543231', 'jen1@gmail.com', 'asd', '1231', 'jdsaa', '$2y$10$jpp79JoLLFKxmu16/bzPSe36M1v.SVXEGZkWvVLt9YFRtPIQHgnl2', 'General User', '2024-11-01 22:39:11', '2024-11-01 22:39:11', NULL);
+INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `suffix`, `contact_number`, `email`, `address`, `zip_code`, `username`, `password_hash`, `role`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
+(1, 'Mark Laurence', 'l', 'caringal', 'jr', '09345678901', 'ha1@gmail.com', 'place', '1234', 'mcaringal', '$2y$10$U5xRKzJxyW0Lgia.SYeMZ.KK/vtWuOuwngG5M1qMsyw8jrxO.eeXy', 'General User', '2024-11-07 00:59:59', '2024-11-07 00:59:59', NULL, 'offline'),
+(3, 'Mark Laurence', 'l', 'caringal', 'wq', '09234567891', 'ha22@gmail.com', 'place', '1234', 'mcaringal3', '$2y$10$CT/oMDS884MILfbF3/2BwOolbz1R7EIMKzZAnGPcrauQX9X5.R9RO', 'General User', '2024-11-07 01:00:59', '2024-11-07 01:00:59', NULL, 'offline'),
+(6, 'Jack', 'l', 'caringal', 'wq', '09234567891', 'mk@gmail.com', 'place', '1234', 'jcaringal', '$2y$10$jVll8K2S6EsrZKPsWUo.POe1lv32lSQncJqkT9567wS78ZrAV3tde', 'Owner', '2024-11-07 01:04:04', '2024-11-07 01:04:49', NULL, 'online'),
+(7, 'Mark Laurence', 'l', 'caringal1', 'wq', '09345678901', 'g@gmail.com', 'place', '1234', 'mcaringal1', '$2y$10$xXj.kj406T.ZM571znX1qeVKsAAEWVh94M0AOBaonnZvbla2nMQ8e', 'General User', '2024-11-07 01:11:42', '2024-11-07 01:11:42', NULL, 'offline'),
+(8, 'hala', 's', 'dsaa', '', '09876543231', 'mk12@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$vgUs1loUX1AJ6FB.hUsJ7u5zXMM.L.6pK9jCD9TaT.iM/Zb74L.da', 'Admin', '2024-11-07 02:46:23', '2024-11-07 02:47:10', NULL, 'online');
 
 --
 -- Indexes for dumped tables
@@ -470,6 +419,12 @@ INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `su
 ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`log_id`),
   ADD KEY `action_by` (`action_by`);
+
+--
+-- Indexes for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `data_reservations`
@@ -598,7 +553,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=354;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `data_reservations`
@@ -622,7 +583,7 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `order_cancellations`
@@ -640,25 +601,25 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `product_items`
 --
 ALTER TABLE `product_items`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `receipt_items`
 --
 ALTER TABLE `receipt_items`
-  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `reservations`
@@ -676,25 +637,25 @@ ALTER TABLE `reservation_reschedule`
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tables`
 --
 ALTER TABLE `tables`
-  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `table_images`
 --
 ALTER TABLE `table_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

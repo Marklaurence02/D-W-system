@@ -61,62 +61,70 @@
     </table>
   </div>
 
-  <!-- Modal for Adding Admin/Staff -->
-  <div class="modal fade" id="adminModal" role="dialog">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h4 class="modal-title">Add Admin/Staff</h4>
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-              </div>
-              <div class="modal-body">
-                  <form id="adminForm" onsubmit="addAdmin(); return false;">
-                      <div class="form-group">
-                          <label for="first_name">First Name:</label>
-                          <input type="text" class="form-control" id="first_name" name="first_name" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="last_name">Last Name:</label>
-                          <input type="text" class="form-control" id="last_name" name="last_name" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="username">Username:</label>
-                          <input type="text" class="form-control" id="username" name="username" required>
-                      </div>
-                      
-                      <div class="form-group">
-                          <label for="email">Email:</label>
-                          <input type="email" class="form-control" id="email" name="email" required>
-                      </div> <div class="form-group">
-                          <label for="email">Email:</label>
-                          <input type="email" class="form-control" id="email" name="email" required>
-                      </div>
-                      
-                      <div class="form-group">
-                          <label for="password">Password:</label>
-                          <input type="password" class="form-control" id="password" name="password" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="role">Role:</label>
-                          <select class="form-control" id="role" name="role" required>
-                              <option value="Admin">Admin</option>
-                              <option value="Staff">Staff</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="contact_number">Contact Number:</label>
-                          <input type="text" class="form-control" id="contact_number" name="contact_number" required
-                                 pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
-                      </div>
-                     
-                      <button type="submit" class="btn btn-secondary" style="height:40px">Add Admin/Staff</button>
-                  </form>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal" style="height:40px">Close</button>
-              </div>
-          </div>
-      </div>
-  </div>
+<!-- Modal for Adding Admin/Staff -->
+<div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="adminModalLabel">Add Admin/Staff</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="adminForm" onsubmit="addAdmin(); return false;">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="first_name">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required autocomplete="off">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="role">Role</label>
+                            <select class="form-control" id="role" name="role" required>
+                                <option value="Admin">Admin</option>
+                                <option value="Staff">Staff</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number</label>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" required
+                               pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block my-3" style="height: 50px;">Add Admin/Staff</button>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal" style="height: 50px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 </div>
+<style>
+
+  
+</style>

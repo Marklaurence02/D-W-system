@@ -907,3 +907,16 @@ function refreshCategoryList() {
 }
 
 
+function showmessage() {
+    $.ajax({
+        url: "adminview/message.php",
+        method: "post",
+        data: { record: 1 },
+        success: function(data) {
+            $('.allContent-section').html(data);
+        },
+        error: function() {
+            alert("Error fetching product items.");
+        }
+    });
+}

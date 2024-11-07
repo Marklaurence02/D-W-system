@@ -47,9 +47,10 @@ include_once "assets/config.php";
     <a href="#users" onclick="showUser()"><i class="fa fa-users"></i> Users</a>
     <a href="#admin" onclick="showadmin()"><i class="fa fa-user-plus"></i></i> Admin Management</a>
     <a href="#activity-log" onclick="showActivity_log()"><i class="fa fa-list-alt"></i> Activity Log</a>
+    <a href="message.php"><i class="fa fa-list-alt"></i> Messages</a>
+
     <a href="assets/ad-logout.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
-
 
 <div id="main">
     <button class="openbtn" onclick="openNav()"><i class="fa fa-bars"></i></button>

@@ -54,9 +54,9 @@ include_once "assets/config.php"; // Database connection
 
 <div id="main-content" class="container allContent-section py-4 text-center">
         <h1 class=" text-center">Dashboard</h1>
-    <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
+        <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
     <!-- Total Sales -->
-    <div class="col-sm-3 mb-4">
+    <div class="col-md-3 col-12 mb-4">
         <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
             <div class="card-body">
                 <i class="fa fa-dollar"></i>
@@ -73,7 +73,7 @@ include_once "assets/config.php"; // Database connection
     </div>
 
     <!-- Total Orders -->
-    <div class="col-sm-3 mb-4">
+    <div class="col-md-3 col-12 mb-4">
         <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
             <div class="card-body">
                 <i class="fa fa-list"></i>
@@ -90,7 +90,7 @@ include_once "assets/config.php"; // Database connection
     </div>
 
     <!-- Total Sold -->
-    <div class="col-sm-3 mb-4">
+    <div class="col-md-3 col-12 mb-4">
         <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
             <div class="card-body">
                 <i class="fa fa-bar-chart"></i>
@@ -113,7 +113,7 @@ include_once "assets/config.php"; // Database connection
     </div>
 
     <!-- Total Customers -->
-    <div class="col-sm-3 mb-4">
+    <div class="col-md-3 col-12 mb-4">
         <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
             <div class="card-body">
                 <i class="fa fa-users"></i>
@@ -129,6 +129,8 @@ include_once "assets/config.php"; // Database connection
         </div>
     </div>
 </div>
+
+
 
 
         <!-- Charts Section -->
@@ -237,6 +239,16 @@ include_once "assets/config.php"; // Database connection
         </div>
     </div>
 
+
+
+
+
+
+
+
+
+
+    
     <!-- Script Loading Order and Dependencies -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
@@ -245,9 +257,11 @@ include_once "assets/config.php"; // Database connection
     <script src="Js/sales_chart.js"></script>
     <script src="Js/Ownerpanel.js"></script>
     <script src="Js/navb.js"></script>
+    <script src="Js/viewmessage.js"></script>
+
 
     <script>
-fetch('assets/fetch_data.php')
+fetch('../assets/fetch_data.php')
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

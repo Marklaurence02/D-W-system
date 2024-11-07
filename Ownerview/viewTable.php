@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+?>
 <div class="table-section">
   <h2>Table Area</h2>
 

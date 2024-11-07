@@ -1,4 +1,10 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+?>
+
+<?php
 include_once "../assets/config.php"; // Include database connection
 
 // Handle form submission to change reservation status

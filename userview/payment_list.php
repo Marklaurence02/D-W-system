@@ -318,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <input type="checkbox" class="form-check-input" id="policyCheck" onclick="togglePayButton()" disabled>
                     <label class="form-check-label small" for="policyCheck">
                         I have read and agree to the 
-                        <a href="#" data-toggle="modal" data-target="#policyModal" onclick="markPolicyRead()">No Return Policy</a>.
+                        <a href="#" data-toggle="modal" data-target="#policyModal" onclick="markPolicyRead()">No Refund Policy</a>.
                     </label>
                 </div>
                 <!-- Pay Button -->
@@ -334,13 +334,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title" id="policyModalLabel">No Return Policy</h5>
+                <h5 class="modal-title" id="policyModalLabel">No Refund Policy</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Please carefully read and understand our No Return Policy:</p>
+                <p>Please carefully read and understand our No Refund Policy:</p>
                 <ul>
                     <li>All sales are final. No refunds or exchanges.</li>
                     <li>Products and services are sold "as-is" without warranties of any kind.</li>
@@ -388,25 +388,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 <!-- Payment Modal with Card Options -->
 <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
+    <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="paymentModalLabel">Complete Payment</h5>
+            <div class="modal-header bg-primary text-white p-2">
+                <h6 class="modal-title" id="paymentModalLabel">Complete Payment</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="text-white">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-2">
                 <form id="paymentForm" onsubmit="return validatePaymentForm()">
                     <!-- Card Image Display on Top -->
-                    <div class="text-center mb-3">
-                        <img id="selectedCardImage" src="../Images/visa.png" alt="Selected Card" style="width: 100px; height: auto;">
+                    <div class="text-center mb-2">
+                        <img id="selectedCardImage" src="../Images/visa.png" alt="Selected Card" style="width: 80px; height: auto;">
                     </div>
 
                     <!-- Card Type Selector -->
-                    <div class="form-group">
+                    <div class="form-group mb-2">
                         <label for="cardType">Select Card Type</label>
-                        <select class="form-control" id="cardType" onchange="updateCardDetails()">
+                        <select class="form-control form-control-sm" id="cardType" onchange="updateCardDetails()">
                             <option value="" disabled selected>Select a card for testing</option>
                             <option value="visa" data-image="../Images/visa.png" data-card-number="4111 1111 1111 1111" data-cvv="123">Visa - 4111 1111 1111 1111</option>
                             <option value="mastercard" data-image="../Images/mastercard.png" data-card-number="5555 5555 5555 4444" data-cvv="456">MasterCard - 5555 5555 5555 4444</option>
@@ -416,34 +416,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </div>
 
                     <!-- Card Information Section -->
-                    <div class="form-group">
+                    <div class="form-group mb-2">
                         <label for="cardName">Cardholder Name</label>
-                        <input type="text" class="form-control" id="cardName" placeholder="Name on card" value="<?= htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']) ?>" readonly>
+                        <input type="text" class="form-control form-control-sm" id="cardName" placeholder="Name on card" value="<?= htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']) ?>" readonly>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-2">
                         <label for="cardNumber">Card Number</label>
-                        <input type="text" class="form-control" id="cardNumber" placeholder="Card number" required>
+                        <input type="text" class="form-control form-control-sm" id="cardNumber" placeholder="Card number" required>
                         <small class="form-text text-danger" id="cardNumberError"></small>
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6 mb-2">
                             <label for="expiryDate">Expiry Date</label>
-                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                            <input type="text" class="form-control form-control-sm" id="expiryDate" placeholder="MM/YY" required>
                             <small class="form-text text-danger" id="expiryDateError"></small>
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6 mb-2">
                             <label for="cvv">CVV</label>
-                            <input type="text" class="form-control" id="cvv" placeholder="CVV" required>
+                            <input type="text" class="form-control form-control-sm" id="cvv" placeholder="CVV" required>
                             <small class="form-text text-danger" id="cvvError"></small>
                         </div>
                     </div>
                     <!-- Updated button to show receipt modal -->
-                    <button type="button" class="btn btn-primary btn-block" onclick="showReceiptModal()">Check Receipt</button>
+                    <button type="button" class="btn btn-primary btn-sm btn-block" onclick="showReceiptModal()">Check Receipt</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <?php $conn->close(); ?>
 
@@ -510,57 +511,116 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     function validatePaymentForm() {
-        let isValid = true;
-        const cardNumber = document.getElementById("cardNumber").value;
-        const expiryDate = document.getElementById("expiryDate").value;
-        const cvv = document.getElementById("cvv").value;
+    let isValid = true;
+    const cardNumberInput = document.getElementById("cardNumber");
+    const expiryDateInput = document.getElementById("expiryDate");
+    const cvvInput = document.getElementById("cvv");
 
-        const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
-        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-        const cvvRegex = /^\d{3,4}$/;
+    const cardNumber = cardNumberInput.value.trim();
+    const expiryDate = expiryDateInput.value.trim();
+    const cvv = cvvInput.value.trim();
 
-        if (!cardNumberRegex.test(cardNumber)) {
-            document.getElementById("cardNumberError").textContent = "Enter a valid 16-digit card number.";
-            isValid = false;
-        } else {
-            document.getElementById("cardNumberError").textContent = "";
-        }
+    const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
+    const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    const cvvRegex = /^\d{3,4}$/;
 
-        if (!expiryDateRegex.test(expiryDate)) {
-            document.getElementById("expiryDateError").textContent = "Enter a valid expiry date in MM/YY format.";
-            isValid = false;
-        } else {
-            document.getElementById("expiryDateError").textContent = "";
-        }
+    // Predefined card numbers and their corresponding CVVs
+    const validCards = {
+        "4111 1111 1111 1111": "123", // Visa
+        "5555 5555 5555 4444": "456", // MasterCard
+        "3782 822463 10005": "789",   // American Express
+        "6019 1234 5678 9012": "012"  // GCash Card
+    };
 
-        if (!cvvRegex.test(cvv)) {
-            document.getElementById("cvvError").textContent = "Enter a valid 3 or 4-digit CVV.";
-            isValid = false;
-        } else {
-            document.getElementById("cvvError").textContent = "";
-        }
+    // Clear previous error highlights and messages
+    cardNumberInput.classList.remove("is-invalid");
+    expiryDateInput.classList.remove("is-invalid");
+    cvvInput.classList.remove("is-invalid");
+    document.getElementById("cardNumberError").textContent = "";
+    document.getElementById("expiryDateError").textContent = "";
+    document.getElementById("cvvError").textContent = "";
 
-        if (!isValid) {
-            showAlert("Please correct the highlighted errors in the form.", 'error');
-        }
-
-        return isValid;
+    // Validate card number
+    if (!cardNumberRegex.test(cardNumber)) {
+        document.getElementById("cardNumberError").textContent = "Enter a valid 16-digit card number.";
+        cardNumberInput.classList.add("is-invalid");
+        isValid = false;
+    } else if (!validCards.hasOwnProperty(cardNumber)) {
+        document.getElementById("cardNumberError").textContent = "Invalid card number. Please enter a valid card.";
+        cardNumberInput.classList.add("is-invalid");
+        isValid = false;
     }
+
+    // Validate expiry date
+    if (!expiryDateRegex.test(expiryDate)) {
+        document.getElementById("expiryDateError").textContent = "Enter a valid expiry date in MM/YY format.";
+        expiryDateInput.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Validate CVV
+    if (!cvvRegex.test(cvv)) {
+        document.getElementById("cvvError").textContent = "Enter a valid 3 or 4-digit CVV.";
+        cvvInput.classList.add("is-invalid");
+        isValid = false;
+    } else if (validCards[cardNumber] && validCards[cardNumber] !== cvv) {
+        document.getElementById("cvvError").textContent = "Invalid CVV. Please enter the correct CVV for the card.";
+        cvvInput.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+
+
 
     function showPasswordModal() {
         $('#passwordModal').modal('show');
     }
 
     function validatePassword() {
-        const password = document.getElementById('userPassword').value;
-        if (password.length > 0) {
-            // Perform password validation (optional: send to server for verification)
-            $('#passwordModal').modal('hide');
-            submitPayment();
-        } else {
-            alert("Please enter your password.");
-        }
+    const passwordInput = document.getElementById('userPassword');
+    const password = passwordInput.value.trim();
+
+    if (password.length === 0) {
+        showAlert("Please enter your password.", 'error');
+        passwordInput.focus();
+        return false;
     }
+
+    if (password.length < 8) {
+        showAlert("Password must be at least 8 characters long.", 'error');
+        passwordInput.focus();
+        return false;
+    }
+
+    // AJAX request to validate password on the server
+    $.ajax({
+        url: '/Usercontrol/passwordVerification.php',
+        type: 'POST',
+        data: {
+            action: 'verifyPassword',
+            password: password
+        },
+        success: function(response) {
+            const result = JSON.parse(response);
+            if (result.status === 'success') {
+                showAlert("Password verified successfully.", 'success');
+                $('#passwordModal').modal('hide');
+                submitPayment();
+            } else {
+                showAlert(result.message || "Password verification failed.", 'error');
+            }
+        },
+        error: function() {
+            showAlert("An error occurred while verifying the password. Please try again.", 'error');
+        }
+    });
+
+    return false; // Prevent form submission until verification is complete
+}
+
 
     function submitPayment() {
     if (validatePaymentForm()) {

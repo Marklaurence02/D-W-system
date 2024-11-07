@@ -1,6 +1,13 @@
 <?php
 include_once "../assets/config.php";  // Include the database connection
 
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+
+
+
 // Enable error reporting for debugging (you can remove this in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);

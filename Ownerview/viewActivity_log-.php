@@ -1,10 +1,9 @@
 <?php
 include_once "../assets/config.php";
-
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
-  session_start();
+    session_start();
 }
-
 
 
 // Get the search term sent from JavaScript (if any)

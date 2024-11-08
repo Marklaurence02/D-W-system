@@ -1,6 +1,8 @@
 <?php
-session_start();
-include '../assets/config.php';
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}include '../assets/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sender = $_SESSION['username'];

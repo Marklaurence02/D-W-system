@@ -1,4 +1,5 @@
 <?php
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -33,13 +34,11 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                    CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
                                    u.contact_number, 
                                    o.order_time, 
-                                   IFNULL(SUM(ri.item_total_price), 0) AS total_amount,
+                                   o.total_amount AS order_total,
                                    o.status AS order_status, 
                                    o.payment_method
                             FROM orders o
                             LEFT JOIN users u ON o.user_id = u.user_id
-                            LEFT JOIN receipts r ON o.order_id = r.order_id
-                            LEFT JOIN receipt_items ri ON r.receipt_id = ri.receipt_id
                             GROUP BY o.order_id
                         ";
 
@@ -60,7 +59,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                     <td><?= htmlspecialchars($row["customer_name"]) ?></td>
                                     <td><?= isset($row["contact_number"]) ? htmlspecialchars($row["contact_number"]) : "N/A" ?></td>
                                     <td><?= date("F j, Y", strtotime($row["order_time"])) ?></td>
-                                    <td>&#8369;<?= number_format($row["total_amount"], 2) ?></td>
+                                    <td>&#8369;<?= number_format($row["order_total"], 2) ?></td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn <?= $buttonClass ?> dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -76,7 +75,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                     </td>
                                     <td><?= htmlspecialchars($row["payment_method"]) ?></td>
                                     <td>
-                                        <a class="btn btn-primary openPopup" data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View</a>
+                                        <a class="btn btn-primary openPopup" data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View Details</a>
                                     </td>
                                 </tr>
                                 <?php
@@ -91,44 +90,44 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
 
                 <!-- Card view for medium screens and below -->
                 <div class="d-lg-none"> <!-- Show only on medium and smaller screens -->
-    <div class="row">
-        <?php
-        if ($result && $result->num_rows > 0) {
-            // Reset result pointer
-            $result->data_seek(0);
-            while ($row = $result->fetch_assoc()) {
-                $buttonClass = match($row["order_status"]) {
-                    'Pending' => 'btn-danger',
-                    'In-Progress' => 'btn-warning',
-                    'Completed' => 'btn-success',
-                    'Canceled' => 'btn-secondary',
-                    default => 'btn-secondary',
-                };
-                ?>
-                <div class="col-12 mb-4"> <!-- Full width on smaller screens -->
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Order #<?= htmlspecialchars($row["order_id"]) ?></h5>
-                            <p><strong>Customer:</strong> <?= htmlspecialchars($row["customer_name"]) ?></p>
-                            <p><strong>Contact:</strong> <?= isset($row["contact_number"]) ? htmlspecialchars($row["contact_number"]) : "N/A" ?></p>
-                            <p><strong>Order Date:</strong> <?= date("F j, Y", strtotime($row["order_time"])) ?></p>
-                            <p><strong>Total:</strong> &#8369;<?= number_format($row["total_amount"], 2) ?></p>
-                            <p><strong>Status:</strong> 
-                                <button class="btn <?= $buttonClass ?>"><?= htmlspecialchars($row["order_status"]) ?></button>
-                            </p>
-                            <p><strong>Payment Method:</strong> <?= htmlspecialchars($row["payment_method"]) ?></p>
-                            <a class="btn btn-primary openPopup" data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                <?php
-            }
-        } else {
-            echo "<div class='col-12'><p>No orders found.</p></div>";
-        }
-        ?>
-    </div> <!-- End of row for cards -->
-</div> <!-- End of card view -->
+                    <div class="row">
+                        <?php
+                        if ($result && $result->num_rows > 0) {
+                            // Reset result pointer
+                            $result->data_seek(0);
+                            while ($row = $result->fetch_assoc()) {
+                                $buttonClass = match($row["order_status"]) {
+                                    'Pending' => 'btn-danger',
+                                    'In-Progress' => 'btn-warning',
+                                    'Completed' => 'btn-success',
+                                    'Canceled' => 'btn-secondary',
+                                    default => 'btn-secondary',
+                                };
+                                ?>
+                                <div class="col-12 mb-4"> <!-- Full width on smaller screens -->
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Order #<?= htmlspecialchars($row["order_id"]) ?></h5>
+                                            <p><strong>Customer:</strong> <?= htmlspecialchars($row["customer_name"]) ?></p>
+                                            <p><strong>Contact:</strong> <?= isset($row["contact_number"]) ? htmlspecialchars($row["contact_number"]) : "N/A" ?></p>
+                                            <p><strong>Order Date:</strong> <?= date("F j, Y", strtotime($row["order_time"])) ?></p>
+                                            <p><strong>Total:</strong> &#8369;<?= number_format($row["order_total"], 2) ?></p>
+                                            <p><strong>Status:</strong> 
+                                                <button class="btn <?= $buttonClass ?>"><?= htmlspecialchars($row["order_status"]) ?></button>
+                                            </p>
+                                            <p><strong>Payment Method:</strong> <?= htmlspecialchars($row["payment_method"]) ?></p>
+                                            <a class="btn btn-primary openPopup" data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>" href="javascript:void(0);">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                        } else {
+                            echo "<div class='col-12'><p>No orders found.</p></div>";
+                        }
+                        ?>
+                    </div> <!-- End of row for cards -->
+                </div> <!-- End of card view -->
 
             </div>
         </div>

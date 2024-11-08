@@ -1,5 +1,6 @@
 <?php
 include_once "../assets/config.php";
+session_name("user_session");
 session_start();
 
 // Enable error reporting for debugging (remove or set to 0 in production)
@@ -10,32 +11,18 @@ error_reporting(E_ALL);
 // Start output buffering to prevent any accidental output before JSON response
 ob_start();
 
-function findFirstMissingReservationID($conn) {
-    $missingIDQuery = "
-        SELECT MIN(t1.reservation_id + 1) AS missing_id
-        FROM reservations t1
-        LEFT JOIN reservations t2 ON t1.reservation_id + 1 = t2.reservation_id
-        WHERE t2.reservation_id IS NULL;
-    ";
-    $result = $conn->query($missingIDQuery);
-    if ($result && $row = $result->fetch_assoc()) {
-        return $row['missing_id'];
-    }
-    return null;
-}
-
 function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
     $conn->begin_transaction();
 
     try {
-        // Update the status of data_reservations
+        // Update the status of data_reservations to 'Paid'
         $updateStatusQuery = "UPDATE data_reservations SET status = 'Paid' WHERE user_id = ? AND status = 'Pending'";
         $stmt = $conn->prepare($updateStatusQuery);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $stmt->close();
 
-        // Transfer reservations to the reservations table and keep track of the original reservation_id
+        // Transfer reservations to the reservations table
         $transferReservationsQuery = "
             INSERT INTO reservations (reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at)
             SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at
@@ -48,49 +35,46 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->close();
 
         // Transfer order details to the orders table using reservation_id from data_reservations
-       // Transfer order details to the orders table using reservation_id from data_reservations
-$transferOrdersQuery = "
-INSERT INTO orders (user_id, reservation_id, order_details, total_amount, order_time, status, created_at, updated_at, payment_method)
-SELECT 
-    oi.user_id,
-    dr.reservation_id,
-    GROUP_CONCAT(
-        CONCAT(
-            'Product Name: ', pi.product_name, ' | Quantity: ', oi.quantity, ' | Price: ', oi.totalprice
-        ) SEPARATOR '; '
-    ) AS order_details,
-    ?,
-    NOW(),
-    'paid in advance',
-    NOW(),
-    NOW(),
-    'Credit Card'
-FROM order_items oi
-JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
-JOIN product_items pi ON oi.product_id = pi.product_id
-WHERE oi.user_id = ?
-GROUP BY dr.reservation_id
-";
-$stmt = $conn->prepare($transferOrdersQuery);
-$stmt->bind_param("di", $totalPayment, $user_id);
-$stmt->execute();
-$stmt->close();
-
-
-        // Insert into the receipts table and get the new receipt_id
-        $receiptQuery = "
-            INSERT INTO receipts (order_id, user_id, total_amount, payment_method)
-            SELECT DISTINCT o.order_id, o.user_id, ?, 'Credit Card'
-            FROM orders o
-            WHERE o.user_id = ?
+        $transferOrdersQuery = "
+            INSERT INTO orders (user_id, reservation_id, order_details, total_amount, order_time, status, created_at, updated_at, payment_method)
+            SELECT 
+                oi.user_id,
+                dr.reservation_id,
+                GROUP_CONCAT(
+                    CONCAT(
+                        'Product Name: ', pi.product_name, ' | Quantity: ', oi.quantity, ' | Price: ', oi.totalprice
+                    ) SEPARATOR '; '
+                ) AS order_details,
+                ?,
+                NOW(),
+                'paid in advance',
+                NOW(),
+                NOW(),
+                'Credit Card'
+            FROM order_items oi
+            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
+            JOIN product_items pi ON oi.product_id = pi.product_id
+            WHERE oi.user_id = ?
+            GROUP BY dr.reservation_id
         ";
-        $stmt = $conn->prepare($receiptQuery);
+        $stmt = $conn->prepare($transferOrdersQuery);
         $stmt->bind_param("di", $totalPayment, $user_id);
         $stmt->execute();
-        $receipt_id = $stmt->insert_id;
+        $order_id = $stmt->insert_id; // Get the last inserted order_id for linking to receipts
         $stmt->close();
 
-        // Insert into receipt_items with reservation_id from data_reservations
+        // Insert into the receipts table, linking each receipt to the correct order_id
+        $receiptQuery = "
+            INSERT INTO receipts (order_id, user_id, total_amount, payment_method)
+            VALUES (?, ?, ?, 'Credit Card')
+        ";
+        $stmt = $conn->prepare($receiptQuery);
+        $stmt->bind_param("iid", $order_id, $user_id, $totalPayment);
+        $stmt->execute();
+        $receipt_id = $stmt->insert_id; // Capture the inserted receipt_id for later use
+        $stmt->close();
+
+        // Insert each order item as a receipt item associated with the receipt_id and reservation_id
         $receiptItemsQuery = "
             INSERT INTO receipt_items (receipt_id, reservation_id, product_id, quantity, item_total_price, user_id)
             SELECT ?, dr.reservation_id, oi.product_id, oi.quantity, oi.totalprice, oi.user_id
@@ -106,7 +90,7 @@ $stmt->close();
         }
         $stmt->close();
 
-        // Clear order_items and data_reservations after successful insertion
+        // Clear order_items and data_reservations for this user after successful processing
         $clearOrderItemsQuery = "DELETE FROM order_items WHERE user_id = ?";
         $stmt = $conn->prepare($clearOrderItemsQuery);
         $stmt->bind_param("i", $user_id);

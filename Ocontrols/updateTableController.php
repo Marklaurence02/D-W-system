@@ -6,7 +6,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-session_start();
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Function to log user actions in the activity_logs table

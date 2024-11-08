@@ -1,8 +1,6 @@
 <?php
-// Start the session at the top of the file
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_name("admin_session");
+session_start();
 
 include_once "assets/config.php";
 ?>

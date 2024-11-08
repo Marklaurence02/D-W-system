@@ -1,6 +1,7 @@
 <?php
-session_start();
-include_once "../assets/config.php";  // Include your DB connection file
+ session_name("admin_session");
+ session_start();
+ include_once "../assets/config.php";  // Include your DB connection file
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {

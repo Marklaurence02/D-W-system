@@ -1,24 +1,49 @@
 <?php
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include_once "../assets/config.php"; // Adjust the path to your config file
+include_once "../assets/config.php";
 
-// Validate and sanitize `orderID`
-if (!isset($_GET['orderID']) || empty($_GET['orderID']) || !is_numeric($_GET['orderID'])) {
-    echo "<tr><td colspan='8'>Invalid or missing order ID.</td></tr>";
+$orderID = intval($_GET['orderID'] ?? 0);
+if ($orderID <= 0) {
+    echo "<p>Invalid Order ID.</p>";
     exit;
 }
 
-$orderID = intval($_GET['orderID']); // Sanitize `orderID`
+// Fetch order details
+$order_sql = "
+    SELECT o.order_id, 
+           CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
+           u.contact_number, 
+           o.order_time, 
+           o.total_amount AS order_total,
+           o.payment_method
+    FROM orders o
+    LEFT JOIN users u ON o.user_id = u.user_id
+    WHERE o.order_id = ?
+";
+
+$order_stmt = $conn->prepare($order_sql);
+$order_stmt->bind_param("i", $orderID);
+$order_stmt->execute();
+$order_result = $order_stmt->get_result();
+$order_data = $order_result->fetch_assoc();
+$order_stmt->close();
+
+if (!$order_data) {
+    echo "<p>Order not found.</p>";
+    exit;
+}
 ?>
 
-<div class="container-fluid">
-    <h2 class="text-center">Order Receipt and Item Details</h2>
-
-    <!-- Table view for large screens and above -->
-    <div class="table-responsive d-none d-lg-block">
-        <table class="table table-striped table-bordered">
+<div class="container">
+    <h3>Order Receipt Details</h3>
+    <p><strong>Order #<?= htmlspecialchars($order_data['order_id']) ?></strong></p>
+    
+    <!-- Table layout for larger screens -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Receipt ID</th>
@@ -32,89 +57,81 @@ $orderID = intval($_GET['orderID']); // Sanitize `orderID`
                 </tr>
             </thead>
             <tbody>
-            <?php
-                // Combined query to fetch receipts and their items for the specified `orderID`
-                $sql = "
-                    SELECT r.receipt_id, 
-                           r.receipt_date, 
-                           r.total_amount, 
-                           r.payment_method, 
-                           pi.product_name AS item_name, 
-                           pc.category_name AS item_type, 
-                           ri.quantity, 
-                           ri.item_total_price
+                <?php
+                // Fetch receipts and their items for the specific order
+                $receipts_sql = "
+                    SELECT r.receipt_id, r.receipt_date, r.total_amount, r.payment_method, 
+                           ri.quantity, ri.item_total_price, pi.product_name, pc.category_name AS item_type
                     FROM receipts r
-                    JOIN receipt_items ri ON r.receipt_id = ri.receipt_id
-                    JOIN product_items pi ON ri.product_id = pi.product_id
-                    JOIN product_categories pc ON pi.category_id = pc.category_id
+                    LEFT JOIN receipt_items ri ON r.receipt_id = ri.receipt_id
+                    LEFT JOIN product_items pi ON ri.product_id = pi.product_id
+                    LEFT JOIN product_categories pc ON pi.category_id = pc.category_id
                     WHERE r.order_id = ?
-                    ORDER BY r.receipt_id, r.receipt_date
+                    ORDER BY r.receipt_date ASC
                 ";
-                
-                if ($stmt = $conn->prepare($sql)) {
-                    $stmt->bind_param("i", $orderID);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
 
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            ?>
-                            <tr>
-                                <td><?= htmlspecialchars($row['receipt_id']) ?></td>
-                                <td><?= date("F j, Y, g:i a", strtotime($row['receipt_date'])) ?></td>
-                                <td>&#8369;<?= number_format($row['total_amount'], 2) ?></td>
-                                <td><?= htmlspecialchars($row['payment_method']) ?></td>
-                                <td><?= htmlspecialchars($row['item_name']) ?></td>
-                                <td><?= htmlspecialchars($row['item_type']) ?></td>
-                                <td><?= htmlspecialchars($row['quantity']) ?></td>
-                                <td>&#8369;<?= number_format($row['item_total_price'], 2) ?></td>
-                            </tr>
-                            <?php
-                        }
-                    } else {
-                        echo "<tr><td colspan='8'>No receipts or items found for this order.</td></tr>";
-                    }
-                    $stmt->close();
-                } else {
-                    echo "<tr><td colspan='8'>Error preparing statement: " . htmlspecialchars($conn->error) . "</td></tr>";
+                $receipts_stmt = $conn->prepare($receipts_sql);
+                $receipts_stmt->bind_param("i", $orderID);
+                $receipts_stmt->execute();
+                $receipts_result = $receipts_stmt->get_result();
+                $cumulative_total = 0;
+
+                while ($row = $receipts_result->fetch_assoc()) {
+                    $cumulative_total += $row['total_amount'];
+                    echo "<tr>
+                            <td>" . htmlspecialchars($row['receipt_id']) . "</td>
+                            <td>" . date("F j, Y, g:i a", strtotime($row['receipt_date'])) . "</td>
+                            <td>&#8369;" . number_format($row['total_amount'], 2) . "</td>
+                            <td>" . htmlspecialchars($row['payment_method']) . "</td>
+                            <td>" . htmlspecialchars($row['product_name']) . "</td>
+                            <td>" . htmlspecialchars($row['item_type']) . "</td>
+                            <td>" . htmlspecialchars($row['quantity']) . "</td>
+                            <td>&#8369;" . number_format($row['item_total_price'], 2) . "</td>
+                        </tr>";
                 }
-            ?>
+                $receipts_stmt->close();
+                ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7" style="text-align: right;"><strong>Cumulative Total:</strong></td>
+                    <td><strong>&#8369;<?= number_format($cumulative_total, 2) ?></strong></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
-
-    <!-- Card view for medium screens and below -->
-    <div class="d-lg-none">
-        <div class="row">
-            <?php
-            if ($result && $result->num_rows > 0) {
-                // Reset result pointer
-                $result->data_seek(0);
-                while ($row = $result->fetch_assoc()) {
-                    ?>
-                    <div class="col-12 mb-4"> <!-- Full width on smaller screens -->
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Receipt #<?= htmlspecialchars($row["receipt_id"]) ?></h5>
-                                <p><strong>Receipt Date:</strong> <?= date("F j, Y, g:i a", strtotime($row["receipt_date"])) ?></p>
-                                <p><strong>Total Amount:</strong> &#8369;<?= number_format($row["total_amount"], 2) ?></p>
-                                <p><strong>Payment Method:</strong> <?= htmlspecialchars($row["payment_method"]) ?></p>
-                                <p><strong>Item Name:</strong> <?= htmlspecialchars($row["item_name"]) ?></p>
-                                <p><strong>Item Type:</strong> <?= htmlspecialchars($row["item_type"]) ?></p>
-                                <p><strong>Quantity:</strong> <?= htmlspecialchars($row["quantity"]) ?></p>
-                                <p><strong>Item Total Price:</strong> &#8369;<?= number_format($row["item_total_price"], 2) ?></p>
-                            </div>
-                        </div>
-                    </div>
-                    <?php
-                }
-            } else {
-                echo "<div class='col-12'><p>No receipts or items found for this order.</p></div>";
-            }
-            ?>
-        </div> <!-- End of row for cards -->
-    </div> <!-- End of card view -->
+    
+    <!-- Card layout for smaller screens -->
+    <div class="d-block d-lg-none">
+        <?php
+        $receipts_stmt = $conn->prepare($receipts_sql);
+        $receipts_stmt->bind_param("i", $orderID);
+        $receipts_stmt->execute();
+        $receipts_result = $receipts_stmt->get_result();
+        
+        while ($row = $receipts_result->fetch_assoc()) {
+            echo "
+            <div class='card mb-3'>
+                <div class='card-body'>
+                    <h5 class='card-title'>Receipt ID: " . htmlspecialchars($row['receipt_id']) . "</h5>
+                    <p><strong>Date:</strong> " . date("F j, Y, g:i a", strtotime($row['receipt_date'])) . "</p>
+                    <p><strong>Total Amount:</strong> &#8369;" . number_format($row['total_amount'], 2) . "</p>
+                    <p><strong>Payment Method:</strong> " . htmlspecialchars($row['payment_method']) . "</p>
+                    <p><strong>Item:</strong> " . htmlspecialchars($row['product_name']) . "</p>
+                    <p><strong>Type:</strong> " . htmlspecialchars($row['item_type']) . "</p>
+                    <p><strong>Quantity:</strong> " . htmlspecialchars($row['quantity']) . "</p>
+                    <p><strong>Item Total Price:</strong> &#8369;" . number_format($row['item_total_price'], 2) . "</p>
+                </div>
+            </div>";
+        }
+        $receipts_stmt->close();
+        ?>
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Cumulative Total:</strong> &#8369;<?= number_format($cumulative_total, 2) ?></p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<?php
-$conn->close();
+<?php $conn->close(); ?>

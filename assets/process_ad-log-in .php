@@ -1,8 +1,10 @@
 <?php
 // Start the session if it's not already started
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 
 // Include the database connection configuration
 include 'config.php';
@@ -32,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
+        if ($result && $result->num_rows > 0) {
             // User found, now check the password
             $row = $result->fetch_assoc();
             $hashedPassword = $row['password_hash'];
@@ -47,13 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $status_stmt = $conn->prepare($status_sql);
                 $status_stmt->bind_param('i', $user_id);
                 $status_stmt->execute();
-                $status_stmt->close(); // Close the statement
+                $status_stmt->close();
 
-                // Store user info in session
+                // Store user info in session (confirm session is not overwritten)
                 $_SESSION['email'] = $email;
                 $_SESSION['role'] = $role;
                 $_SESSION['username'] = $username; // Store username for welcome message
-                $_SESSION['user_id'] = $user_id; // Store user_id
+                $_SESSION['user_id'] = $user_id;
 
                 // Log the login activity
                 $action_type = "Login";
@@ -62,30 +64,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $log_stmt = $conn->prepare($log_sql);
                 $log_stmt->bind_param('iss', $user_id, $action_type, $action_details);
                 $log_stmt->execute();
-                $log_stmt->close(); // Close the statement
+                $log_stmt->close();
 
-                // Redirect based on role
+                // Redirect based on role and ensure exit to prevent further script execution
                 switch ($role) {
                     case 'Owner':
                         header('Location: Owner-panel.php');
-                        break;
+                        exit();
                     case 'Admin':
                         header('Location: Admin-panel.php');
-                        break;
+                        exit();
                     case 'Staff':
                         header('Location: Staff-panel.php');
-                        break;
+                        exit();
+                    case 'General User':
+                        header('Location: User-Panel.php');
+                        exit();
                     default:
                         $error = "Unknown role. Please contact support.";
                 }
-                exit();
             } else {
                 $error = "Invalid password. Please try again.";
             }
         } else {
             $error = "No user found with this email.";
         }
-        $stmt->close(); // Close the prepared statement
+        $stmt->close();
     } else {
         $error = "Please fill in all the required fields.";
     }
@@ -93,4 +97,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Close the database connection
 $conn->close();
+?>
 

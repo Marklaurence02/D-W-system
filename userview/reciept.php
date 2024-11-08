@@ -1,4 +1,5 @@
 <?php
+session_name("user_session");
 session_start(); // Start the session at the beginning of the script
 
 include '../assets/config.php'; // Include your database configuration file

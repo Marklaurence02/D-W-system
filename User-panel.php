@@ -1,10 +1,11 @@
 <?php
+session_name("user_session");
 session_start();
 include 'assets/config.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location:assets/process_log-in.php");
     exit();
 }
 

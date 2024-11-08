@@ -6,8 +6,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Assume user_id is stored in session (modify based on your authentication system)
-session_start();
+// Start the session if it's not already started
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Function to find the lowest available ID

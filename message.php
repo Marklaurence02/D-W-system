@@ -6,15 +6,15 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
     <link rel="stylesheet" href="css/panel.css">
     
     
 </head>
 <body>
     <?php
-        include "Header_nav/ownerHeader.php"; // Header for admin panel
-        include "Header_nav/own-sidebar.php"; // Sidebar for navigation
-        
+        include "Header_nav/ownerHeader.php"; // Header for admin panel        
 
     ?>
 
@@ -80,51 +80,51 @@ if (!empty($rolesToFetch)) {
 
 $conn->close();
 ?>
+<div id="main">
+    <button class="openbtn" onclick="window.location.href='owner-panel.php'"><i class='bx bxs-dashboard' ></i></button>
+</div>
 
-<div class="container mt-12">
+<div class="container">
     <!-- User List -->
     <div class="card mx-auto user-list" id="user-list">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Messages</h5>
+            <input type="text" id="search-input" class="form-control search-input d-none" placeholder="Search..." oninput="searchMessage()">
+            <i class='bx bx-search-alt-2' onclick="toggleSearchInput()"></i>
         </div>
         <div class="list-group list-group-flush" id="user-list-content">
-        <?php if (!empty($users)): ?>
-    <?php foreach ($users as $user): ?>
-        <div class="list-group-item d-flex justify-content-between align-items-center user-item border-blue" 
-             data-user-id="<?php echo $user['user_id']; ?>" 
-             onclick="openConversation(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')">
-            <div class="d-flex align-items-center">
-                <div class="user-initial">
-                    <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
-                </div>
-                <div class="user-details">
-                    <div class="username">
-                        <?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>
-                        <span class="role">(<?php echo htmlspecialchars($user['role'], ENT_QUOTES); ?>)</span>
+            <?php if (!empty($users)): ?>
+                <?php foreach ($users as $user): ?>
+                    <div class="list-group-item d-flex justify-content-between align-items-center user-item border-blue" 
+                         data-user-id="<?php echo $user['user_id']; ?>" 
+                         onclick="openConversation(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')">
+                        <div class="d-flex align-items-center">
+                            <div class="user-initial">
+                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            </div>
+                            <div class="user-details">
+                                <div class="username">
+                                    <?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>
+                                    <span class="role">(<?php echo htmlspecialchars($user['role'], ENT_QUOTES); ?>)</span>
+                                </div>
+                                <small class="text-muted recent-message">
+                                    Loading...
+                                </small>
+                                <div class="message-date text-muted">
+                                    <!-- This will display the timestamp -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Blue dot for unread messages -->
+                        <span class="blue-dot d-none"></span>
                     </div>
-                    <small class="text-muted recent-message">
-                        Loading...
-                    </small>
-                    <div class="message-date text-muted">
-                        <!-- This will display the timestamp -->
-                    </div>
-                </div>
-            </div>
-            <!-- Blue dot for unread messages -->
-            <span class="blue-dot d-none"></span>
-        </div>
-    <?php endforeach; ?>
-<?php else: ?>
-    <div class="list-group-item text-center">No users available.</div>
-<?php endif; ?>
-
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="list-group-item text-center">No users available.</div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
-
-
-
-  
 
 
     <!-- Conversation View -->
@@ -143,7 +143,6 @@ $conn->close();
             </form>
         </div>
     </div>
-</div>
 </div>
 
 
@@ -164,7 +163,7 @@ $conn->close();
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    width: 50rem;
+    width: 100%;
 }
 /* Centered Date Separator */
 .separator-centered {
@@ -331,6 +330,15 @@ $conn->close();
     max-height: 400px;
     overflow-y: auto;
 }
+.message-form{
+    width: fit-content;
+}
+
+/* Hide the search input and dots menu by default */
+.search-input {
+    display: none;
+}
+
 
 </style>
 
@@ -345,3 +353,34 @@ $conn->close();
 
 </body>
 </html>
+
+
+<script>
+// Toggle the visibility of the search input field
+function toggleSearchInput() {
+    const searchInput = document.getElementById('search-input');
+    searchInput.classList.toggle('d-none');
+}
+
+// Search function that filters messages based on name, date, or content
+function searchMessage() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const users = document.querySelectorAll('.user-item');
+    users.forEach(user => {
+        const username = user.querySelector('.username').textContent.toLowerCase();
+        const message = user.querySelector('.recent-message').textContent.toLowerCase();
+        const date = user.querySelector('.message-date').textContent.toLowerCase();
+        
+        if (username.includes(query) || message.includes(query) || date.includes(query)) {
+            user.style.display = '';
+        } else {
+            user.style.display = 'none';
+        }
+    });
+}
+
+
+
+
+
+</script>

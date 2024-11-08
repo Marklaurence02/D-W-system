@@ -1,10 +1,9 @@
 <?php
 include_once "../assets/config.php";  // Include the database connection
-
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
-  session_start();
+    session_start();
 }
-
 
 
 

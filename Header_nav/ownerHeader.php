@@ -1,5 +1,11 @@
 <?php
-session_start();
+// Start the session if it's not already started
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 include_once "./assets/config.php";
 ?>
 

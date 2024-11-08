@@ -1,6 +1,8 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}header('Content-Type: application/json');
 
 // Turn on error logging only if in development (remove or change to '0' in production)
 ini_set('display_errors', 1);

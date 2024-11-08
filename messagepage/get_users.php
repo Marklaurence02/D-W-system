@@ -1,6 +1,8 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}header('Content-Type: application/json');
 include '../assets/config.php';
 
 try {

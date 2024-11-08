@@ -544,7 +544,7 @@ function itemEditForm(id) {
     });
 }
 
-
+// update items
 function updateItems(event) {
     event.preventDefault(); // Prevent default form submission
 
@@ -640,7 +640,7 @@ function itemDelete(id) {
 
 
 
-
+// filter items
 function filterItems() {
     var selectedType = document.getElementById("filter_item_type").value;
     var rows = document.querySelectorAll(".product-row");
@@ -656,16 +656,11 @@ function filterItems() {
     });
 }
 
-
-
-
-
-
-
 $(document).ready(function() {
     // Automatically load all users when the page loads
     UfilterItems();  // Call this function to load all users by default
 });
+
 
 // Function to filter users based on search and date inputs or load all users
 function UfilterItems() {
@@ -712,10 +707,6 @@ function clearFilters() {
     // Reload the table with all users by calling filterItems without filters
     UfilterItems();
 }
-
-
-
-
 
 
 // Load the edit form for a table
@@ -812,6 +803,7 @@ function refreshUpdateTableList() {
     });
 }
 
+// delete table
 function deleteTable(table_id) {
     if (confirm('Are you sure you want to delete this table?')) {
         // Disable the delete button and show a loading spinner (optional, for better UX)
@@ -837,30 +829,6 @@ function deleteTable(table_id) {
         });
     }
 }
-
-
-
-
-
-
-
-function eachDetailsForm(id) {
-    $.ajax({
-        url: "Ownerview/viewEachDetails.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-
-
-
-
-
-
 
 
 // Update variation after submit
@@ -891,42 +859,7 @@ function updateVariations() {
 }
 
 
-
-function quantityPlus(id) { 
-    $.ajax({
-        url: "controller/addQuantityController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-
-function quantityMinus(id) {
-    $.ajax({
-        url: "controller/subQuantityController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-
-function checkout() {
-    $.ajax({
-        url: "view/viewCheckout.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
+// show category
 function showCategory() {
     $.ajax({
         url: "Ownerview/viewAllCategory.php",
@@ -987,6 +920,7 @@ function categoryEditForm(id) {
         }
     });
 }
+
 // Update category data without image handling
 function updateCategory(event) {
     event.preventDefault(); // Prevent default form submission

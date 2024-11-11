@@ -27,20 +27,22 @@ if (!$userId) {
 }
 
 try {
-    // Query to get the most recent message between the current user and the specified user
+    // Query to get the most recent message between the current user and the specified user,
+    // or between the current user and any assigned general users if the current user is staff.
     $sql = "SELECT cm.message, cm.timestamp, u.first_name
             FROM chat_messages cm
             JOIN users u ON cm.sender_id = u.user_id
             WHERE (cm.sender_id = ? AND cm.receiver_id = ?)
                OR (cm.sender_id = ? AND cm.receiver_id = ?)
+               OR (cm.receiver_id IN (SELECT user_id FROM user_staff_assignments WHERE assigned_staff_id = ?))
             ORDER BY cm.timestamp DESC
             LIMIT 1";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) throw new Exception($conn->error);
 
-    // Bind parameters for both sender-receiver directions
-    $stmt->bind_param('iiii', $currentUserId, $userId, $userId, $currentUserId);
+    // Bind parameters for both sender-receiver directions and the current user
+    $stmt->bind_param('iiiii', $currentUserId, $userId, $userId, $currentUserId, $currentUserId);
     $stmt->execute();
     $result = $stmt->get_result();
 

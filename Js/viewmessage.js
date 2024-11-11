@@ -1,110 +1,6 @@
-
-
 const MessageBox = document.getElementById('message-box');
 let latestMessageTimestamp = null;  // Track the latest message timestamp
-let isPaused = false;  // Track if auto-load is paused
 let selectedUserId = null;  // Track the selected user ID
-
-// Auto-load function with pause on interaction
-function startAutoLoad() {
-    let autoLoadInterval;
-
-    // Function to start the auto-load interval
-    function startInterval() {
-        if (!autoLoadInterval) {
-            autoLoadInterval = setInterval(() => {
-                if (!isPaused && selectedUserId) loadMessages(true);
-            }, 1000);  // Adjust interval time as needed
-        }
-    }
-
-    // Function to stop the auto-load interval
-    function stopInterval() {
-        if (autoLoadInterval) clearInterval(autoLoadInterval);
-        autoLoadInterval = null;
-    }
-
-    // Pause auto-load when user interacts with the chat box
-    MessageBox.addEventListener('mouseenter', () => {
-        isPaused = true;
-        stopInterval();
-    });
-
-    MessageBox.addEventListener('mouseleave', () => {
-        isPaused = false;
-        startInterval();
-    });
-
-    MessageBox.addEventListener('scroll', () => {
-        isPaused = true;
-        stopInterval();
-        clearTimeout( MessageBox.scrollTimeout);
-        MessageBox.scrollTimeout = setTimeout(() => {
-            isPaused = false;
-            startInterval();
-        }, 1000);  // Delay after scroll interaction
-    });
-
-    startInterval();  // Start auto-loading messages initially
-}
-
-
-
-function loadMessages(autoLoad = false) {
-    if (!selectedUserId) {
-        console.error("No user selected.");
-        return;
-    }
-
-    const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
-    const url = `/messagepage/get_messages.php?receiver=${selectedUserId}` +
-                (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
-
-    let lastMessageMinute = null;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(messages => {
-            if (!messages.length && autoLoad) return;
-
-            messages.forEach(msg => {
-                const msgDate = new Date(msg.timestamp);
-                const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();
-
-                // Check if the message is in a new minute compared to the last message
-                if (lastMessageMinute !== currentMessageMinute) {
-                    const separatorElement = document.createElement('div');
-                    separatorElement.classList.add('separator', 'separator-centered');  // Add centered class
-                    separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
-                    MessageBox.appendChild(separatorElement);
-                }
-
-                // Create a new message bubble
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');
-                
-                messageElement.innerHTML = `
-                    <p><strong>${msg.first_name}:</strong> ${msg.message}</p>
-                `;
-                MessageBox.appendChild(messageElement);
-
-                lastMessageMinute = currentMessageMinute;
-            });
-
-            if (messages.length > 0) {
-                latestMessageTimestamp = messages[messages.length - 1].timestamp;
-            }
-
-            if (!autoLoad || isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
-        })
-        .catch(error => console.error("Error loading messages:", error));
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUserRecentMessages();
@@ -160,7 +56,7 @@ function loadUserRecentMessages() {
                 }
             })
             .catch(error => {
-                console.error("Error loading recent message:", error);
+                console.error("Error loading recent message :", error);
                 recentMessageElement.textContent = "No messages yet";
                 messageDateElement.textContent = ""; // Clear the date if error
                 blueDotElement.classList.add('d-none');
@@ -169,11 +65,8 @@ function loadUserRecentMessages() {
     });
 }
 
-
-
-
 function openConversation(userId, username) {
-    selectedUserId = userId;
+    selectedUserId = userId;  // Corrected variable name
     latestMessageTimestamp = null;
     document.getElementById('conversation-username').textContent = username;
 
@@ -187,11 +80,67 @@ function openConversation(userId, username) {
     blueDotElement.classList.add('d-none');  // Hide blue dot
     userItem.classList.remove('border-blue');  // Remove blue border
 
+    // Clear the message box before loading new messages
+    MessageBox.innerHTML = ''; // Clear previous messages
+
     loadMessages();
-    startAutoLoad();
 }
 
+function loadMessages() {
+    if (!selectedUserId) {  // Corrected variable name
+        console.error("No user selected.");
+        return;
+    }
 
+    const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
+    const url = `/messagepage/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
+                (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
+
+    let lastMessageMinute = null;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(messages => {
+            if (!messages.length) return;
+
+            messages.forEach(msg => {
+                const msgDate = new Date(msg.timestamp);
+                const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();
+
+                // Check if the message is in a new minute compared to the last message
+                if (lastMessageMinute !== currentMessageMinute) {
+                    const separatorElement = document.createElement('div');
+                    separatorElement.classList.add('separator', 'separator-centered');  // Add centered class
+                    separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
+                    MessageBox.appendChild(separatorElement);
+                }
+
+                // Create a new message bubble
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');  // Corrected variable name
+                
+                messageElement.innerHTML = `
+                    <p><strong>${msg.first_name}:</strong> ${msg.message}</p>
+                `;
+                MessageBox.appendChild(messageElement);
+
+                lastMessageMinute = currentMessageMinute;
+            });
+
+            if (messages.length > 0) {
+                latestMessageTimestamp = messages[messages.length - 1].timestamp;
+            }
+
+            if (isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
+        })
+        .catch(error => console.error("Error loading messages:", error));
+}
 
 // Send a message
 function sendMessage(event) {
@@ -199,7 +148,7 @@ function sendMessage(event) {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
 
-    if (!message || !selectedUserId) {
+    if (!message || !selectedUserId) {  // Corrected variable name
         alert("Please enter a message.");
         return;
     }
@@ -207,7 +156,7 @@ function sendMessage(event) {
     fetch("/messagepage/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`
+        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Corrected variable name
     })
     .then(response => response.json())
     .then(result => {
@@ -226,6 +175,4 @@ function backToUserList() {
     document.getElementById('user-list').classList.remove('d-none');
     document.getElementById('conversation-view').classList.add('d-none');
     selectedUserId = null;  // Reset selected user
-    isPaused = true;  // Pause auto-load when leaving the conversation
 }
-

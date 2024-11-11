@@ -9,6 +9,19 @@ function ordertable() {
     });
 }
 
+
+function messageview(){
+    $.ajax({
+        url: "userview/message.php",
+        method: "post",
+        data: { record: 1 },
+        success: function(data) {
+            $('.allContent-section').html(data);
+        }
+    });
+}
+
+
 function paymentlist() {  
     $.ajax({
         url: "userview/payment_list.php",

@@ -1,11 +1,4 @@
 <?php
-// Start the session if it's not already started
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
 // Include the database connection configuration
 include 'config.php';
 
@@ -44,6 +37,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Verify the entered password against the hashed password
             if (password_verify($password, $hashedPassword)) {
+                
+                // Set session name based on role
+                switch ($role) {
+                    case 'Owner':
+                        session_name("owner_session");
+                        break;
+                    case 'Admin':
+                        session_name("admin_session");
+                        break;
+                    case 'Staff':
+                        session_name("staff_session");
+                        break;
+                    default:
+                        $error = "Unknown role. Please contact support.";
+                        break;
+                }
+
+                // Start the session if not already started
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+
                 // Update the user's status to 'online'
                 $status_sql = "UPDATE users SET status = 'online' WHERE user_id = ?";
                 $status_stmt = $conn->prepare($status_sql);
@@ -51,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $status_stmt->execute();
                 $status_stmt->close();
 
-                // Store user info in session (confirm session is not overwritten)
+                // Store user info in session
                 $_SESSION['email'] = $email;
                 $_SESSION['role'] = $role;
                 $_SESSION['username'] = $username; // Store username for welcome message
@@ -77,9 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     case 'Staff':
                         header('Location: Staff-panel.php');
                         exit();
-                    case 'General User':
-                        header('Location: User-Panel.php');
-                        exit();
                     default:
                         $error = "Unknown role. Please contact support.";
                 }
@@ -89,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $error = "No user found with this email.";
         }
-        $stmt->close();
+      
     } else {
         $error = "Please fill in all the required fields.";
     }
@@ -97,5 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Close the database connection
 $conn->close();
-?>
 
+// Display error message on the login page if it exists
+if (!empty($error)) {
+    // Optionally, you can redirect with an error message stored in the session
+    $_SESSION['login_error'] = $error;
+    header("Location: login.php");
+    exit();
+}
+?>

@@ -1,487 +1,224 @@
+const MessageBox = document.getElementById('message-box');
+let latestMessageTimestamp = null;  // Track the latest message timestamp
+let isPaused = false;  // Track if auto-load is paused
+let selectedUserId = null;  // Track the selected user ID
 
+// Auto-load function with pause on interaction
+function startAutoLoad() {
+    let autoLoadInterval;
 
-function showReservation() {  
-    $.ajax({
-        url: "staffview/viewsReservation.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
+    // Function to start the auto-load interval
+    function startInterval() {
+        if (!autoLoadInterval) {
+            autoLoadInterval = setInterval(() => {
+                if (!isPaused && selectedUserId) loadMessages(true);
+            }, 1000);  // Adjust interval time as needed
         }
+    }
+
+    // Function to stop the auto-load interval
+    function stopInterval() {
+        if (autoLoadInterval) clearInterval(autoLoadInterval);
+        autoLoadInterval = null;
+    }
+
+    // Pause auto-load when user interacts with the chat box
+    MessageBox.addEventListener('mouseenter', () => {
+        isPaused = true;
+        stopInterval();
     });
+
+    MessageBox.addEventListener('mouseleave', () => {
+        isPaused = false;
+        startInterval();
+    });
+
+    MessageBox.addEventListener('scroll', () => {
+        isPaused = true;
+        stopInterval();
+        clearTimeout(MessageBox.scrollTimeout);
+        MessageBox.scrollTimeout = setTimeout(() => {
+            isPaused = false;
+            startInterval();
+        }, 1000);  // Delay after scroll interaction
+    });
+
+    startInterval();  // Start auto-loading messages initially
 }
 
-
-
-
-function showProductSizes() {  
-    $.ajax({
-        url: "staffview/viewProductSizes.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-function showUser() {
-    $.ajax({
-        url: "staffview/viewUser.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-function showOrders() {
-    $.ajax({
-        url: "staffview/viewAllOrders.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-function ChangeOrderStatus(id) {
-    $.ajax({
-        url: "Scontrols/updateOrderStatus.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Order Status updated successfully');
-            $('form').trigger('reset');
-            showOrders();
-        }
-    });
-}
-
-
-
-// Add product data
-function addItems() {
-    var item_name = $('#item_name').val();
-    var item_type = $('#item_type').val();
-    var stock = $('#stock').val();
-    var price = $('#price').val();
-    var special_instructions = $('#special_instructions').val();
-    var file = $('#item_image')[0].files[0];  // Ensure this matches the input field
-
-    // Check if all fields are filled
-    if (!item_name || !item_type || !stock || !price || !file) {
-        alert("Please fill in all fields and select a file.");
+function loadMessages(autoLoad = false) {
+    if (!selectedUserId) {
+        console.error("No user selected.");
         return;
     }
 
-    var fd = new FormData();
-    fd.append('item_name', item_name);
-    fd.append('item_type', item_type);
-    fd.append('stock', stock);
-    fd.append('price', price);
-    fd.append('special_instructions', special_instructions);
-    fd.append('item_image', file);  // Add the file input
-    fd.append('upload', '1'); // Add a flag to signify the upload process
+    const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
+    const url = `/messagepage/get_messages.php?receiver=${selectedUserId}` +
+                (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
-    $.ajax({
-        url: "/Scontrols/addItemController.php",  // Ensure the correct path
-        method: "POST",
-        data: fd,
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            console.log(data);  // Log the response for debugging
-            $('#myModal').modal('hide');  // Hide the modal after success
-            $('#productForm').trigger('reset');  // Reset the form fields
-            
-            // Show alert and refresh after the user clicks "OK"
-            alert("Product added successfully.");
-            setTimeout(function() {
-                refreshProductList();  // Refresh the product list after OK
-            });  // Short delay before refreshing the list
-        },
-        error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText);  // Log the error response
-            alert("Error: Unable to add the product. Please try again.");
-        }
-    });
-}
+    let lastMessageMinute = null;
 
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(messages => {
+            if (!messages.length && autoLoad) return;
 
+            messages.forEach(msg => {
+                const msgDate = new Date(msg.timestamp);
+                const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();
 
-
-// Refresh product list dynamically without redirecting
-function refreshProductList() {
-    $.ajax({
-        url: 'staffview/viewAllProducts.php',  // URL to load the product list
-        method: 'GET',
-        success: function(data) {
-            $('.allContent-section').html(data);  // Update the content with the product list
-        },
-        error: function() {
-            alert('Error refreshing the product list.');
-        }
-    });
-}
-
-
-
-
-
-
-
-
-
-function showProductItems() {
-    $.ajax({
-        url: "staffview/viewAllProducts.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        },
-        error: function() {
-            alert("Error fetching product items.");
-        }
-    });
-}
-
-// Load the edit form for a product
-function itemEditForm(id) {
-    $.ajax({
-        url: "staffview/editItemForm.php",  // URL to load the edit form
-        method: "POST",
-        data: { record: id },  // Send the product ID
-        success: function(data) {
-            $('.allContent-section').html(data);  // Load the form HTML into the section
-        },
-        error: function() {
-            alert("Error loading the form.");
-        }
-    });
-}
-
-
-// Update product data with image handling
-function updateItems(event) {
-    event.preventDefault(); // Prevent default form submission
-
-    // Get the values from the form fields
-    var product_id = $('#product_id').val();
-    var product_name = $('#product_name').val();
-    var category = $('#category').val();
-    var quantity = $('#quantity').val();
-    var price = $('#price').val();
-    var special_instructions = $('#special_instructions').val();
-    var product_image = $('#item_image')[0].files[0]; // Get the image file if uploaded
-
-    // Validate that required fields are filled
-    if (!product_name || !category || !quantity || !price) {
-        alert('All fields except special instructions and image are required.');
-        return;
-    }
-
-    // Create FormData object to handle file uploads and form fields
-    var fd = new FormData();
-    fd.append('product_id', product_id);
-    fd.append('product_name', product_name);
-    fd.append('category', category);
-    fd.append('quantity', quantity);
-    fd.append('price', price);
-    fd.append('special_instructions', special_instructions);
-
-    // Append the image file if available
-    if (product_image) {
-        fd.append('item_image', product_image); // Only append the actual file if it exists
-    }
-
-    // Send the AJAX request to update the product
-    $.ajax({
-        url: '/Scontrols/updateItemController.php', 
-        method: 'POST',
-        data: fd,
-        processData: false,
-        contentType: false,
-        success: function (data) {
-            try {
-                var response = JSON.parse(data); // Parse the JSON response
-                if (response.status === 'success') {
-                    alert('Product updated successfully.');
-                    refreshProductList(); // Optionally refresh the product list
-                } else {
-                    alert('Error: ' + response.message);
+                // Check if the message is in a new minute compared to the last message
+                if (lastMessageMinute !== currentMessageMinute) {
+                    const separatorElement = document.createElement('div');
+                    separatorElement.classList.add('separator', 'separator-centered');  // Add centered class
+                    separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
+                    MessageBox.appendChild(separatorElement);
                 }
-            } catch (e) {
-                // If response is not JSON
-                alert("Error: Invalid response from the server.");
-                console.error("Response:", data); // Log the response for debugging
+
+                // Create a new message bubble
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');
+                
+                messageElement.innerHTML = `
+                    <p><strong>${msg.first_name}:</strong> ${msg.message}</p>
+                `;
+                MessageBox.appendChild(messageElement);
+
+                lastMessageMinute = currentMessageMinute;
+            });
+
+            if (messages.length > 0) {
+                latestMessageTimestamp = messages[messages.length - 1].timestamp;
             }
-        },
-        error: function (xhr, status, error) {
-            console.error("Error: " + xhr.responseText);
-            alert('Error updating the product item.');
-        }
+
+            if (!autoLoad || isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
+
+            // Dynamically update the content using updateContent
+            updateContent("message.php", {}, '.allContent-section');
+        })
+        .catch(error => console.error("Error loading messages:", error));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserRecentMessages();
+});
+
+function loadUserRecentMessages() {
+    const userItems = document.querySelectorAll('.user-item');
+
+    userItems.forEach(userItem => {
+        const userId = userItem.getAttribute('data-user-id');
+        const recentMessageElement = userItem.querySelector('.recent-message');
+        const blueDotElement = userItem.querySelector('.blue-dot');
+        const messageDateElement = userItem.querySelector('.message-date'); // Element for the date
+        const usernameElement = userItem.querySelector('.username'); // Element for the username
+
+        // Fetch the most recent message and unread count for each user
+        fetch(`/messagepage/get_recent_message.php?user_id=${userId}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                return response.json();
+            })
+            .then(data => {
+                // Check if the data is available and display the most recent message
+                if (data && data.recent_message) {
+                    recentMessageElement.textContent = data.recent_message; // Update the recent message text
+
+                    // Format the timestamp (assuming it's in `YYYY-MM-DD HH:MM:SS` format)
+                    const messageDate = new Date(data.timestamp);
+                    const formattedDate = messageDate.toLocaleString(); // Format the date as per local timezone
+
+                    // Display the formatted date
+                    messageDateElement.textContent = formattedDate;
+
+                    // Update the username with the role in the format username (role)
+                    if (data.name && data.role) {
+                        usernameElement.innerHTML = `${data.name} <span class="role">(${data.role})</span>`;
+                    }
+
+                    // Check if there are unread messages and display the blue dot
+                    if (data.unread_count > 0) {
+                        blueDotElement.classList.remove('d-none');
+                        userItem.classList.add('border-blue');  // Add blue border for unread messages
+                    } else {
+                        blueDotElement.classList.add('d-none');
+                        userItem.classList.remove('border-blue');
+                    }
+                } else {
+                    // Fallback when no message data is available
+                    recentMessageElement.textContent = "No messages yet";
+                    messageDateElement.textContent = ""; // Clear the date if no message
+                    blueDotElement.classList.add('d-none');
+                    userItem.classList.remove('border-blue');
+                }
+            })
+            .catch(error => {
+                console.error("Error loading recent message:", error);
+                recentMessageElement.textContent = "No messages yet";
+                messageDateElement.textContent = ""; // Clear the date if error
+                blueDotElement.classList.add('d-none');
+                userItem.classList.remove('border-blue');
+            });
     });
 }
 
+function openConversation(userId, username) {
+    selectedUserId = userId;
+    latestMessageTimestamp = null;
+    document.getElementById('conversation-username').textContent = username;
 
+    // Hide the user list and show the conversation view
+    document.getElementById('user-list').classList.add('d-none');
+    document.getElementById('conversation-view').classList.remove('d-none');
 
+    // Clear unread indicator
+    const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
+    const blueDotElement = userItem.querySelector('.blue-dot');
+    blueDotElement.classList.add('d-none');  // Hide blue dot
+    userItem.classList.remove('border-blue');  // Remove blue border
 
-
-
-// Function to refresh the product list without redirecting
-// Function to refresh the product list without redirecting
-function refreshProductList() {
-    $.ajax({
-        url: 'staffview/viewAllProducts.php',  // URL to load the product list
-        method: 'GET',
-        success: function(data) {
-            $('.allContent-section').html(data);  // Update the content with the product list
-        },
-        error: function() {
-            alert('Error refreshing the product list.');
-        }
-    });
+    loadMessages();
+    startAutoLoad();
 }
 
+// Send a message
+function sendMessage(event) {
+    event.preventDefault();
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
 
-
-// Function to refresh the product list without redirecting
-function refreshProductList() {
-    $.ajax({
-        url: 'staffview/viewAllProducts.php', 
-        method: 'GET',
-        success: function(data) {
-            $('.allContent-section').html(data); 
-        },
-        error: function() {
-            alert('Error refreshing the product list.');
-        }
-    });
-}
-
-
-
-
-
-
-// Delete product data 
-function itemDelete(id) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        $.ajax({
-            url: "/Scontrols/deleteItemController.php",
-            method: "POST",
-            data: { record: id },
-            success: function(data) {
-                console.log(data);  // Log the response for debugging
-                alert(data);  // Show success or error message
-                showProductItems();  // Refresh the product list after deletion
-            },
-            error: function(xhr, status, error) {
-                console.error("Error: " + xhr.responseText);  // Log any errors from the server
-                alert("Error: Unable to delete the product.");
-            }
-        });
+    if (!message || !selectedUserId) {
+        alert("Please enter a message.");
+        return;
     }
-}
 
-
-
-function filterItems() {
-    var selectedType = document.getElementById("filter_item_type").value;
-    var rows = document.querySelectorAll(".product-row");
-
-    rows.forEach(function(row) {
-        var itemType = row.getAttribute("data-item-type");
-
-        if (selectedType === "All" || itemType === selectedType) {
-            row.style.display = "";  // Show the row
+    fetch("/messagepage/post_message.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            messageInput.value = '';  // Clear input field
+            loadMessages();  // Reload messages after sending
         } else {
-            row.style.display = "none";  // Hide the row
+            console.error("Error sending message:", result.message);
         }
-    });
+    })
+    .catch(error => console.error("Error sending message:", error));
 }
 
-
-
-// Delete cart data
-function cartDelete(id) {
-    $.ajax({
-        url: "Scontroller/deleteCartController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Cart Item Successfully deleted');
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-
-
-
-
-
-
-function eachDetailsForm(id) {
-    $.ajax({
-        url: "staffview/viewEachDetails.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-// Delete category data
-function cancelReservation(id) {
-    $.ajax({
-        url: "Scontroller/catDeleteController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Category Successfully deleted');
-            $('form').trigger('reset');
-            showReservation();
-        }
-    });
-}
-
-// Delete size data
-function sizeDelete(id) {
-    $.ajax({
-        url: "controller/deleteSizeController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Size Successfully deleted');
-            $('form').trigger('reset');
-            showSizes();
-        }
-    });
-}
-
-// Delete variation data
-function variationDelete(id) {
-    $.ajax({
-        url: "controller/deleteVariationController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Successfully deleted');
-            $('form').trigger('reset');
-            showProductSizes();
-        }
-    });
-}
-
-// Edit variation data
-function variationEditForm(id) {
-    $.ajax({
-        url: "staffview/editVariationForm.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-// Update variation after submit
-function updateVariations() {
-    var v_id = $('#v_id').val();
-    var product = $('#product').val();
-    var size = $('#size').val();
-    var qty = $('#qty').val();
-    
-    var fd = new FormData();
-    fd.append('v_id', v_id);
-    fd.append('product', product);
-    fd.append('size', size);
-    fd.append('qty', qty);
-    
-    $.ajax({
-        url: 'controller/updateVariationController.php',
-        method: 'post',
-        data: fd,
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            alert('Update Success.');
-            $('form').trigger('reset');
-            showProductSizes();
-        }
-    });
-}
-
-function search(id) {
-    $.ajax({
-        url: "controller/searchController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('.eachCategoryProducts').html(data);
-        }
-    });
-}
-
-function quantityPlus(id) { 
-    $.ajax({
-        url: "controller/addQuantityController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-
-function quantityMinus(id) {
-    $.ajax({
-        url: "controller/subQuantityController.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-
-function checkout() {
-    $.ajax({
-        url: "view/viewCheckout.php",
-        method: "post",
-        data: { record: 1 },
-        success: function(data) {
-            $('.allContent-section').html(data);
-        }
-    });
-}
-
-function removeFromWish(id) {
-    $.ajax({
-        url: "controller/removeFromWishlist.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Removed from wishlist');
-        }
-    });
-}
-
-function addToWish(id) {
-    $.ajax({
-        url: "controller/addToWishlist.php",
-        method: "post",
-        data: { record: id },
-        success: function(data) {
-            alert('Added to wishlist');        
-        }
-    });
+// Switch back to user list view
+function backToUserList() {
+    document.getElementById('user-list').classList.remove('d-none');
+    document.getElementById('conversation-view').classList.add('d-none');
+    selectedUserId = null;  // Reset selected user
+    isPaused = true;  // Pause auto-load when leaving the conversation
 }

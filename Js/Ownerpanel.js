@@ -1,3 +1,22 @@
+
+// General AJAX function for handling content updates
+function updateContent(url, data, targetSelector) {
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: data,
+        success: function (response) {
+            $(targetSelector).html(response);
+        },
+        error: function (xhr, status, error) {
+            console.error(`Error loading content from ${url}:`, error);
+            alert(`Error loading content. Please try again.`);
+        }
+    });
+}
+
+
+
 //  reservation view
 function closeModal() {
     const modal = document.getElementById('statusModal');
@@ -73,26 +92,43 @@ function closeModal() {
   }
   
 
-
-
-function showActivity_log(searchTerm = '') {
+  function showActivity_log(searchLog = '', actionType = '', page = 1) {
     $.ajax({
         url: "Ownerview/viewActivity_log-.php",
-        method: "post",
+        method: "POST",
         data: { 
-            record: 1,
-            search: searchTerm // Pass the search term to the server-side
+            search: searchLog,
+            action: actionType,
+            page: page
         },
         success: function(data) {
-            $('.allContent-section').html(data); // Update the content with the filtered logs
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching activity logs:", error);
+            alert("An error occurred while loading activity logs.");
         }
     });
 }
 
-// Attach event listener to search input
-$(document).on('input', '#activityLogSearch', function() {
-    let searchTerm = $(this).val();
-    showActivity_log(searchTerm); // Call the function with the search term
+// Click event for the search button
+$(document).on('click', '#searchLog', function() {
+    const searchValue = $('#searchInput').val().trim();
+    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
+    console.log("Search Button Clicked - Value:", searchValue, "Action:", actionType);
+    
+    showActivity_log(searchValue, actionType, 1); // Reset to page 1 when searching
+});
+
+// Pagination listener to handle clicks on pagination links
+$(document).on('click', '.page-link', function(e) {
+    e.preventDefault();
+    const page = $(this).data('page');
+    const searchValue = $('#searchInput').val().trim();
+    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
+    console.log("Pagination Clicked - Page:", page, "Search:", searchValue, "Action:", actionType);
+
+    showActivity_log(searchValue, actionType, page);
 });
 
 
@@ -315,16 +351,8 @@ function ChangeOrderStatus(orderId, newStatus) {
 
 // Refresh order list dynamically without redirecting
 function refreshOrderList() {
-    $.ajax({
-        url: 'Ownerview/viewAllOrders.php',  // URL to load the order list
-        method: 'GET',
-        success: function(data) {
-            $('.container').html(data);  // Update the content with the order list
-        },
-        error: function() {
-            alert('Error refreshing the order list.');
-        }
-    });
+    updateContent('Ownerview/viewAllOrders.php', {}, '.allContent-section');
+
 }
 
 
@@ -384,16 +412,7 @@ function addItems() {
 
 // Refresh product list dynamically without redirecting
 function refreshProductList() {
-    $.ajax({
-        url: 'Ownerview/viewAllProducts.php',  // URL to load the product list
-        method: 'GET',
-        success: function(data) {
-            $('.allContent-section').html(data);  // Update the content with the product list
-        },
-        error: function() {
-            alert('Error refreshing the product list.');
-        }
-    });
+    updateContent('Ownerview/viewAllProducts.php', {}, '.allContent-section');
 }
 
 // Function to show table views dynamically
@@ -479,16 +498,8 @@ function addTable() {
 
 // Refresh table list dynamically without redirecting
 function refreshTableList() {
-    $.ajax({
-        url: 'Ownerview/viewTable.php',  // URL to load the table list
-        method: 'GET',
-        success: function(data) {
-            $('.allContent-section').html(data);  // Update the content with the table list
-        },
-        error: function() {
-            alert('Error refreshing the table list.');
-        }
-    });
+    updateContent('Ownerview/viewTable.php', {}, '.allContent-section');
+
 }
 
 
@@ -656,9 +667,9 @@ function filterItems() {
     });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Automatically load all users when the page loads
-    UfilterItems();  // Call this function to load all users by default
+    UfilterItems();
 });
 
 
@@ -1002,16 +1013,7 @@ function categoryDelete(categoryId) {
   
 // Function to refresh the entire category list section dynamically
 function refreshCategoryList() {
-    $.ajax({
-        url: 'Ownerview/viewAllCategory.php',  // URL to load the updated category list content
-        method: 'GET',
-        success: function(data) {
-            $('.category-list').html($(data).find('.category-list').html());  // Replace the category list content dynamically
-        },
-        error: function() {
-            alert('Error refreshing the category list.');
-        }
-    });
+    updateContent("Ownerview/viewAllCategory.php", {}, '.allContent-section');
 }
 
 

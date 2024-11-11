@@ -34,16 +34,28 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
     <a href="#orders" onclick="order_list()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
     <a href="#reservation" onclick="savedreservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
     <a href="#reservation" onclick="recieptrecords()"><i class="fa fa-calendar-check-o"></i> Receipt</a>
-    <a href="User-settings.php"><i class="fa fa-cog"></i> Settings</a>
+    <a href="#Message"onclick="messageview()"><i class="fa fa-cog"></i> Message</a>
     <a href="assets/log-out.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
 
 <script>
 function toggleSidebar() {
+    console.log("Toggling sidebar");
     const sidebar = document.getElementById("mySidebar");
-    sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
-    document.getElementById("mainContent").style.marginRight = sidebar.style.width === "250px" ? "250px" : "0";
+    const mainContent = document.getElementById("mainContent");
+    console.log("Sidebar:", sidebar);
+    console.log("Main content:", mainContent);
+
+    if (sidebar) {
+        sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
+        if (mainContent) {
+            mainContent.style.marginRight = sidebar.style.width === "250px" ? "250px" : "0";
+        }
+    } else {
+        console.error("Sidebar element not found");
+    }
 }
+
 </script>
 <style>
 /* Sidebar styling */

@@ -154,7 +154,7 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(response) {
             if (response.status === 'success') {
-                // Disable Table button if no orders exist
+                // Disable the Table button if no orders exist
                 if (!response.has_orders) {
                     $('#tableButton').attr('disabled', true).css({
                         'cursor': 'not-allowed',
@@ -164,8 +164,8 @@ $(document).ready(function() {
                         alert("Please add an order before reserving a table.");
                     });
                 }
-                
-                // Disable Payment button if no reservations exist
+
+                // Disable the Payment button if no reservations exist
                 if (!response.has_reservations) {
                     $('#paymentButton').attr('disabled', true).css({
                         'cursor': 'not-allowed',
@@ -176,7 +176,7 @@ $(document).ready(function() {
                     });
                 }
             } else {
-                console.error("Error:", response.message);
+                console.error("Server error:", response.message);
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -184,4 +184,7 @@ $(document).ready(function() {
         }
     });
 });
+
+
+
 </script>

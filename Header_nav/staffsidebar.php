@@ -10,7 +10,7 @@ include_once "assets/config.php";
 <!-- Sidebar -->
 <div class="sidebar" id="mySidebar">
     <div class="side-header">
-        <img src="./assets/images/logo.png" width="120" height="120" alt="Dine&Watch">
+        <img src="./images/admin.png" width="120" height="120" alt="Dine&Watch">
         <h5 style="margin-top:10px;">
             <?php
                 // Check if the user is logged in
@@ -35,15 +35,18 @@ include_once "assets/config.php";
             ?>
         </h5>
     </div>
+    
 
     <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="assets/log-out.php"><h5>Log-out</h5></a>
-    <a href="Admin-panel.php"><i class="fa fa-home"></i> Dashboard</a>
-    <a href="#orders" onclick="showOrders()"><i class="fa fa-list"></i> Orders</a>
-    <a href="#reservation" onclick="showReservation()"><i class="fa fa-th-large"></i> Reservations</a>
-    <a href="#products" onclick="showProductItems()"><i class="fa fa-th"></i> Products</a>
+    <a href="Admin-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
+    <a href="#orders" onclick="showOrders()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
+    <a href="#reservation" onclick="showReservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
+    <a href="#products" onclick="showProductItems()"><i class="fa fa-th-list"></i> Products</a>
+    <a href="#tables" onclick="showTableViews()"><i class="fa fa-th"></i> Tables</a>
     <a href="#users" onclick="showUser()"><i class="fa fa-users"></i> Users</a>
+    <a href="Smessage.php"><i class="fa fa-list-alt"></i> Messages</a>
+    <a href="assets/ad-logout.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
 
 <div id="main">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2024 at 04:36 AM
+-- Generation Time: Nov 10, 2024 at 11:53 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,7 +50,64 @@ INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_detai
 (10, 6, 'Login', 'jcaringal logged in', '2024-11-07 01:21:31'),
 (11, 6, 'Logout', 'jcaringal logged out', '2024-11-07 01:22:29'),
 (12, 6, 'Login', 'jcaringal logged in', '2024-11-07 01:26:29'),
-(13, 8, 'Login', 'hdsaa logged in', '2024-11-07 02:47:10');
+(13, 8, 'Login', 'hdsaa logged in', '2024-11-07 02:47:10'),
+(14, 6, 'Logout', 'jcaringal logged out', '2024-11-07 05:05:07'),
+(15, 6, 'Login', 'jcaringal logged in', '2024-11-07 05:05:36'),
+(16, 6, 'Logout', 'jcaringal logged out', '2024-11-07 05:15:02'),
+(17, 6, 'Login', 'jcaringal logged in', '2024-11-07 05:15:12'),
+(18, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 05:19:29'),
+(19, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 06:05:17'),
+(20, 7, 'Logout', 'mcaringal1 logged out', '2024-11-07 06:07:30'),
+(21, 7, 'Logout', 'mcaringal1 logged out', '2024-11-07 06:07:46'),
+(22, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:08:24'),
+(23, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 06:08:33'),
+(24, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:12:47'),
+(25, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 06:12:57'),
+(26, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:15:28'),
+(27, 7, 'Login', 'Mark Laurence l. caringal1 wq logged in', '2024-11-07 06:15:49'),
+(28, 7, 'Logout', 'mcaringal1 logged out', '2024-11-07 06:16:50'),
+(29, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:17:05'),
+(30, 7, 'Logout', 'mcaringal1 logged out', '2024-11-07 06:20:25'),
+(31, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:25:49'),
+(32, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:28:38'),
+(33, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:34:11'),
+(34, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:34:31'),
+(35, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:43:35'),
+(36, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:43:39'),
+(37, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:43:50'),
+(38, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:44:32'),
+(39, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:45:49'),
+(40, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:45:53'),
+(41, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:46:28'),
+(42, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:46:42'),
+(43, 6, 'Logout', 'jcaringal logged out', '2024-11-07 06:50:17'),
+(44, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:50:22'),
+(45, 6, 'Login', 'jcaringal logged in', '2024-11-07 06:54:39'),
+(46, 6, 'Login', 'jcaringal logged in', '2024-11-07 07:37:38'),
+(47, 6, 'Add Product', 'Added a new product: da (Category ID: 1)', '2024-11-07 09:28:21'),
+(48, 6, 'Login', 'jcaringal logged in', '2024-11-08 08:36:02'),
+(49, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:41:06'),
+(50, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:42:40'),
+(51, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:45:52'),
+(52, 6, 'Login', 'jcaringal logged in', '2024-11-08 08:51:27'),
+(53, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:51:44'),
+(54, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:54:59'),
+(55, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:56:03'),
+(56, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:57:21'),
+(57, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:58:17'),
+(58, 8, 'Login', 'hdsaa logged in', '2024-11-08 08:58:59'),
+(59, 6, 'Login', 'jcaringal logged in', '2024-11-08 09:54:13'),
+(60, 6, 'Login', 'jcaringal logged in', '2024-11-08 11:19:54'),
+(61, 6, 'Add Product', 'Added a new product: 123 (Category ID: 1)', '2024-11-08 11:27:58'),
+(62, 6, 'Login', 'jcaringal logged in', '2024-11-08 11:44:44'),
+(63, 6, 'Login', 'jcaringal logged in', '2024-11-09 11:45:37'),
+(64, 9, 'Login', '123455 logged in', '2024-11-09 14:15:15'),
+(65, 9, 'Login', '123455 logged in', '2024-11-09 14:21:02'),
+(66, 9, 'Login', '123455 logged in', '2024-11-09 14:25:23'),
+(67, 9, 'Login', '123455 logged in', '2024-11-09 14:26:22'),
+(68, 9, 'Login', '123455 logged in', '2024-11-09 14:29:41'),
+(69, 6, 'Login', 'jcaringal logged in', '2024-11-09 14:31:17'),
+(70, 9, 'Login', '123455 logged in', '2024-11-09 14:31:26');
 
 -- --------------------------------------------------------
 
@@ -66,6 +123,40 @@ CREATE TABLE `chat_messages` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_group_message` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_messages`
+--
+
+INSERT INTO `chat_messages` (`id`, `sender_id`, `receiver_id`, `message`, `timestamp`, `is_group_message`) VALUES
+(1, 6, 8, 'dds', '2024-11-07 03:46:30', 0),
+(2, 6, 8, 's', '2024-11-07 04:00:53', 0),
+(3, 6, 8, 'fsd', '2024-11-07 04:27:24', 0),
+(4, 6, 8, 'asd', '2024-11-07 07:00:19', 0),
+(5, 6, 8, 'faf', '2024-11-08 09:00:42', 0),
+(6, 8, 6, 'zczx', '2024-11-08 09:00:48', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chat_responses`
+--
+
+CREATE TABLE `chat_responses` (
+  `id` int(11) NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `response` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_responses`
+--
+
+INSERT INTO `chat_responses` (`id`, `question`, `response`, `created_at`) VALUES
+(1, 'No Refund Policy?', 'Dine&Watch has a strict no refund policy. All sales are final.', '2024-11-10 21:05:44'),
+(2, 'What time Dine&Watch Open', 'Dine&Watch is open from 10 AM to 10 PM daily.', '2024-11-10 21:05:44'),
+(3, 'FAQ', 'Here are some common questions:\n- No Refund Policy\n- Opening Hours\n- Reservations', '2024-11-10 21:05:44');
 
 -- --------------------------------------------------------
 
@@ -140,7 +231,9 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `reservation_id`, `order_details`, `total_amount`, `order_time`, `status`, `feedback`, `created_at`, `updated_at`, `payment_method`) VALUES
-(1, 7, 2, 'Product Name: Pizzasdf | Quantity: 1 | Price: 12.00', 12.00, '2024-11-07 09:13:28', 'paid in advance', NULL, '2024-11-07 01:13:28', '2024-11-07 01:13:28', 'Credit Card');
+(1, 7, 1, 'Product Name: pepsi | Quantity: 4 | Price: 852.00; Product Name: Pizzasdf | Quantity: 4 | Price: 48.00', 900.00, '2024-11-07 16:50:37', 'paid in advance', NULL, '2024-11-07 08:50:37', '2024-11-07 08:50:37', 'Credit Card'),
+(2, 7, 2, 'Product Name: pepsi | Quantity: 2 | Price: 426.00; Product Name: Pizzasdf | Quantity: 2 | Price: 24.00', 450.00, '2024-11-07 16:52:01', 'paid in advance', NULL, '2024-11-07 08:52:01', '2024-11-07 08:52:01', 'Credit Card'),
+(3, 7, 3, 'Product Name: pepsi | Quantity: 1 | Price: 213.00', 213.00, '2024-11-08 19:07:38', 'paid in advance', NULL, '2024-11-08 11:07:38', '2024-11-08 11:07:38', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -188,7 +281,8 @@ CREATE TABLE `product_categories` (
 
 INSERT INTO `product_categories` (`category_id`, `category_name`) VALUES
 (1, 'pizza'),
-(2, 'drinks');
+(2, 'drinks'),
+(3, 'adds');
 
 -- --------------------------------------------------------
 
@@ -214,7 +308,9 @@ CREATE TABLE `product_items` (
 
 INSERT INTO `product_items` (`product_id`, `product_name`, `price`, `special_instructions`, `product_image`, `created_at`, `updated_at`, `quantity`, `category_id`) VALUES
 (1, 'Pizzasdf', 12.00, '213', '../Uploads/672c128367284_hawwiean.jpg', '2024-11-07 01:06:11', '2024-11-07 01:06:11', 231, 1),
-(2, 'pepsi', 213.00, '', '../Uploads/672c12a5ee9a4_images.jpg', '2024-11-07 01:06:45', '2024-11-07 01:06:45', 4, 2);
+(2, 'pepsi', 213.00, '', '../Uploads/672c12a5ee9a4_images.jpg', '2024-11-07 01:06:45', '2024-11-07 01:06:45', 4, 2),
+(3, 'da', 12.00, '12', '../Uploads/672c883520f50_download (4).jpg', '2024-11-07 09:28:21', '2024-11-07 09:28:21', 21, 1),
+(4, '123', 12.00, '123', '../Uploads/672df5be5a200_images (1).jpg', '2024-11-08 11:27:58', '2024-11-08 11:27:58', 123, 1);
 
 -- --------------------------------------------------------
 
@@ -236,7 +332,9 @@ CREATE TABLE `receipts` (
 --
 
 INSERT INTO `receipts` (`receipt_id`, `order_id`, `user_id`, `total_amount`, `receipt_date`, `payment_method`) VALUES
-(1, 1, 7, 12.00, '2024-11-07 01:13:28', 'Credit Card');
+(1, 1, 7, 900.00, '2024-11-07 08:50:37', 'Credit Card'),
+(2, 2, 7, 450.00, '2024-11-07 08:52:01', 'Credit Card'),
+(3, 3, 7, 213.00, '2024-11-08 11:07:38', 'Credit Card');
 
 -- --------------------------------------------------------
 
@@ -259,7 +357,11 @@ CREATE TABLE `receipt_items` (
 --
 
 INSERT INTO `receipt_items` (`receipt_item_id`, `receipt_id`, `reservation_id`, `user_id`, `product_id`, `quantity`, `item_total_price`) VALUES
-(1, 1, 2, 7, 1, 1, 12.00);
+(1, 1, 1, 7, 1, 4, 48.00),
+(2, 1, 1, 7, 2, 4, 852.00),
+(4, 2, 2, 7, 1, 2, 24.00),
+(5, 2, 2, 7, 2, 2, 426.00),
+(6, 3, 3, 7, 2, 1, 213.00);
 
 -- --------------------------------------------------------
 
@@ -285,7 +387,9 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`reservation_id`, `user_id`, `table_id`, `reservation_date`, `reservation_time`, `status`, `custom_note`, `feedback`, `created_at`, `updated_at`) VALUES
-(2, 7, 1, '2024-11-08', '07:15:00', 'Pending', '1234', NULL, '2024-11-07 01:12:53', '2024-11-07 01:21:56');
+(1, 7, 1, '2024-11-07', '07:00:00', 'Paid', '', NULL, '2024-11-07 08:50:06', '2024-11-07 08:50:37'),
+(2, 7, 1, '2024-11-07', '08:30:00', 'Paid', '', NULL, '2024-11-07 08:51:35', '2024-11-07 08:52:01'),
+(3, 7, 5, '2024-11-09', '07:15:00', 'Paid', '1231', NULL, '2024-11-08 11:07:12', '2024-11-08 11:07:38');
 
 -- --------------------------------------------------------
 
@@ -346,7 +450,10 @@ CREATE TABLE `tables` (
 
 INSERT INTO `tables` (`table_id`, `table_number`, `seating_capacity`, `is_available`, `area`) VALUES
 (1, 9, 2, 1, 'Indoor'),
-(2, 9, 12, 1, 'Outdoor');
+(2, 9, 12, 1, 'Outdoor'),
+(3, 2, 12, 1, 'Indoor'),
+(4, 12, 12, 1, 'Outdoor'),
+(5, 4, 3, 1, 'Indoor');
 
 -- --------------------------------------------------------
 
@@ -371,7 +478,10 @@ INSERT INTO `table_images` (`image_id`, `table_id`, `image_path`, `uploaded_at`,
 (2, 1, '../uploads/672c12c9ab7a8_image.jpg', '2024-11-07 01:07:21', 'back view'),
 (3, 1, '../uploads/672c12c9ac18d_image.jpg', '2024-11-07 01:07:21', 'left view'),
 (4, 2, '../uploads/672c12e59a8f7_marvelous-city-skyline.jpg', '2024-11-07 01:07:49', 'front view'),
-(5, 2, '../uploads/672c12e59b9e1_dramatic-river-views.jpg', '2024-11-07 01:07:49', 'back view');
+(5, 2, '../uploads/672c12e59b9e1_dramatic-river-views.jpg', '2024-11-07 01:07:49', 'back view'),
+(6, 3, '../uploads/672c8f8b5f26a_l-intro-1678787918.jpg', '2024-11-07 09:59:39', 'front view'),
+(7, 4, '../uploads/672c9049a0252_images (3).jpg', '2024-11-07 10:02:49', 'front view'),
+(8, 5, '../uploads/672cac75afcc2_download (3).jpg', '2024-11-07 12:03:01', 'back view');
 
 -- --------------------------------------------------------
 
@@ -395,19 +505,32 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
-  `status` enum('online','offline') NOT NULL DEFAULT 'offline'
+  `status` enum('online','offline') NOT NULL DEFAULT 'offline',
+  `typing` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `suffix`, `contact_number`, `email`, `address`, `zip_code`, `username`, `password_hash`, `role`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
-(1, 'Mark Laurence', 'l', 'caringal', 'jr', '09345678901', 'ha1@gmail.com', 'place', '1234', 'mcaringal', '$2y$10$U5xRKzJxyW0Lgia.SYeMZ.KK/vtWuOuwngG5M1qMsyw8jrxO.eeXy', 'General User', '2024-11-07 00:59:59', '2024-11-07 00:59:59', NULL, 'offline'),
-(3, 'Mark Laurence', 'l', 'caringal', 'wq', '09234567891', 'ha22@gmail.com', 'place', '1234', 'mcaringal3', '$2y$10$CT/oMDS884MILfbF3/2BwOolbz1R7EIMKzZAnGPcrauQX9X5.R9RO', 'General User', '2024-11-07 01:00:59', '2024-11-07 01:00:59', NULL, 'offline'),
-(6, 'Jack', 'l', 'caringal', 'wq', '09234567891', 'mk@gmail.com', 'place', '1234', 'jcaringal', '$2y$10$jVll8K2S6EsrZKPsWUo.POe1lv32lSQncJqkT9567wS78ZrAV3tde', 'Owner', '2024-11-07 01:04:04', '2024-11-07 01:04:49', NULL, 'online'),
-(7, 'Mark Laurence', 'l', 'caringal1', 'wq', '09345678901', 'g@gmail.com', 'place', '1234', 'mcaringal1', '$2y$10$xXj.kj406T.ZM571znX1qeVKsAAEWVh94M0AOBaonnZvbla2nMQ8e', 'General User', '2024-11-07 01:11:42', '2024-11-07 01:11:42', NULL, 'offline'),
-(8, 'hala', 's', 'dsaa', '', '09876543231', 'mk12@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$vgUs1loUX1AJ6FB.hUsJ7u5zXMM.L.6pK9jCD9TaT.iM/Zb74L.da', 'Admin', '2024-11-07 02:46:23', '2024-11-07 02:47:10', NULL, 'online');
+INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `suffix`, `contact_number`, `email`, `address`, `zip_code`, `username`, `password_hash`, `role`, `created_at`, `updated_at`, `deleted_at`, `status`, `typing`) VALUES
+(1, 'Mark Laurence', 'l', 'caringal', 'jr', '09345678901', 'ha1@gmail.com', 'place', '1234', 'mcaringal', '$2y$10$U5xRKzJxyW0Lgia.SYeMZ.KK/vtWuOuwngG5M1qMsyw8jrxO.eeXy', 'General User', '2024-11-07 00:59:59', '2024-11-07 00:59:59', NULL, 'offline', 0),
+(3, 'Mark Laurence', 'l', 'caringal', 'wq', '09234567891', 'ha22@gmail.com', 'place', '1234', 'mcaringal3', '$2y$10$CT/oMDS884MILfbF3/2BwOolbz1R7EIMKzZAnGPcrauQX9X5.R9RO', 'General User', '2024-11-07 01:00:59', '2024-11-07 01:00:59', NULL, 'offline', 0),
+(6, 'Jack', 'l', 'caringal', 'wq', '09234567891', 'mk@gmail.com', 'place', '1234', 'jcaringal', '$2y$10$jVll8K2S6EsrZKPsWUo.POe1lv32lSQncJqkT9567wS78ZrAV3tde', 'Owner', '2024-11-07 01:04:04', '2024-11-08 08:36:02', NULL, 'online', 0),
+(7, 'Mark Laurence', 'l', 'caringal1', 'wq', '09345678901', 'g@gmail.com', 'place', '1234', 'mcaringal1', '$2y$10$xXj.kj406T.ZM571znX1qeVKsAAEWVh94M0AOBaonnZvbla2nMQ8e', 'General User', '2024-11-07 01:11:42', '2024-11-08 10:59:27', NULL, 'online', 0),
+(8, 'hala', 's', 'dsaa', '', '09876543231', 'mk12@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$vgUs1loUX1AJ6FB.hUsJ7u5zXMM.L.6pK9jCD9TaT.iM/Zb74L.da', 'Admin', '2024-11-07 02:46:23', '2024-11-08 08:41:06', NULL, 'online', 0),
+(9, 'jack', NULL, 'jason', NULL, '09876543462', 'Jack@gmail.com', NULL, NULL, '123455', '$2y$10$Dk5YSAHL2G02USrQo4KateYe0q4wm9hvq8ywVD7fzWDg4dkJplC.O', 'Staff', '2024-11-09 11:46:29', '2024-11-09 12:31:54', NULL, 'online', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_staff_assignments`
+--
+
+CREATE TABLE `user_staff_assignments` (
+  `user_id` int(11) NOT NULL,
+  `assigned_staff_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -424,6 +547,12 @@ ALTER TABLE `activity_logs`
 -- Indexes for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `chat_responses`
+--
+ALTER TABLE `chat_responses`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -546,6 +675,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `username` (`username`);
 
 --
+-- Indexes for table `user_staff_assignments`
+--
+ALTER TABLE `user_staff_assignments`
+  ADD PRIMARY KEY (`user_id`),
+  ADD KEY `assigned_staff_id` (`assigned_staff_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -553,19 +689,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `chat_responses`
+--
+ALTER TABLE `chat_responses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `data_reservations`
 --
 ALTER TABLE `data_reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `error_logs`
@@ -583,7 +725,7 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `order_cancellations`
@@ -595,37 +737,37 @@ ALTER TABLE `order_cancellations`
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `product_items`
 --
 ALTER TABLE `product_items`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `receipt_items`
 --
 ALTER TABLE `receipt_items`
-  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `receipt_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `reservation_reschedule`
@@ -643,19 +785,19 @@ ALTER TABLE `sessions`
 -- AUTO_INCREMENT for table `tables`
 --
 ALTER TABLE `tables`
-  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `table_images`
 --
 ALTER TABLE `table_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
@@ -700,6 +842,13 @@ ALTER TABLE `receipt_items`
   ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `receipt_items_ibfk_1` FOREIGN KEY (`receipt_id`) REFERENCES `receipts` (`receipt_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `receipt_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product_items` (`product_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_staff_assignments`
+--
+ALTER TABLE `user_staff_assignments`
+  ADD CONSTRAINT `user_staff_assignments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_staff_assignments_ibfk_2` FOREIGN KEY (`assigned_staff_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2024 at 11:53 PM
+-- Generation Time: Nov 13, 2024 at 01:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -107,7 +107,34 @@ INSERT INTO `activity_logs` (`log_id`, `action_by`, `action_type`, `action_detai
 (67, 9, 'Login', '123455 logged in', '2024-11-09 14:26:22'),
 (68, 9, 'Login', '123455 logged in', '2024-11-09 14:29:41'),
 (69, 6, 'Login', 'jcaringal logged in', '2024-11-09 14:31:17'),
-(70, 9, 'Login', '123455 logged in', '2024-11-09 14:31:26');
+(70, 9, 'Login', '123455 logged in', '2024-11-09 14:31:26'),
+(71, 9, 'Login', '123455 logged in', '2024-11-10 23:29:33'),
+(72, 9, 'Login', '123455 logged in', '2024-11-10 23:34:25'),
+(73, 9, 'Login', '123455 logged in', '2024-11-10 23:36:23'),
+(74, 6, 'Login', 'jcaringal logged in', '2024-11-10 23:44:18'),
+(75, 6, 'Login', 'jcaringal logged in', '2024-11-11 00:30:14'),
+(76, 6, 'Login', 'jcaringal logged in', '2024-11-11 00:30:36'),
+(77, 6, 'Login', 'jcaringal logged in', '2024-11-11 00:44:59'),
+(78, 6, 'Login', 'jcaringal logged in', '2024-11-11 04:56:20'),
+(79, 6, 'Login', 'jcaringal logged in', '2024-11-11 07:58:39'),
+(80, 9, 'Login', '123455 logged in', '2024-11-13 01:02:39'),
+(81, 9, 'Login', '123455 logged in', '2024-11-13 01:05:51'),
+(82, 9, 'Login', '123455 logged in', '2024-11-13 01:10:37'),
+(83, 9, 'Login', '123455 logged in', '2024-11-13 01:11:22'),
+(84, 9, 'Login', '123455 logged in', '2024-11-13 01:13:27'),
+(85, 6, 'Login', 'jcaringal logged in', '2024-11-13 01:14:24'),
+(86, 9, 'Login', '123455 logged in', '2024-11-13 01:20:07'),
+(87, 9, 'Login', '123455 logged in', '2024-11-13 01:22:30'),
+(88, 9, 'Login', '123455 logged in', '2024-11-13 01:25:36'),
+(89, 9, 'Login', '123455 logged in', '2024-11-13 01:33:52'),
+(90, 9, 'Login', '123455 logged in', '2024-11-13 01:35:53'),
+(91, 9, 'Login', '123455 logged in', '2024-11-13 01:36:04'),
+(92, 9, 'Login', '123455 logged in', '2024-11-13 01:38:59'),
+(93, 9, 'Login', '123455 logged in', '2024-11-13 01:50:27'),
+(94, 9, 'Login', '123455 logged in', '2024-11-13 01:51:00'),
+(95, 9, 'Login', '123455 logged in', '2024-11-13 01:52:51'),
+(96, 6, 'Login', 'jcaringal logged in', '2024-11-13 01:53:58'),
+(97, 9, 'Login', '123455 logged in', '2024-11-13 02:06:46');
 
 -- --------------------------------------------------------
 
@@ -129,12 +156,20 @@ CREATE TABLE `chat_messages` (
 --
 
 INSERT INTO `chat_messages` (`id`, `sender_id`, `receiver_id`, `message`, `timestamp`, `is_group_message`) VALUES
-(1, 6, 8, 'dds', '2024-11-07 03:46:30', 0),
-(2, 6, 8, 's', '2024-11-07 04:00:53', 0),
-(3, 6, 8, 'fsd', '2024-11-07 04:27:24', 0),
-(4, 6, 8, 'asd', '2024-11-07 07:00:19', 0),
-(5, 6, 8, 'faf', '2024-11-08 09:00:42', 0),
-(6, 8, 6, 'zczx', '2024-11-08 09:00:48', 0);
+(74, 6, 8, 'aw', '2024-11-13 01:58:11', 0),
+(75, 6, 8, 'asd', '2024-11-13 01:58:13', 0),
+(76, 6, 8, 'a', '2024-11-13 01:58:52', 0),
+(77, 6, 8, 'sa', '2024-11-13 02:00:56', 0),
+(78, 6, 8, 'as', '2024-11-13 02:01:05', 0),
+(79, 6, 8, 'sa', '2024-11-13 02:02:28', 0),
+(80, 6, 8, 'sa', '2024-11-13 02:02:31', 0),
+(81, 6, 8, 'ssa', '2024-11-13 02:03:42', 0),
+(82, 6, 8, 'sa', '2024-11-13 02:03:43', 0),
+(83, 6, 8, 'sada', '2024-11-13 02:05:47', 0),
+(84, 6, 8, 'sa', '2024-11-13 02:05:48', 0),
+(85, 7, 9, 'sasa', '2024-11-13 02:20:37', 0),
+(87, 9, 7, 'h;asb', '2024-11-13 02:42:08', 0),
+(88, 7, 9, 'sad', '2024-11-13 02:42:45', 0);
 
 -- --------------------------------------------------------
 
@@ -519,7 +554,7 @@ INSERT INTO `users` (`user_id`, `first_name`, `middle_initial`, `last_name`, `su
 (6, 'Jack', 'l', 'caringal', 'wq', '09234567891', 'mk@gmail.com', 'place', '1234', 'jcaringal', '$2y$10$jVll8K2S6EsrZKPsWUo.POe1lv32lSQncJqkT9567wS78ZrAV3tde', 'Owner', '2024-11-07 01:04:04', '2024-11-08 08:36:02', NULL, 'online', 0),
 (7, 'Mark Laurence', 'l', 'caringal1', 'wq', '09345678901', 'g@gmail.com', 'place', '1234', 'mcaringal1', '$2y$10$xXj.kj406T.ZM571znX1qeVKsAAEWVh94M0AOBaonnZvbla2nMQ8e', 'General User', '2024-11-07 01:11:42', '2024-11-08 10:59:27', NULL, 'online', 0),
 (8, 'hala', 's', 'dsaa', '', '09876543231', 'mk12@gmail.com', 'asd', '1231', 'hdsaa', '$2y$10$vgUs1loUX1AJ6FB.hUsJ7u5zXMM.L.6pK9jCD9TaT.iM/Zb74L.da', 'Admin', '2024-11-07 02:46:23', '2024-11-08 08:41:06', NULL, 'online', 0),
-(9, 'jack', NULL, 'jason', NULL, '09876543462', 'Jack@gmail.com', NULL, NULL, '123455', '$2y$10$Dk5YSAHL2G02USrQo4KateYe0q4wm9hvq8ywVD7fzWDg4dkJplC.O', 'Staff', '2024-11-09 11:46:29', '2024-11-09 12:31:54', NULL, 'online', 0);
+(9, 'jack', NULL, 'jason', NULL, '09876543462', 'Jack@gmail.com', NULL, NULL, '123455', '$2y$10$Dk5YSAHL2G02USrQo4KateYe0q4wm9hvq8ywVD7fzWDg4dkJplC.O', 'Staff', '2024-11-09 11:46:29', '2024-11-12 09:58:32', NULL, 'online', 0);
 
 -- --------------------------------------------------------
 
@@ -531,6 +566,13 @@ CREATE TABLE `user_staff_assignments` (
   `user_id` int(11) NOT NULL,
   `assigned_staff_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_staff_assignments`
+--
+
+INSERT INTO `user_staff_assignments` (`user_id`, `assigned_staff_id`) VALUES
+(7, 9);
 
 --
 -- Indexes for dumped tables
@@ -689,13 +731,13 @@ ALTER TABLE `user_staff_assignments`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT for table `chat_messages`
 --
 ALTER TABLE `chat_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `chat_responses`

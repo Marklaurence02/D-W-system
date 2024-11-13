@@ -1,10 +1,6 @@
 <?php
-// Start the session at the top of the file
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 include_once "assets/config.php";
+
 ?>
 
 <!-- Sidebar -->
@@ -39,7 +35,7 @@ include_once "assets/config.php";
 
     <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="Admin-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
+    <a href="Staff-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
     <a href="#orders" onclick="showOrders()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
     <a href="#reservation" onclick="showReservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
     <a href="#products" onclick="showProductItems()"><i class="fa fa-th-list"></i> Products</a>

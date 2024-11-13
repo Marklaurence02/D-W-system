@@ -1,13 +1,7 @@
 <?php
-session_name("user_session");
-session_start();
 include 'assets/config.php';
+include "Header_nav/Userheader.php"; 
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location:assets/process_log-in.php");
-    exit();
-}
 
 // Set session variables if they are not already set
 if (!isset($_SESSION['first_name'])) {
@@ -62,7 +56,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
 </head>
 <body>
 
-<?php include "Header_nav/Userheader.php"; ?>
+
 
     <!-- Main Content Section -->
     <div id="main-content" class="container allContent-section py-4 center-content">

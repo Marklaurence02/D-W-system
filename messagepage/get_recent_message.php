@@ -1,6 +1,6 @@
 <?php
 include '../assets/config.php';
-session_name("owner_session");
+session_name("staff_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

@@ -1,7 +1,3 @@
-<?php
-
-include_once "assets/config.php"; // Database connection
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,6 +47,7 @@ include_once "assets/config.php"; // Database connection
     <?php
         include "Header_nav/staffHeader .php"; // Header for admin panel
         include "Header_nav/staffsidebar.php"; // Sidebar for navigation
+        include_once "assets/config.php"; // Database connection
     ?>
 
 <div id="main-content" class="container allContent-section py-4 text-center">

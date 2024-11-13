@@ -1,8 +1,6 @@
 <?php
-// Start the session if it hasn't been started yet
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_name("user_session");
+session_start();
 
 // Use session variables directly for displaying user info
 $first_name = htmlspecialchars($_SESSION['first_name'] ?? 'User');

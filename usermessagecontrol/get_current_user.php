@@ -11,7 +11,7 @@ try {
     if (isset($_SESSION['username'], $_SESSION['role'], $_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
 
-        // Prepare and execute the query to retrieve user status
+        // Retrieve user status
         $status_sql = "SELECT status FROM users WHERE user_id = ?";
         $status_stmt = $conn->prepare($status_sql);
 

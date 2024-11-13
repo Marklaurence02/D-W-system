@@ -142,13 +142,14 @@ function loadMessages() {
         .catch(error => console.error("Error loading messages:", error));
 }
 
-// Send a message
+let lastSentMessageMinute = null;  // Track the last message minute for sent messages
+
 function sendMessage(event) {
     event.preventDefault();
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
 
-    if (!message || !selectedUserId) {  // Corrected variable name
+    if (!message || !selectedUserId) {  // Ensure message and selected user exist
         alert("Please enter a message.");
         return;
     }
@@ -156,19 +157,49 @@ function sendMessage(event) {
     fetch("/messagepage/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Corrected variable name
+        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data
     })
     .then(response => response.json())
     .then(result => {
         if (result.status === 'success') {
-            messageInput.value = '';  // Clear input field
-            loadMessages();  // Reload messages after sending
+            const msgDate = new Date();  // Current timestamp for the new message
+            const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();  // Minute of the day
+
+            // Only add a timestamp if this message is in a new minute
+            if (lastSentMessageMinute !== currentMessageMinute) {
+                const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                // Create a separator element with the timestamp
+                const separatorElement = document.createElement('div');
+                separatorElement.classList.add('separator', 'separator-centered');
+                separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
+                MessageBox.appendChild(separatorElement);
+
+                // Update the last message minute
+                lastSentMessageMinute = currentMessageMinute;
+            }
+
+            // Add the message directly to the message box
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'sent');  // Mark as sent message
+            messageElement.innerHTML = `
+                <p><strong>You:</strong> ${message}</p>
+            `;
+
+            // Append message and auto-scroll to the bottom
+            MessageBox.appendChild(messageElement);
+            MessageBox.scrollTop = MessageBox.scrollHeight;
+
+            // Clear the input field
+            messageInput.value = '';
         } else {
             console.error("Error sending message:", result.message);
         }
     })
     .catch(error => console.error("Error sending message:", error));
 }
+
+
 
 // Switch back to user list view
 function backToUserList() {

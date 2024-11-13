@@ -10,8 +10,14 @@
     <link rel="stylesheet" href="css/panel.css">
 </head>
 <body>
-    <?php include "Header_nav/ownerHeader.php"; ?>
-
+    <?php include "Header_nav/ownerHeader.php"; 
+    ?>
+<div id="main">
+    <a href="Owner-panel.php" class="openbtn">
+        <i class='bx bxs-dashboard'></i>
+        <span>Dashboard</span>
+    </a>
+</div>
     <?php
     include 'assets/config.php';
     header('Content-Type: text/html; charset=UTF-8');

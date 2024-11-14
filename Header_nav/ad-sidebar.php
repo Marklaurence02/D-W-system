@@ -45,7 +45,7 @@ include_once "assets/config.php";
     <a href="#products" onclick="showProductItems()"><i class="fa fa-th-list"></i> Products</a>
     <a href="#tables" onclick="showTableViews()"><i class="fa fa-th"></i> Tables</a>
     <a href="#users" onclick="showUser()"><i class="fa fa-users"></i> Users</a>
-    <a href="message.php"><i class="fa fa-list-alt"></i> Messages</a>
+    <a href="Amessage.php"><i class="fa fa-list-alt"></i> Messages</a>
     <a href="assets/ad-logout.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
 

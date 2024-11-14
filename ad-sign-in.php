@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,20 +23,22 @@
 
                 <?php 
                     // Include the form processing logic
-                    include 'assets/process_ad-log-in .php'; 
-                    
-                    // Display any error messages
-                    if (!empty($error)):  // Check if $error is not empty
-                ?>
-                    <p style="color: red;"><?php echo htmlspecialchars($error); ?></p> <!-- Error message -->
-                <?php endif; ?>
+                    include 'assets/process_ad-log-in .php';  ?>
 
-                <?php if (!empty($message)): ?>  <!-- Check if a message exists -->
-                    <p style="color: green;">
-                        <img src="Images/check-icon.png" alt="Success" style="width: 20px; vertical-align: middle;">
-                        <?php echo htmlspecialchars($message); ?>
-                    </p> <!-- Success message -->
-                <?php endif; ?>
+                    <!-- Display any error messages from the session -->
+                    <?php if (!empty($_SESSION['login_error'])): ?>
+                        <p style="color: red;"><?php echo htmlspecialchars($_SESSION['login_error']); ?></p>
+                        <?php unset($_SESSION['login_error']); // Clear the error after displaying it ?>
+                    <?php endif; ?>
+                    
+                    <!-- Display any success message if available -->
+                    <?php if (!empty($_SESSION['login_message'])): ?>
+                        <p style="color: green;">
+                            <img src="Images/check-icon.png" alt="Success" style="width: 20px; vertical-align: middle;">
+                            <?php echo htmlspecialchars($_SESSION['login_message']); ?>
+                        </p>
+                        <?php unset($_SESSION['login_message']); // Clear the message after displaying it ?>
+                    <?php endif; ?>
 
                 <!-- Sign-In Form -->
                 <form class="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">

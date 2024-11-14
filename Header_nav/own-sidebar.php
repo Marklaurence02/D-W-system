@@ -3,50 +3,124 @@ include_once "assets/config.php";
 ?>
 
 <!-- Sidebar -->
-<div class="sidebar" id="mySidebar">
-    <div class="side-header">
-        <img src="./images/admin.png" width="120" height="120" alt="Dine&Watch">
-        <h5 style="margin-top:100px;">
-            <?php
-                // Check if the user is logged in
-                if (isset($_SESSION['user_id'])) {
-                    $user_id = $_SESSION['user_id'];
-                    $sql = "SELECT first_name FROM users WHERE user_id = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param('i', $user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $user = $result->fetch_assoc();
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white" id="mySidebar">
+<div class="text-center mb-4" id="welcomeMessage">
+    <!-- Logo displayed when the sidebar is collapsed -->
+    <img src="./images/admin.png" class="logo d-md-none" width="50" height="50" alt="Logo" title="Dine&Watch">
 
-                    if ($user) {
-                        // Welcome message using your specified format
-                        echo '<div class="welc">Welcome, ' . htmlspecialchars($user['first_name']) . ' (' . htmlspecialchars($_SESSION['role']) . ')</div>';
-                    } else {
-                        echo "Hello, User";
-                    }
-                } else {
-                    echo "Hello, Guest";
-                }
-            ?>
-        </h5>
-    </div>
+    <!-- Profile picture and welcome message displayed when expanded -->
+    <img src="./images/admin.png" class="rounded-circle profile-pic " width="80" height="80" alt="Dine&Watch">
+    <button class="btn btn-dark openbtn" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
+
+    <h5 class="mt-3 d-none d-md-block" id="welcomeText">
+        <?php
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            $sql = "SELECT first_name FROM users WHERE user_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
+
+            if ($user) {
+                echo '<div>Welcome, <b>' . htmlspecialchars($user['first_name']) . '</b> (' . htmlspecialchars($_SESSION['role']) . ')</div>';
+            } else {
+                echo "<div>Welcome, User</div>";
+            }
+        } else {
+            echo "<div>Welcome, Guest</div>";
+        }
+        ?>
+
+    </h5>
+
     
-    <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="owner-panel.php"><i class="fa fa-line-chart"></i> Dashboard</a>
-    <a href="#orders" onclick="showOrders()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
-    <a href="#reservation" onclick="showReservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
-    <a href="#category" onclick="showCategory()"><i class="fa fa-line-chart"></i> Category</a>
-    <a href="#products" onclick="showProductItems()"><i class="fa fa-th-list"></i> Products</a>
-    <a href="#tables" onclick="showTableViews()"><i class="fa fa-th"></i> Tables</a>
-    <a href="#users" onclick="showUser()"><i class="fa fa-users"></i> Users</a>
-    <a href="#admin" onclick="showadmin()"><i class="fa fa-user-plus"></i></i> Admin Management</a>
-    <a href="#activity-log" onclick="showActivity_log()"><i class="fa fa-list-alt"></i> Activity Log</a>
-    <a href="message.php"><i class="fa fa-list-alt"></i> Messages</a>
-
-    <a href="assets/ad-logout.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
 
-<div id="main">
-    <button class="openbtn" onclick="openNav()"><i class="fa fa-bars"></i></button>
+
+    <hr class="bg-light">
+    <a href="#" class="closebtn text-white d-md-none" onclick="toggleNav()">×</a>
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fa fa-cart-arrow-down"></i><span class="ml-2">Orders</span></a></li>
+        <li class="nav-item"><a href="#reservation" onclick="showReservation()" class="nav-link text-white"><i class="fa fa-calendar-check-o"></i><span class="ml-2">Reservations</span></a></li>
+        <li class="nav-item"><a href="#category" onclick="showCategory()" class="nav-link text-white"><i class="fa fa-line-chart"></i><span class="ml-2">Category</span></a></li>
+        <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fa fa-th-list"></i><span class="ml-2">Products</span></a></li>
+        <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fa fa-th"></i><span class="ml-2">Tables</span></a></li>
+        <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users"></i><span class="ml-2">Users</span></a></li>
+        <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus"></i><span class="ml-2">Admin Management</span></a></li>
+        <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fa fa-list-alt"></i><span class="ml-2">Activity Log</span></a></li>
+        <li class="nav-item"><a href="message.php" class="nav-link text-white"><i class="fa fa-envelope"></i><span class="ml-2">Messages</span></a></li>
+        <li class="nav-item"><a href="assets/ad-logout.php" class="nav-link text-white"><i class="fa fa-sign-out"></i><span class="ml-2">Log-out</span></a></li>
+    </ul>
 </div>
+
+
+
+<style>
+    #mySidebar {
+    width: 250px;
+    transition: all 0.4s ease;
+}
+
+#mySidebar.collapsed {
+    width: 70px;
+}
+
+#mySidebar.collapsed .nav-link span {
+    display: none;
+}
+
+#main {
+    transition: margin-left 0.4s ease;
+}
+
+.openbtn {
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    z-index: 1000;
+}
+
+/* Sidebar Collapsed State Styles */
+#mySidebar.collapsed .profile-pic {
+    display: none !important;
+}
+
+#mySidebar.collapsed #welcomeText {
+    display: none !important;
+}
+
+#mySidebar .logo {
+    display: none;
+}
+
+#mySidebar.collapsed .logo {
+    display: block !important;
+    margin: auto;
+}
+
+.profile-pic {
+    transition: all 0.3s ease-in-out;
+}/* Sidebar Collapsed State Styles */
+#mySidebar.collapsed .profile-pic {
+    display: none !important;
+}
+
+#mySidebar.collapsed #welcomeText {
+    display: none !important;
+}
+
+#mySidebar .logo {
+    display: none;
+}
+
+#mySidebar.collapsed .logo {
+    display: block !important;
+    margin: auto;
+}
+
+.profile-pic {
+    transition: all 0.3s ease-in-out;
+}
+</style>

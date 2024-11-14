@@ -11,15 +11,10 @@ include_once "assets/config.php"; // Database connection
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/panel.css">
+    <link rel="stylesheet" href="css/Opanel.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
     <style>
-        body {
-            background-color: #f8f9fa; /* Light background */
-        }
-        #main, #main-content {
-  transition: margin-left 0.3s; /* Smooth transition */
-}
+
         .card {
         background-color: #ADADAD; /* Set background color */
         border: none; /* Remove default border */
@@ -155,22 +150,7 @@ include_once "assets/config.php"; // Database connection
 
            <!-- Recent Activity & Popular Products -->
            <div class="col-lg-4">
-    <div class="card shadow-sm mb-4">
-        <div class="card-body p-3">
-            <h5 class="card-title">Recent Activity</h5>
-            <ul class="list-group">
-                <?php
-                    $sql = "SELECT action_details, created_at FROM activity_logs ORDER BY created_at DESC LIMIT 5";
-                    $result = $conn->query($sql);
-                    if ($result) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<li class='list-group-item'>" . htmlspecialchars($row['action_details']) . " - " . date('Y-m-d H:i', strtotime($row['created_at'])) . "</li>";
-                        }
-                    }
-                ?>
-            </ul>
-        </div>
-    </div>
+
 
     <div class="card shadow-sm mb-4">
         <div class="card-body p-3">

@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_name("owner_session");
 include_once "../assets/config.php";  // Include your DB connection file
 
 // Check if the user is logged in

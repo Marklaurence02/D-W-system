@@ -77,7 +77,7 @@ if (!$order_data) {
                 $cumulative_total = 0;
 
                 while ($row = $receipts_result->fetch_assoc()) {
-                    $cumulative_total += $row['total_amount'];
+                    $cumulative_total = $row['total_amount'];
                     echo "<tr>
                             <td>" . htmlspecialchars($row['receipt_id']) . "</td>
                             <td>" . date("F j, Y, g:i a", strtotime($row['receipt_date'])) . "</td>

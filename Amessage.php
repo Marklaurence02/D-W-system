@@ -10,63 +10,82 @@
     <link rel="stylesheet" href="css/panel.css">
 </head>
 <body>
-    <?php include "Header_nav/ownerHeader.php"; 
+    <?php include "Header_nav/adminHeader.php"; 
     ?>
 <div id="main">
-    <a href="Owner-panel.php" class="openbtn">
+    <a href="Admin-panel.php" class="openbtn">
         <i class='bx bxs-dashboard'></i>
         <span>Dashboard</span>
     </a>
 </div>
-    <?php
-    include 'assets/config.php';
-    header('Content-Type: text/html; charset=UTF-8');
+<?php
+include 'assets/config.php';
+header('Content-Type: text/html; charset=UTF-8');
 
-    $users = [];
-    if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
-        error_log("User  not authenticated or missing role");
-        exit("<div class='alert alert-danger text-center'>User  not authenticated.</div>");
-    }
+$users = [];
+if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
+    error_log("User not authenticated or missing role");
+    exit("<div class='alert alert-danger text-center'>User not authenticated.</div>");
+}
 
-    $currentRole = $_SESSION['role'];
-    $rolesToFetch = [];
-    switch ($currentRole) {
-        case 'Admin':
-            $rolesToFetch = ['Owner', 'Staff'];
-            break;
-        case 'Owner':
-            $rolesToFetch = ['Admin'];
-            break;
-        case 'Staff':
-            $rolesToFetch = ['Admin'];
-            break;
-        default:
-            error_log("Undefined role: $currentRole");
-            exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
-    }
+$currentRole = $_SESSION['role'];
+$currentUserId = $_SESSION['user_id'];
+$rolesToFetch = [];
 
+switch ($currentRole) {
+    case 'Admin':
+        $rolesToFetch = ['Owner', 'Staff'];
+        break;
+    case 'Owner':
+        $rolesToFetch = ['Admin'];
+        break;
+    case 'Staff':
+        $rolesToFetch = ['Admin', 'General User'];
+        break;
+    default:
+        error_log("Undefined role: $currentRole");
+        exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
+}
+
+// Construct SQL to get assigned users if the user is a Staff member
+if ($currentRole === 'Staff') {
+    $sql = "SELECT DISTINCT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS username, u.role
+            FROM users u
+            LEFT JOIN user_staff_assignments usa ON u.user_id = usa.user_id
+            WHERE (u.role = 'Admin' OR (u.role = 'General User' AND usa.assigned_staff_id = ?))";
+    $params = [$currentUserId];
+    $paramTypes = 'i';
+} else {
+    // If the user is not Staff, use a simple role-based query
     if (!empty($rolesToFetch)) {
         $rolePlaceholders = implode(',', array_fill(0, count($rolesToFetch), '?'));
-        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role 
-                FROM users 
+        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role
+                FROM users
                 WHERE role IN ($rolePlaceholders)";
-        
-        try {
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) throw new Exception($conn->error);
-            $stmt->bind_param(str_repeat('s', count($rolesToFetch)), ...$rolesToFetch);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $users = $result->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
-        } catch (Exception $e) {
-            error_log("Database error: " . $e->getMessage());
-            exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
-        }
+        $params = $rolesToFetch;
+        $paramTypes = str_repeat('s', count($rolesToFetch));
     }
+}
 
-    $conn->close();
-    ?>
+try {
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) throw new Exception($conn->error);
+    
+    // Bind parameters based on the current user's role
+    $stmt->bind_param($paramTypes, ...$params);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $users = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+} catch (Exception $e) {
+    error_log("Database error: " . $e->getMessage());
+    exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
+}
+
+$conn->close();
+?>
+
 
     <div class="container mt-4">
         <!-- User List -->
@@ -287,33 +306,11 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="Js/Ownerpanel.js"></script>
+    <script src="Js/panel.js"></script>
     <script src="Js/navb.js"></script>
-    <script src="Js/Oviewmessage.js"></script>
+    <script src="Js/Aviewmessage.js"></script>
 
-    <script>
-        // Toggle the visibility of the search input field
-        function toggleSearchInput() {
-            const searchInput = document.getElementById('search-input');
-            searchInput.classList.toggle('d-none');
-        }
 
-        // Search function that filters messages based on name, date, or content
-        function searchMessage() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const users = document.querySelectorAll('.user-item');
-            users.forEach(user => {
-                const username = user.querySelector('.username').textContent.toLowerCase();
-                const message = user.querySelector('.recent-message').textContent.toLowerCase();
-                const date = user.querySelector('.message-date').textContent.toLowerCase();
-                
-                if (username.includes(query) || message.includes(query) || date.includes(query)) {
-                    user.style.display = '';
-                } else {
-                    user.style.display = 'none';
-                }
-            });
-        }
-    </script>
+      
 </body>
 </html>

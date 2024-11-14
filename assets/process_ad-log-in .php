@@ -114,7 +114,7 @@ $conn->close();
 if (!empty($error)) {
     // Optionally, you can redirect with an error message stored in the session
     $_SESSION['login_error'] = $error;
-    header("Location: login.php");
+    header("Location: ad-sign-in.php");
     exit();
 }
 ?>

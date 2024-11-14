@@ -17,7 +17,7 @@ function loadUserRecentMessages() {
         const usernameElement = userItem.querySelector('.username'); // Element for the username
 
         // Fetch the most recent message and unread count for each user
-        fetch(`/SmessageC/get_recent_message.php?user_id=${userId}`)
+        fetch(`/AmessageC/get_recent_message.php?user_id=${userId}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
                 return response.json();
@@ -93,7 +93,7 @@ function loadMessages() {
     }
 
     const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
-    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
+    const url = `/AmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
                 (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
     let lastMessageMinute = null;
@@ -154,7 +154,7 @@ function sendMessage(event) {
         return;
     }
 
-    fetch("/SmessageC/post_message.php", {
+    fetch("/AmessageC/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data

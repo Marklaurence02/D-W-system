@@ -33,3 +33,4 @@ include_once "./assets/config.php";
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
 </nav>
 
+<div class="row" style="justify-content: flex-start;     flex-wrap: nowrap;">

@@ -18,7 +18,7 @@
             </div>
         </div>
        
-        <div class="S-section">
+        <div class="S-section ">
             <div class="log-container">
                 <h1>Sign-In</h1>
 

@@ -3,14 +3,13 @@ include_once "assets/config.php";
 ?>
 
 <!-- Sidebar -->
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white" id="mySidebar">
+<div class="md-3 d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: rgba(253, 102, 16, 0.8); " id="mySidebar">
 <div class="text-center mb-4" id="welcomeMessage">
     <!-- Logo displayed when the sidebar is collapsed -->
     <img src="./images/admin.png" class="logo d-md-none" width="50" height="50" alt="Logo" title="Dine&Watch">
 
     <!-- Profile picture and welcome message displayed when expanded -->
     <img src="./images/admin.png" class="rounded-circle profile-pic " width="80" height="80" alt="Dine&Watch">
-    <button class="btn btn-dark openbtn" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
 
     <h5 class="mt-3 d-none d-md-block" id="welcomeText">
         <?php
@@ -41,30 +40,36 @@ include_once "assets/config.php";
 
     <hr class="bg-light">
     <a href="#" class="closebtn text-white d-md-none" onclick="toggleNav()">×</a>
-    <ul class="nav nav-pills flex-column">
-        <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fa fa-cart-arrow-down"></i><span class="ml-2">Orders</span></a></li>
-        <li class="nav-item"><a href="#reservation" onclick="showReservation()" class="nav-link text-white"><i class="fa fa-calendar-check-o"></i><span class="ml-2">Reservations</span></a></li>
-        <li class="nav-item"><a href="#category" onclick="showCategory()" class="nav-link text-white"><i class="fa fa-line-chart"></i><span class="ml-2">Category</span></a></li>
-        <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fa fa-th-list"></i><span class="ml-2">Products</span></a></li>
-        <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fa fa-th"></i><span class="ml-2">Tables</span></a></li>
-        <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users"></i><span class="ml-2">Users</span></a></li>
-        <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus"></i><span class="ml-2">Admin Management</span></a></li>
-        <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fa fa-list-alt"></i><span class="ml-2">Activity Log</span></a></li>
-        <li class="nav-item"><a href="message.php" class="nav-link text-white"><i class="fa fa-envelope"></i><span class="ml-2">Messages</span></a></li>
-        <li class="nav-item"><a href="assets/ad-logout.php" class="nav-link text-white"><i class="fa fa-sign-out"></i><span class="ml-2">Log-out</span></a></li>
+    <ul class="nav nav-pills flex-column" style="align-content: space-around ">
+    <li class="nav-item"><a href="Owner-panel.php"class="nav-link text-white"><i class="fa fa-cart-arrow-down"></i><span class="ml-2">Dashboard</span></a></li>
+        <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fa fa-cart-arrow-down sideicon"></i><span class="ml-2">Orders</span></a></li>
+        <li class="nav-item"><a href="#reservation" onclick="showReservation()" class="nav-link text-white"><i class="fa fa-calendar-check-o sideicon"></i><span class="ml-2">Reservations</span></a></li>
+        <li class="nav-item"><a href="#category" onclick="showCategory()" class="nav-link text-white"><i class="fa fa-line-chart sideicon"></i><span class="ml-2">Category</span></a></li>
+        <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fa fa-th-list sideicon"></i><span class="ml-2">Products</span></a></li>
+        <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fa fa-th sideicon"></i><span class="ml-2">Tables</span></a></li>
+        <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users sideicon"></i><span class="ml-2">Users</span></a></li>
+        <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus sideicon"></i><span class="ml-2">Admin Management</span></a></li>
+        <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fa fa-list-alt sideicon"></i><span class="ml-2">Activity Log</span></a></li>
+        <li class="nav-item"><a href="message.php" class="nav-link text-white"><i class="fa fa-envelope sideicon"></i><span class="ml-2">Messages</span></a></li>
     </ul>
 </div>
 
 
 
 <style>
+
+#mySidebar.collapsed .sideicon{
+    font-size: 40px;
+}
+
+
     #mySidebar {
-    width: 250px;
+    width: 260px;
     transition: all 0.4s ease;
 }
 
 #mySidebar.collapsed {
-    width: 70px;
+    width: 150px;
 }
 
 #mySidebar.collapsed .nav-link span {
@@ -76,10 +81,8 @@ include_once "assets/config.php";
 }
 
 .openbtn {
-    position: fixed;
     top: 10px;
     left: 20px;
-    z-index: 1000;
 }
 
 /* Sidebar Collapsed State Styles */
@@ -123,4 +126,18 @@ include_once "assets/config.php";
 .profile-pic {
     transition: all 0.3s ease-in-out;
 }
+/* Sidebar active state */
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 5px solid #FD6610;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Hover effect */
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
 </style>

@@ -5,32 +5,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
 include_once "./assets/config.php";
 ?>
 
-<!-- nav -->
-<nav class="navbar navbar-expand-lg navbar-light px-5" style="background-color: #3B3131;">
-    <a class="navbar-brand ml-5" href="./index.php">
-        <img src="./images/admin.png" width="80" height="80" alt="Dine&Watch">
-    </a>
+<nav class="navbar navbar-expand-lg navbar-light bg-orange w-100">
+    <div class="container-fluid">
+        <button class="btn openbtn" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
 
-    <div class="welc">
-        <?php
-        $welcomeMessage = "Welcome, Guest";
 
-        if (isset($_SESSION['user_id'])) {
-            $role = $_SESSION['role'];
-            $username = $_SESSION['username'] ?? 'User';
-
-            $welcomeMessage = "Welcome, " . htmlspecialchars($username) . " (" . htmlspecialchars($role) . ")";
-        }
-
-        echo $welcomeMessage;
-        ?>
+        <a href="assets/ad-logout.php" class="ml-auto text-white">
+            <i class="fa fa-sign-out"></i> Log-out
+        </a>
     </div>
-
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
 </nav>
 
-<div class="row" style="justify-content: flex-start;     flex-wrap: nowrap;">
+<!-- Optional Row Container -->
+<div class="row" style="flex-wrap: nowrap;">
+<Style>
+ 
+</Style>

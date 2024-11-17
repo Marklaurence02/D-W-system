@@ -1,5 +1,5 @@
 <?php
- session_name("admin_session");
+ session_name("owner_session");
  session_start();
  include_once "../assets/config.php";  // Include your DB connection file
 

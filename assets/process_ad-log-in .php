@@ -1,9 +1,11 @@
 <?php
-// Include the database connection configuration
+// Start the session
+session_start();
+
+// Include the database connection
 include 'config.php';
 
-// Initialize message and error variables
-$message = '';
+// Initialize error variable
 $error = '';
 
 // Check if the form is submitted
@@ -37,61 +39,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Verify the entered password against the hashed password
             if (password_verify($password, $hashedPassword)) {
-                
-                // Set session name based on role
-                switch ($role) {
-                    case 'Owner':
-                        session_name("owner_session");
-                        break;
-                    case 'Admin':
-                        session_name("admin_session");
-                        break;
-                    case 'Staff':
-                        session_name("staff_session");
-                        break;
-                    default:
-                        $error = "Unknown role. Please contact support.";
-                        break;
-                }
-
-                // Start the session if not already started
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-
-                // Update the user's status to 'online'
-                $status_sql = "UPDATE users SET status = 'online' WHERE user_id = ?";
-                $status_stmt = $conn->prepare($status_sql);
-                $status_stmt->bind_param('i', $user_id);
-                $status_stmt->execute();
-                $status_stmt->close();
-
-                // Store user info in session
-                $_SESSION['email'] = $email;
-                $_SESSION['role'] = $role;
-                $_SESSION['username'] = $username; // Store username for welcome message
+                // Set session variables
                 $_SESSION['user_id'] = $user_id;
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
+                $_SESSION['email'] = $email;
 
-                // Log the login activity
-                $action_type = "Login";
-                $action_details = "$username logged in";
-                $log_sql = "INSERT INTO activity_logs (action_by, action_type, action_details) VALUES (?, ?, ?)";
-                $log_stmt = $conn->prepare($log_sql);
-                $log_stmt->bind_param('iss', $user_id, $action_type, $action_details);
-                $log_stmt->execute();
-                $log_stmt->close();
+                // Generate a session token
+                $session_token = bin2hex(random_bytes(32)); // Generate a secure session token
 
-                // Redirect based on role and ensure exit to prevent further script execution
+                // Store session in the sessions table
+                $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour')); // 1 hour session expiry
+                $sql = "INSERT INTO sessions (user_id, session_token, created_at, expires_at) VALUES (?, ?, NOW(), ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('iss', $user_id, $session_token, $expires_at);
+                $stmt->execute();
+                $_SESSION['session_token'] = $session_token;
+
+                // Redirect based on role
                 switch ($role) {
                     case 'Owner':
                         header('Location: Owner-panel.php');
-                        exit();
+                        break;
                     case 'Admin':
                         header('Location: Admin-panel.php');
-                        exit();
+                        break;
                     case 'Staff':
                         header('Location: Staff-panel.php');
-                        exit();
+                        break;
                     default:
                         $error = "Unknown role. Please contact support.";
                 }
@@ -101,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $error = "No user found with this email.";
         }
-      
     } else {
         $error = "Please fill in all the required fields.";
     }
@@ -112,7 +86,6 @@ $conn->close();
 
 // Display error message on the login page if it exists
 if (!empty($error)) {
-    // Optionally, you can redirect with an error message stored in the session
     $_SESSION['login_error'] = $error;
     header("Location: ad-sign-in.php");
     exit();

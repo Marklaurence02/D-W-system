@@ -1,47 +1,57 @@
 <?php
-include_once "../assets/config.php";  // Include the database connection
+include_once "../assets/config.php";
+
 session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-
-// Enable error reporting for debugging (you can remove this in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Check if the category ID is provided in the POST request
 if (isset($_POST['record'])) {
-    $categoryID = intval($_POST['record']);  // Sanitize the input
+    $categoryID = intval($_POST['record']);
 
-    // Prepare the SQL query to get category details
     $stmt = $conn->prepare("SELECT * FROM product_categories WHERE category_id = ?");
     $stmt->bind_param("i", $categoryID);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Check if the category is found
     if ($result->num_rows > 0) {
         $categoryData = $result->fetch_assoc();
         ?>
-        <div class="container p-5">
-            <h4>Edit Category Details</h4>
-            <form id="update-Category" onsubmit="updateCategory(event)" enctype="multipart/form-data">
-                <input type="hidden" class="form-control" name="category_id" id="category_id" value="<?= htmlspecialchars($categoryData['category_id']) ?>">
+        <form id="editCategoryForm">
+            <input type="hidden" name="category_id" value="<?= htmlspecialchars($categoryData['category_id']) ?>">
+            <div class="form-group">
+                <label for="category_name">Category Name:</label>
+                <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($categoryData['category_name']) ?>" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Category</button>
+        </form>
 
-                <div class="form-group">
-                    <label for="category_name">Category Name:</label>
-                    <input type="text" class="form-control" name="category_name" id="category_name" value="<?= htmlspecialchars($categoryData['category_name']) ?>" required>
-                </div>
+        <script>
+            $('#editCategoryForm').on('submit', function (event) {
+                event.preventDefault();
 
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Update Category</button>
-                </div>
-            </form>
-        </div>
+                const formData = $(this).serialize();
 
+                $.ajax({
+                    url: '../Ownerview/updatecatController.php',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message || 'Category updated successfully!');
+                            $('#editModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert(response.message || 'Failed to update category.');
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred.');
+                    }
+                });
+            });
+        </script>
         <?php
     } else {
         echo "<p>No category found with the given ID.</p>";

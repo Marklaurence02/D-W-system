@@ -14,7 +14,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
 
                 <!-- Table view for large screens and above -->
                 <div class="table-responsive d-none d-lg-block"> <!-- Hide on medium and smaller screens -->
-                <table id="example" class="display" width="100%" data-page-length="25" data-order="[[ 1, &quot;asc&quot; ]]">
+                <table id="example" class="display" width="100%" data-page-length="10" data-order="[[ 1, &quot;asc&quot; ]]">
         <thead>
             <tr>
                 <th>O.N.</th>

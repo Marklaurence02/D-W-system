@@ -326,16 +326,31 @@ function showOrders() {
 }
 
 
-// AJAX to change order status
 function ChangeOrderStatus(orderId, newStatus) {
     $.ajax({
-        url: "/Ocontrols/updateOrderStatus.php",  // Assuming this PHP file handles the status update
+        url: "/Ocontrols/updateOrderStatus.php",
         method: "POST",
         data: { record: orderId, new_status: newStatus },
-        success: function(data) {
-            if (data.trim() === "success") {
+        success: function(response) {
+            response = response.trim();
+            if (response === "success") {
                 alert('Order Status updated successfully');
-                refreshOrderList();  // Dynamically refresh the order list
+                
+                // Update the button text immediately
+                const dropdownButton = document.querySelector(`#order-status-button-${orderId}`);
+                if (dropdownButton) {
+                    dropdownButton.textContent = newStatus;
+                }
+
+                // Close the modal after successful update
+                $('#viewModal').modal('hide'); // Close the modal using the correct ID
+                
+                // Ensure the backdrop is hidden
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+
+                // Dynamically refresh the orders list
+                refreshOrderList();
             } else {
                 alert('Failed to update the order status');
             }
@@ -346,14 +361,21 @@ function ChangeOrderStatus(orderId, newStatus) {
     });
 }
 
-
-
-
 // Refresh order list dynamically without redirecting
 function refreshOrderList() {
-    updateContent('Ownerview/viewAllOrders.php', {}, '.allContent-section');
-
+    $.ajax({
+        url: 'Ownerview/viewAllOrders.php',  // Adjust the URL if needed
+        method: 'GET',
+        success: function(response) {
+            $('.allContent-section').html(response);  // Replace the content in the section
+        },
+        error: function() {
+            alert('Error refreshing the orders list');
+        }
+    });
 }
+
+
 
 
 

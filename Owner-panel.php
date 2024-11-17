@@ -41,11 +41,18 @@ include_once "assets/config.php"; // Database connection
     </style>
 </head>
 <body>
-    <?php
+<?php
         include "Header_nav/ownerHeader.php"; // Header for admin panel
-        include "Header_nav/own-sidebar.php"; // Sidebar for navigation
     ?>
 
+    <div class="d-flex" style="min-height: 100vh; overflow-x: hidden;">
+        <!-- Sidebar -->
+        <div id="mySidebar" class="flex-shrink-0">
+<?php
+        include "Header_nav/own-sidebar.php"; // Sidebar for navigation
+
+?>        
+</div>
     <div id="main-content" class="container-fluid allContent-section py-4 text-center ">
         <h1 class="text-center">Dashboard</h1>
         <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
@@ -186,12 +193,18 @@ include_once "assets/config.php"; // Database connection
     <script src="Js/sales_chart.js"></script>
     <script src="Js/Ownerpanel.js"></script>
     <script src="Js/navb.js"></script>
-    <script src="Js/viewmessage.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+
 
 </body>
 </html>
 
-    <script>
+<script>
+new DataTable('#example');
+
 fetch('../assets/fetch_data.php')
     .then(response => {
         if (!response.ok) {

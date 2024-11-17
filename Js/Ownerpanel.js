@@ -907,35 +907,8 @@ function showCategory() {
     });
 }
 
-// Add Category function
-function addCategory() {
-    var categoryName = document.getElementById('add_category_name').value.trim();  // Get the input value
 
-    // Validate the input for the category name
-    if (categoryName === '') {
-        alert('Category name is required.');
-        return;
-    }
 
-    // AJAX request to add category
-    $.ajax({
-        url: '/Ocontrols/addCatController.php',  // URL to your PHP controller that handles category addition
-        type: 'POST',
-        dataType: 'json',  // Expect JSON response
-        data: { category_name: categoryName },  // Send the category name to the server
-        success: function(response) {
-            if (response.success) {
-                $('#categoryModal').modal('hide');  // Hide the modal after successful addition
-                refreshCategoryList();  // Refresh the category list dynamically
-            } else {
-                alert(response.message || 'An error occurred while adding the category.');  // Display the error message
-            }
-        },
-        error: function(xhr, status, error) {
-            alert('An unexpected error occurred: ' + error);  // Handle server errors
-        }
-    });
-}
 
 
 // Load the edit form for a category
@@ -953,8 +926,49 @@ function categoryEditForm(id) {
         }
     });
 }
+// Add Category function
+function addCategory() {
+    var categoryName = document.getElementById('add_category_name').value.trim(); // Get the input value
 
-// Update category data without image handling
+    // Validate the input for the category name
+    if (categoryName === '') {
+        alert('Category name is required.');
+        return;
+    }
+
+    // AJAX request to add category
+    $.ajax({
+        url: '/Ocontrols/addCatController.php', // URL to your PHP controller
+        type: 'POST',
+        dataType: 'json', // Expect JSON response
+        data: { category_name: categoryName }, // Send the category name to the server
+        success: function(response) {
+            if (response.success) {
+                // Clear the input field
+                document.getElementById('add_category_name').value = '';
+
+                // Hide the modal after successful addition
+                $('#categoryModal').modal('hide');
+                $('.modal-backdrop').remove();  // Remove the backdrop
+                $('#categoryModal').data('bs.modal', null);  // Reset modal state
+
+                // Display a success message
+                alert('Category added successfully.');
+
+                // Refresh the category list dynamically
+                refreshCategoryList();
+            } else {
+                // Display the error message from the server
+                alert(response.message || 'An error occurred while adding the category.');
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('An unexpected error occurred: ' + error); // Handle server errors
+        }
+    });
+}
+
+// Update catesgory data without image handling
 function updateCategory(event) {
     event.preventDefault(); // Prevent default form submission
 
@@ -982,6 +996,9 @@ function updateCategory(event) {
                 // Handle success case
                 if (response.success) {
                     alert('Category updated successfully.');
+                    $('#editModal').modal('hide');  // Hide the modal
+                    $('.modal-backdrop').remove();  // Remove the backdrop
+                    $('#editModal').data('bs.modal', null);  // Reset modal state
                     showCategory();  // Call showCategory() to load the updated category list
                 } else {
                     // Handle error cases
@@ -999,6 +1016,7 @@ function updateCategory(event) {
         }
     });
 }
+
 
 
 // Delete Category function

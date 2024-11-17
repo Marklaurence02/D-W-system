@@ -43,7 +43,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
   <!-- Product List Table (Visible on Desktop) -->
   <div class="product-list d-none d-md-block">
-    <table class="table table-bordered">
+    <table id="categoriesTable" class="table table-bordered">
       <thead class="thead">
         <tr>
           <th class="text-center">S.N.</th>
@@ -200,3 +200,28 @@ if (session_status() === PHP_SESSION_NONE) {
 </div>
 
 <?php $conn->close(); ?>
+
+<script>
+  $(document).ready(function() {
+    $('#categoriesTable').DataTable({
+      "paging": true,
+      "searching": true,
+      "ordering": true
+    });
+  });
+
+  function filterItems() {
+    var filter = $('#filter_item_type').val();
+    if (filter === 'All') {
+      $(".product-row").show();
+    } else {
+      $(".product-row").each(function() {
+        if ($(this).data("item-type") === filter) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    }
+  }
+</script>

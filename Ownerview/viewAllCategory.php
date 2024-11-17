@@ -10,7 +10,9 @@ include_once "../assets/config.php"; // Include database connection
     <div class="row justify-content-center">
         <div class="col-12">
             <h2 class="text-center">Category Management</h2>
-
+            <button type="button" class="btn btn-secondary" style="height:40px" data-toggle="modal" data-target="#categoryModal">
+      Add Category
+    </button>
             <!-- Table for Categories -->
             <div class="table-responsive">
                 <table id="categoriesTable" class="table table-bordered" width="100%">
@@ -49,6 +51,32 @@ include_once "../assets/config.php"; // Include database connection
                         ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal for Adding Category -->
+<!-- Modal for Adding Category -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Category</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm" onsubmit="addCategory(); return false;">
+                    <div class="form-group">
+                        <label for="add_category_name">Category Name:</label>
+                        <input type="text" class="form-control" id="add_category_name" name="category_name" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-secondary" style="height:40px">Add Category</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal" style="height:40px">Close</button>
             </div>
         </div>
     </div>

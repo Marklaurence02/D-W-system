@@ -74,7 +74,7 @@ if (session_status() === PHP_SESSION_NONE) {
         ?>
       </td>
       <td class="text-center">
-        <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
+      <button class="btn btn-warning" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
       </td>
       <td class="text-center">
         <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
@@ -196,8 +196,34 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 </div>
 
+<!-- Edit Table Modal -->
+<div class="modal fade" id="editTableModal" tabindex="-1" role="dialog" aria-labelledby="editTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editTableModalLabel">Edit Table</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editTableContent">
+                <!-- The table form will be loaded here dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="updateTables(event)">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 </div>
+
+
+
 <script>
 $(document).ready(function () {
     // Initialize DataTable

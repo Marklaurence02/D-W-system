@@ -83,7 +83,7 @@ if (session_status() === PHP_SESSION_NONE) {
       <td class="text-center">&#8369;<?= htmlspecialchars($row["price"]) ?></td>
       <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
       <td class="text-center">
-        <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
+      <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
       </td>
       <td class="text-center">
         <button class="btn btn-danger btn-sm" onclick="itemDelete('<?= $row['product_id'] ?>')">Delete</button>
@@ -199,6 +199,28 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
   </div>
 </div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editModalLabel">Edit Product</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editProductContent">
+                <!-- Form content will be dynamically loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="updateItems(event)">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </div>
 

@@ -149,8 +149,6 @@ function addAdmin() {
 }
 
 
-// Function to show the edit form for Admin/Staff with a confirmation prompt and password verification
-// Function to show the edit form for Admin/Staff
 // Function to show the edit form for Admin/Staff
 function adminEditForm(userId) {
     // Confirmation prompt before loading the edit form
@@ -525,13 +523,19 @@ function showProductItems() {
 }
 
 // Load the edit form for a product
+// Load the edit form for a product
+// Load the edit form for a product inside the modal
 function itemEditForm(id) {
     $.ajax({
         url: "Ownerview/editItemForm.php",  // URL to load the edit form
         method: "POST",
         data: { record: id },  // Send the product ID
         success: function(data) {
-            $('.allContent-section').html(data);  // Load the form HTML into the section
+            // Load the form HTML into the modal body
+            $('#editProductContent').html(data);
+
+            // Show the modal after the content is loaded
+            $('#editModal').modal('show');
         },
         error: function() {
             alert("Error loading the form.");
@@ -539,47 +543,44 @@ function itemEditForm(id) {
     });
 }
 
-// update items
+// Update items
 function updateItems(event) {
     event.preventDefault(); // Prevent default form submission
 
-    var product_id = $('#product_id').val();
-    var product_name = $('#product_name').val();
-    var category_id = $('#category_id').val(); // category_id instead of item_type
-    var quantity = $('#quantity').val();
-    var price = $('#price').val();
-    var special_instructions = $('#special_instructions').val();
-    var product_image = $('#item_image')[0].files[0];
+    // Get the form element
+    const form = document.getElementById('update-Items');
 
-    if (!product_name || !category_id || !quantity || !price) {
-        alert('All fields except special instructions and image are required.');
-        return;
-    }
+    // Create a FormData object from the form
+    const formData = new FormData(form);
 
-    var fd = new FormData();
-    fd.append('product_id', product_id);
-    fd.append('product_name', product_name);
-    fd.append('category_id', category_id); // Pass category_id
-    fd.append('quantity', quantity);
-    fd.append('price', price);
-    fd.append('special_instructions', special_instructions);
+    // Get the product_id from the form and append it to the FormData object
+    const product_id = document.getElementById('product_id').value;
+    formData.append('product_id', product_id);
 
-    if (product_image) {
-        fd.append('item_image', product_image);
-    }
-
+    // Send the form data via AJAX
     $.ajax({
-        url: '/Ocontrols/updateItemController.php',
+        url: '/Ocontrols/updateItemController.php',  // The URL to your update handler
         method: 'POST',
-        data: fd,
-        processData: false,
-        contentType: false,
-        success: function (data) {
+        data: formData,
+        processData: false,  // Prevent jQuery from processing the data
+        contentType: false,  // Prevent jQuery from setting contentType (needed for FormData)
+        success: function(data) {
             try {
-                var response = JSON.parse(data); 
+                var response = JSON.parse(data);  // Parse the server response
                 if (response.status === 'success') {
                     alert('Product updated successfully.');
-                    refreshProductList(); 
+                    
+                    // Hide the modal after success
+                    $('#editModal').modal('hide');  // Bootstrap hides the modal
+
+                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+
+                    refreshProductList();  // Call your function to refresh the product list
+
+                    // Optional: Clear modal content (reset form) if necessary
+                    $('#editProductContent').html('');
                 } else {
                     alert('Error: ' + response.message);
                 }
@@ -588,12 +589,19 @@ function updateItems(event) {
                 console.error("Response:", data);
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error("Error: " + xhr.responseText);
             alert('Error updating the product item.');
         }
     });
 }
+
+
+
+
+
+
+
 
 
 // Function to refresh the product list without redirecting
@@ -711,7 +719,8 @@ function tableEditForm(id) {
         method: "POST",
         data: { record: id },  // Send the table ID
         success: function(data) {
-            $('.allContent-section').html(data);  // Load the form HTML into the section
+            $('#editTableContent').html(data);  // Load the form HTML into the modal body
+            $('#editTableModal').modal('show');  // Show the modal once the content is loaded
         },
         error: function() {
             alert("Error loading the form.");
@@ -765,6 +774,12 @@ function updateTables(event) {
                 // Handle success case
                 if (response.status === 'success') {
                     alert('Table updated successfully.');
+                    // Hide the modal after success
+                    $('#editTableModal').modal('hide');  // Bootstrap hides the modal
+
+                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
                     refreshUpdateTableList(); // Optionally refresh the table list or UI here
                 } else {
                     // Handle error cases

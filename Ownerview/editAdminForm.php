@@ -1,8 +1,7 @@
 <?php
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
+
     session_start();
-}include_once "../assets/config.php";  // Include your DB connection file
+include_once "../assets/config.php";  // Include your DB connection file
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {

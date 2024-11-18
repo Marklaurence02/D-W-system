@@ -27,9 +27,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
       <!-- Filter and Clear Buttons -->
       <div class="col-12 col-md-2 mb-2 mb-md-0">
-        <button type="button" class="btn btn-primary w-100" onclick="UfilterItems()">Filter</button>
-        <button type="button" class="btn btn-secondary w-100 mt-2 mt-md-0" onclick="clearFilters()">Clear</button>
-      </div>
+  <div class="d-flex justify-content-between">
+    <!-- Filter Button -->
+    <button type="button" class="btn btn-primary w-48" onclick="UfilterItems()">Filter</button>
+    <!-- Clear Button -->
+    <button type="button" class="btn btn-secondary w-48" onclick="clearFilters()">Clear</button>
+  </div>
+</div>
     </div>
   </form>
 

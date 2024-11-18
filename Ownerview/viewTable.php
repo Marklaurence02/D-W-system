@@ -27,70 +27,69 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 </div>
 
-
-
-
   <!-- Table List (Visible on Desktop) -->
-  <div class="table-list d-none d-md-block">
-    <table class="table table-bordered">
-      <thead class="thead-dark">
-        <tr>
-          <th class="text-center">S.N.</th>
-          <th class="text-center">Table Number</th>
-          <th class="text-center">Seating Capacity</th>
-          <th class="text-center">Area</th>
-          <th class="text-center">Views</th>
-          <th class="text-center" colspan="2">Action</th>
-        </tr>
-      </thead>
-      <tbody id="table_body">
-        <?php
-        include_once "../assets/config.php";
+  <div class="table-responsive">
+  <table id="tableData" class="table table-bordered">
+  <thead class="thead-dark">
+    <tr>
+      <th class="text-center">S.N.</th>
+      <th class="text-center">Table Number</th>
+      <th class="text-center">Seating Capacity</th>
+      <th class="text-center">Area</th>
+      <th class="text-center">Views</th>
+      <th class="text-center">Edit</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody id="table_body">
+    <?php
+    include_once "../assets/config.php";
 
-        // Fetch all tables and their images
-        $sql = "SELECT t.*, GROUP_CONCAT(i.image_path) AS images 
-                FROM tables t 
-                LEFT JOIN table_images i ON t.table_id = i.table_id 
-                GROUP BY t.table_id";
-        $result = $conn->query($sql);
-        $count = 1;
+    // Fetch all tables and their images
+    $sql = "SELECT t.*, GROUP_CONCAT(i.image_path) AS images 
+            FROM tables t 
+            LEFT JOIN table_images i ON t.table_id = i.table_id 
+            GROUP BY t.table_id";
+    $result = $conn->query($sql);
+    $count = 1;
 
-        if ($result->num_rows > 0) {
-          while ($row = $result->fetch_assoc()) {
-        ?>
-        <tr>
-          <td class="text-center"><?= $count ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["table_number"]) ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["seating_capacity"]) ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["area"]) ?></td>
-          <td class="text-center">
-            <?php
-              if ($row["images"]) {
-                $images = explode(',', $row["images"]);
-                foreach ($images as $image) {
-                  echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 50px; height: 50px; margin-right: 5px;'>";
-                }
-              } else {
-                echo "No Images";
-              }
-            ?>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
-          </td>
-        </tr>
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+    ?>
+    <tr>
+      <td class="text-center"><?= $count ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["table_number"]) ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["seating_capacity"]) ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["area"]) ?></td>
+      <td class="text-center">
         <?php
-            $count++;
+          if ($row["images"]) {
+            $images = explode(',', $row["images"]);
+            foreach ($images as $image) {
+              echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 50px; height: 50px; margin-right: 5px;'>";
+            }
+          } else {
+            echo "No Images";
           }
-        } else {
-          echo "<tr><td colspan='7' class='text-center'>No tables found</td></tr>";
-        }
         ?>
-      </tbody>
-    </table>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
+      </td>
+    </tr>
+    <?php
+        $count++;
+      }
+    } else {
+      echo "<tr><td colspan='7' class='text-center'>No tables found</td></tr>";
+    }
+    ?>
+  </tbody>
+</table>
+
   </div>
 
   <!-- Card View for Table List (Visible on Mobile) -->
@@ -199,3 +198,30 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
 </div>
+<script>
+$(document).ready(function () {
+    // Initialize DataTable
+    var table = $('#tableData').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        columnDefs: [
+            { orderable: false, targets: [4, 5, 6] } // Disable ordering for certain columns
+        ]
+    });
+
+    // Add event listener to the "Filter by Area" dropdown
+    $('#filter_area').on('change', function () {
+        var selectedValue = $(this).val();
+
+        if (selectedValue === 'All') {
+            // Show all rows when "All" is selected
+            table.column(3).search('').draw();
+        } else {
+            // Filter rows based on selected value
+            table.column(3).search(selectedValue).draw();
+        }
+    });
+});
+
+</script>

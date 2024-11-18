@@ -11,6 +11,8 @@ include_once "assets/config.php"; // Database connection
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/Opanel.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .card {
@@ -193,17 +195,18 @@ include_once "assets/config.php"; // Database connection
     <script src="Js/sales_chart.js"></script>
     <script src="Js/Ownerpanel.js"></script>
     <script src="Js/navb.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
-
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
 
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
 </body>
 </html>
 
 <script>
-new DataTable('#example');
 
 fetch('../assets/fetch_data.php')
     .then(response => {

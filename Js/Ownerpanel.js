@@ -525,29 +525,6 @@ function refreshTableList() {
 }
 
 
-
-
-// Filter tables by area (Indoor/Outdoor)
-function filterTables() {
-    var area = $('#filter_area').val();
-
-    $.ajax({
-        url: 'Ownerview/viewTables.php',
-        method: 'POST',
-        data: { area: area },
-        success: function(data) {
-            $('.table-list').html(data);  // Update table list with filtered data
-        },
-        error: function() {
-            alert("Error filtering tables.");
-        }
-    });
-}
-
-
-
-
-
 function showProductItems() {
     $.ajax({
         url: "Ownerview/viewAllProducts.php",

@@ -46,6 +46,9 @@ switch ($order_data['order_status']) {
     case 'In-Progress':
         $buttonClass = 'btn-info';
         break;
+        case 'paid in advance':
+            $buttonClass = 'btn-warning';
+            break;
     case 'Completed':
         $buttonClass = 'btn-success';
         break;
@@ -74,6 +77,7 @@ switch ($order_data['order_status']) {
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Pending')">Pending</a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'In-Progress')">In-Progress</a>
+                <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'paid in advance')">Paid in advance</a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Completed')">Completed</a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Canceled')">Canceled</a>
             </div>

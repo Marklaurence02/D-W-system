@@ -1,9 +1,8 @@
 <?php
 // Start the session with a custom session name if it's not already started
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
+
     session_start();
-}
+
 
 include_once "./assets/config.php"; // Include the DB connection file
 

@@ -1,3 +1,4 @@
+
 <div class="admin-table">
   <h2>Admin and Staff Management</h2>
 
@@ -11,58 +12,58 @@
 
   <!-- Admin/Staff List -->
   <div class="user-list">
-    <table class="table">
-        <thead>
-            <tr>
-                <th class="text-center">S.N.</th>
-                <th class="text-center">Full Name</th>
-                <th class="text-center">Username</th>
-                <th class="text-center">Role</th>
-                <th class="text-center">Contact Number</th>
-                <th class="text-center">Email</th>
-                <th class="text-center" colspan="2">Action</th>
-            </tr>
-        </thead>
-        <tbody id="user_table_body">
-            <!-- Admin/Staff rows will be dynamically updated here -->
-            <?php
-            include_once "../assets/config.php"; // Ensure this path is correct
+    <table id="userTable" class="table table-bordered">
+      <thead>
+        <tr>
+            <th class="text-center">S.N.</th>
+            <th class="text-center">Full Name</th>
+            <th class="text-center">Username</th>
+            <th class="text-center">Role</th>
+            <th class="text-center">Contact Number</th>
+            <th class="text-center">Email</th>
+            <th class="text-center" colspan="2">Action</th>
+        </tr>
+      </thead>
+      <tbody id="user_table_body">
+        <!-- Admin/Staff rows will be dynamically updated here -->
+        <?php
+        include_once "../assets/config.php"; // Ensure this path is correct
 
-            // Fetch all Admin/Staff members
-            $sql = "SELECT * FROM users WHERE role IN ('Admin', 'Staff')";
-            $result = $conn->query($sql);
-            $count = 1;
+        // Fetch all Admin/Staff members
+        $sql = "SELECT * FROM users WHERE role IN ('Admin', 'Staff')";
+        $result = $conn->query($sql);
+        $count = 1;
 
-            if ($result->num_rows > 0) {
-              while ($row = $result->fetch_assoc()) {
-            ?>
-            <tr class="user-row">
-              <td class="text-center"><?= $count ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["first_name"] . " " . $row["last_name"]) ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["username"]) ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["role"]) ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["contact_number"]) ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["email"]) ?></td>
-              <td class="text-center">
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+        ?>
+        <tr class="user-row">
+            <td class="text-center"><?= $count ?></td>
+            <td class="text-center"><?= htmlspecialchars($row["first_name"] . " " . $row["last_name"]) ?></td>
+            <td class="text-center"><?= htmlspecialchars($row["username"]) ?></td>
+            <td class="text-center"><?= htmlspecialchars($row["role"]) ?></td>
+            <td class="text-center"><?= htmlspecialchars($row["contact_number"]) ?></td>
+            <td class="text-center"><?= htmlspecialchars($row["email"]) ?></td>
+            <td class="text-center">
                 <button class="btn btn-primary" style="height:40px" onclick="adminEditForm('<?= $row['user_id'] ?>')">Edit</button>
-              </td>
-              <td class="text-center">
+            </td>
+            <td class="text-center">
                 <button class="btn btn-danger" style="height:40px" onclick="adminDelete('<?= $row['user_id'] ?>')">Delete</button>
-              </td>
-            </tr>
-            <?php
-                $count++;
-              }
-            } else {
-              echo "<tr><td colspan='8' class='text-center'>No Admin or Staff found</td></tr>";
+            </td>
+        </tr>
+        <?php
+            $count++;
             }
-            ?>
-        </tbody>
+        } else {
+            echo "<tr><td colspan='8' class='text-center'>No Admin or Staff found</td></tr>";
+        }
+        ?>
+      </tbody>
     </table>
   </div>
 
-<!-- Modal for Adding Admin/Staff -->
-<div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+  <!-- Modal for Adding Admin/Staff -->
+  <div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,12 +120,22 @@
             </div>
         </div>
     </div>
-</div>
-
-
+  </div>
 
 </div>
-<style>
 
-  
-</style>
+<!-- Initialize DataTable -->
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    $('#userTable').DataTable({
+        paging: true,        // Enable pagination
+        searching: true,     // Enable searching
+        ordering: true,      // Enable sorting
+        columnDefs: [
+            { orderable: false, targets: [6, 7] } // Disable sorting on Action columns
+        ],
+        responsive: true,    // Make the table responsive
+    });
+});
+</script>

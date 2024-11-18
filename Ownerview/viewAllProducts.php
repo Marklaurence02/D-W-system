@@ -43,61 +43,66 @@ if (session_status() === PHP_SESSION_NONE) {
 
   <!-- Product List Table (Visible on Desktop) -->
   <div class="product-list d-none d-md-block">
-    <table id="categoriesTable" class="table table-bordered">
-      <thead class="thead">
-        <tr>
-          <th class="text-center">S.N.</th>
-          <th class="text-center">Image</th>
-          <th class="text-center">Item Name</th>
-          <th class="text-center">Item Type</th>
-          <th class="text-center">Stock</th>
-          <th class="text-center">Unit Price</th>
-          <th class="text-center">Details</th>
-          <th class="text-center" colspan="2">Action</th>
-        </tr>
-      </thead>
-      <tbody id="product_table_body">
-        <?php
-        // Fetch product items and category names
-        $sql = "SELECT product_items.*, product_categories.category_name 
-                FROM product_items 
-                INNER JOIN product_categories ON product_items.category_id = product_categories.category_id";
-        $result = $conn->query($sql);
-        $count = 1;
+    <!-- Product Table -->
+<table id="productTable" class="table table-bordered display">
+  <thead class="thead">
+    <tr>
+      <th class="text-center">S.N.</th>
+      <th class="text-center">Image</th>
+      <th class="text-center">Item Name</th>
+      <th class="text-center">Item Type</th>
+      <th class="text-center">Stock</th>
+      <th class="text-center">Unit Price</th>
+      <th class="text-center">Details</th>
+      <th class="text-center">Edit</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody id="product_table_body">
+    <?php
+    // Fetch product items and category names
+    $sql = "SELECT product_items.*, product_categories.category_name 
+            FROM product_items 
+            INNER JOIN product_categories ON product_items.category_id = product_categories.category_id";
+    $result = $conn->query($sql);
+    $count = 1;
 
-        if ($result->num_rows > 0) {
-          while ($row = $result->fetch_assoc()) {
-        ?>
-        <tr class="product-row" data-item-type="<?= htmlspecialchars($row["category_name"]) ?>">
-          <td class="text-center"><?= $count ?></td>
-          <td class="text-center">
-            <?php if ($row["product_image"]): ?>
-              <img src="<?= htmlspecialchars($row["product_image"]) ?>" alt="<?= htmlspecialchars($row["product_name"]) ?>" style="width: 50px; height: 50px;">
-            <?php else: ?>
-              No Image
-            <?php endif; ?>
-          </td>
-          <td><?= htmlspecialchars($row["product_name"]) ?></td>
-          <td><?= htmlspecialchars($row["category_name"]) ?></td>
-          <td><?= htmlspecialchars($row["quantity"]) ?></td>
-          <td>&#8369;<?= htmlspecialchars($row["price"]) ?></td>
-          <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
-          <td class="text-center">
-            <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-danger btn-sm" onclick="itemDelete('<?= $row['product_id'] ?>')">Delete</button>
-          </td>
-        </tr>
-        <?php
-            $count++;
-          }
-        } else {
-          echo "<tr><td colspan='9' class='text-center'>No items found</td></tr>";
-        }
-        ?>
-      </tbody>
-    </table>
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+    ?>
+    <tr class="product-row" data-item-type="<?= htmlspecialchars($row["category_name"]) ?>">
+      <td class="text-center"><?= $count ?></td>
+      <td class="text-center">
+        <?php if ($row["product_image"]): ?>
+          <img src="<?= htmlspecialchars($row["product_image"]) ?>" alt="<?= htmlspecialchars($row["product_name"]) ?>" style="width: 50px; height: 50px;">
+        <?php else: ?>
+          No Image
+        <?php endif; ?>
+      </td>
+      <td><?= htmlspecialchars($row["product_name"]) ?></td>
+      <td><?= htmlspecialchars($row["category_name"]) ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["quantity"]) ?></td>
+      <td class="text-center">&#8369;<?= htmlspecialchars($row["price"]) ?></td>
+      <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
+      <td class="text-center">
+        <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-danger btn-sm" onclick="itemDelete('<?= $row['product_id'] ?>')">Delete</button>
+      </td>
+    </tr>
+    <?php
+          $count++;
+      }
+    } else {
+      echo "<tr><td colspan='9' class='text-center'>No items found</td></tr>";
+    }
+    ?>
+  </tbody>
+</table>
+
+<!-- Initialize DataTable -->
+
   </div>
 
   <!-- Product List Card View (Visible on Mobile) -->
@@ -201,27 +206,18 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <?php $conn->close(); ?>
 
-<script>
-  $(document).ready(function() {
-    $('#categoriesTable').DataTable({
-      "paging": true,
-      "searching": true,
-      "ordering": true
+
+ <script>
+  $(document).ready(function () {
+    $('#productTable').DataTable({
+      "responsive": true,
+      "lengthChange": true,
+      "pageLength": 10,
+      "ordering": true,
+      "columnDefs": [
+        { "orderable": false, "targets": [1, 7, 8] } // Disable ordering for Image, Edit, and Delete columns
+      ]
     });
   });
-
-  function filterItems() {
-    var filter = $('#filter_item_type').val();
-    if (filter === 'All') {
-      $(".product-row").show();
-    } else {
-      $(".product-row").each(function() {
-        if ($(this).data("item-type") === filter) {
-          $(this).show();
-        } else {
-          $(this).hide();
-        }
-      });
-    }
-  }
 </script>
+

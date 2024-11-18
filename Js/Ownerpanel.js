@@ -80,27 +80,30 @@ function closeModal() {
   
 
 
-  // Function to refresh the reservation list dynamically
-  function showReservation() {
-    fetch('/Ownerview/viewsReservation.php', {
-      method: 'POST',
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        document.querySelector('.allContent-section').innerHTML = data; // Update the table content dynamically
-      });
-  }
+// Function to refresh the reservation list dynamically using AJAX
+function showReservation() {
+    $.ajax({
+        url: 'Ownerview/viewsReservation.php',  // The PHP file to call
+        type: 'POST',                          // Send data using POST method
+        data: { record: 1 },                   // The data to send (record = 1)
+        success: function(data) {
+            // On success, update the content of the .allContent-section
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            // Handle errors if any
+            console.error('Error fetching reservation data:', error);
+        }
+    });
+}
+
   
 
-  function showActivity_log(searchLog = '', actionType = '', page = 1) {
+  function showActivity_log() {
     $.ajax({
         url: "Ownerview/viewActivity_log-.php",
         method: "POST",
-        data: { 
-            search: searchLog,
-            action: actionType,
-            page: page
-        },
+        data: { record: 1 },                   // The data to send (record = 1)
         success: function(data) {
             $('.allContent-section').html(data);
         },
@@ -110,27 +113,6 @@ function closeModal() {
         }
     });
 }
-
-// Click event for the search button
-$(document).on('click', '#searchLog', function() {
-    const searchValue = $('#searchInput').val().trim();
-    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
-    console.log("Search Button Clicked - Value:", searchValue, "Action:", actionType);
-    
-    showActivity_log(searchValue, actionType, 1); // Reset to page 1 when searching
-});
-
-// Pagination listener to handle clicks on pagination links
-$(document).on('click', '.page-link', function(e) {
-    e.preventDefault();
-    const page = $(this).data('page');
-    const searchValue = $('#searchInput').val().trim();
-    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
-    console.log("Pagination Clicked - Page:", page, "Search:", searchValue, "Action:", actionType);
-
-    showActivity_log(searchValue, actionType, page);
-});
-
 
 // Function to show Admin/Staff management view
 function showadmin() {
@@ -168,84 +150,85 @@ function addAdmin() {
 
 
 // Function to show the edit form for Admin/Staff with a confirmation prompt and password verification
+// Function to show the edit form for Admin/Staff
+// Function to show the edit form for Admin/Staff
 function adminEditForm(userId) {
     // Confirmation prompt before loading the edit form
     if (!confirm("Are you sure you want to edit this user's details?")) {
         alert("Edit canceled.");
-        return;  // Exit the function if user cancels
+        return; // Exit the function if the user cancels
     }
 
     // Password prompt for security confirmation
     const password = prompt("Please enter your password to confirm editing:");
     if (!password) {
         alert("Edit canceled. Password is required.");
-        return;  // Exit the function if no password is entered
+        return; // Exit the function if no password is entered
     }
 
     // Proceed to load the edit form if confirmed and password is provided
     $.ajax({
-        url: "Ownerview/editAdminForm.php",  // URL to load the edit form
+        url: "Ownerview/editAdminForm.php", // URL to load the edit form
         method: "POST",
-        dataType: "json",  // Expect JSON response from server
-        data: { user_id: userId, user_password: password },  // Send the user ID and password to the server
+        dataType: "json",
+        data: { user_id: userId, user_password: password },
         success: function(response) {
-            if (response.status === 'success') {
-                console.log("Edit form loaded successfully.");  // Log for debugging
-                $('.allContent-section').html(response.form_html);  // Load the edit form HTML into the section
+            if (response.status === "success") {
+                // Load the form HTML into the modal container
+                $("#editAdminFormContainer").html(response.form_html);
+                // Show the modal
+                $("#editAdminModal").modal("show");
             } else {
-                // Handle error cases (incorrect password, etc.)
-                alert(response.message);  // Show error message from server response
+                // Display the error message from the server response
+                alert(response.message);
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error loading the form:", status, error);  // Log error for debugging
-            alert("Error loading the form. Please try again.");  // Show error alert if form loading fails
+            console.error("Error loading the form:", status, error); // Log the error
+            alert("Error loading the form. Please try again."); // Show an alert for the error
         }
     });
 }
 
-
-// Function to update Admin/Staff
 function updateadmin(userId) {
-    // Collect form data from the form fields
-    const formData = {
-        user_id: userId,
-        first_name: $('#first_name').val(),
-        middle_initial: $('#middle_initial').val(),
-        last_name: $('#last_name').val(),
-        suffix: $('#suffix').val(),
-        username: $('#username').val(),
-        role: $('#role').val(),
-        contact_number: $('#contact_number').val(),
-        email: $('#email').val(),
-        address: $('#address').val(),
-        zip_code: $('#zip_code').val()
-    };
+    // Get the form element
+    const form = document.getElementById('editAdminForm');
 
-    // Log the form data to ensure it's correct (optional for debugging)
-    console.log("Form data being sent:", formData);
+    // Create a FormData object from the form
+    const formData = new FormData(form);
 
-    // Send the form data via AJAX to updateAdmin.php
-    $.ajax({
-        url: "/Ocontrols/updateAdmin.php",  // The URL of the PHP script to update admin/staff
-        method: "POST",
-        data: formData,  // Form data to be sent
-        dataType: 'json',  // Expect JSON response
-        success: function(response) {
-            console.log("Response from server:", response);  // Log response for debugging
+    // Add the user ID to the FormData object
+    formData.append('user_id', userId);
 
-            if (response.status === 'success') {
-                alert(response.message);  // Show success message
-                showadmin();  // Call the function to refresh the admin list
-            } else {
-                // Show error message returned by the server
-                alert('Error: ' + response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating the user:", status, error);  // Log error for debugging
-            alert("Error updating the user. Please try again.");  // Show error alert
+    // Use the Fetch API to send the form data to the server
+    fetch('/Ocontrols/updateAdmin.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // Ensure the server responds with a valid status
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Network error: ${response.status} - ${text}`);
+            });
         }
+        return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+        // Handle the server's JSON response
+        if (data.status === 'success') {
+            alert(data.message); // Show success message from the server
+            // Optionally refresh the UI
+            $("#editAdminModal").modal("hide");
+        } else {
+            // Handle server error messages
+            alert('Error updating user: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        // Log and display any errors that occurred
+        console.error('Error during update operation:', error);
+        alert('An error occurred while updating the user. Please check your network or try again.');
     });
 }
 
@@ -523,6 +506,8 @@ function refreshTableList() {
     updateContent('Ownerview/viewTable.php', {}, '.allContent-section');
 
 }
+
+
 
 
 function showProductItems() {

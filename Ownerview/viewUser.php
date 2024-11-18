@@ -1,45 +1,10 @@
-<?php
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
+
 <div>
-  <h2>All Customers</h2>
+  <h2>All General Users Report</h2>
 
-  <!-- Search and Date Filter Form -->
-  <form id="filterForm" class="mb-3">
-    <div class="row">
-      <!-- Search Input -->
-      <div class="col-12 col-md-4 mb-2 mb-md-0">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by username, email, or contact number">
-      </div>
-      
-      <!-- Start Date -->
-      <div class="col-12 col-md-3 mb-2 mb-md-0">
-        <input type="date" id="startDate" class="form-control" placeholder="Start Date">
-      </div>
-
-      <!-- End Date -->
-      <div class="col-12 col-md-3 mb-2 mb-md-0">
-        <input type="date" id="endDate" class="form-control" placeholder="End Date">
-      </div>
-
-      <!-- Filter and Clear Buttons -->
-      <div class="col-12 col-md-2 mb-2 mb-md-0">
-  <div class="d-flex justify-content-between">
-    <!-- Filter Button -->
-    <button type="button" class="btn btn-primary w-48" onclick="UfilterItems()">Filter</button>
-    <!-- Clear Button -->
-    <button type="button" class="btn btn-secondary w-48" onclick="clearFilters()">Clear</button>
-  </div>
-</div>
-    </div>
-  </form>
-
-  <!-- Table for displaying users -->
+  <!-- Users Table -->
   <div class="table-responsive">
-    <table class="table table-bordered">
+    <table id="generalUsersTable" class="table table-bordered">
       <thead>
         <tr>
           <th class="text-center">S.N.</th>
@@ -49,9 +14,59 @@ if (session_status() === PHP_SESSION_NONE) {
           <th class="text-center">Joining Date</th>
         </tr>
       </thead>
-      <tbody id="usersTableBody">
-        <!-- Table rows will be populated here dynamically via AJAX -->
-      </tbody>
     </table>
   </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('#generalUsersTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/Ocontrols/loadAllUsers.php',
+            type: 'POST',
+        },
+        columns: [
+            { data: 'sn', className: 'text-center', orderable: false },
+            { data: 'username', className: 'text-center' },
+            { data: 'email', className: 'text-center' },
+            { data: 'contact_number', className: 'text-center' },
+            { data: 'created_at', className: 'text-center' }
+        ],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[4, 'desc']],
+        dom: 'Bfrtip', // Add buttons to the table
+        buttons: [
+            {
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-info'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Export to Excel',
+                className: 'btn btn-success'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'Generate PDF',
+                className: 'btn btn-danger',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                title: 'General Users Report'
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'btn btn-warning',
+                title: 'All General Users Report',
+                customize: function (win) {
+                    $(win.document.body).css('font-size', '10pt')
+                        .prepend('<h3>All General Users</h3>');
+                }
+            }
+        ]
+    });
+});
+</script>

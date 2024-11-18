@@ -182,7 +182,42 @@ include_once "assets/config.php"; // Database connection
                         </ul>
                     </div>
                 </div>
+                
+                <!-- Popular Reserved Tables -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <h5 class="card-title">Popular Reserved Tables</h5>
+            <ul class="list-group">
+                <?php
+                    $sql = "
+                        SELECT tables.table_number, COUNT(reservations.table_id) AS reservation_count, 
+                               MIN(table_images.image_path) AS image_path
+                        FROM reservations
+                        JOIN tables ON reservations.table_id = tables.table_id
+                        LEFT JOIN table_images ON tables.table_id = table_images.table_id
+                        WHERE reservations.status IN ('Complete', 'Paid')
+                        GROUP BY tables.table_number
+                        ORDER BY reservation_count DESC
+                        LIMIT 5
+                    ";
+                    $result = $conn->query($sql);
+                    if ($result) {
+                        while ($row = $result->fetch_assoc()) {
+                            $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
+                            echo "<li class='list-group-item d-flex align-items-center'>
+                                    <img src='$imagePath' alt='Table Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
+                                    Table #" . htmlspecialchars($row['table_number']) . " - " . $row['reservation_count'] . " reservations
+                                  </li>";
+                        }
+                    }
+                ?>
+            </ul>
+        </div>
+    </div>
+</div>
             </div>
+
+            
         </div>
     </div>
     </div>
@@ -203,6 +238,21 @@ include_once "assets/config.php"; // Database connection
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
+
+<!-- generate report -->
+ <!-- Include jQuery -->
+
+
+
+
+<!-- Include DataTables Buttons extension CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 </body>
 </html>
 

@@ -47,7 +47,6 @@ if (session_status() === PHP_SESSION_NONE) {
 <table id="productTable" class="table table-bordered display">
   <thead class="thead">
     <tr>
-      <th class="text-center">S.N.</th>
       <th class="text-center">Image</th>
       <th class="text-center">Item Name</th>
       <th class="text-center">Item Type</th>
@@ -71,7 +70,6 @@ if (session_status() === PHP_SESSION_NONE) {
       while ($row = $result->fetch_assoc()) {
     ?>
     <tr class="product-row" data-item-type="<?= htmlspecialchars($row["category_name"]) ?>">
-      <td class="text-center"><?= $count ?></td>
       <td class="text-center">
         <?php if ($row["product_image"]): ?>
           <img src="<?= htmlspecialchars($row["product_image"]) ?>" alt="<?= htmlspecialchars($row["product_name"]) ?>" style="width: 50px; height: 50px;">
@@ -208,16 +206,42 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
  <script>
-  $(document).ready(function () {
+$(document).ready(function () {
     $('#productTable').DataTable({
-      "responsive": true,
-      "lengthChange": true,
-      "pageLength": 10,
-      "ordering": true,
-      "columnDefs": [
-        { "orderable": false, "targets": [1, 7, 8] } // Disable ordering for Image, Edit, and Delete columns
-      ]
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Product Items Report',
+                text: 'Export to Excel'
+            },
+            {
+                extend: 'csvHtml5',
+                title: 'Product Items Report',
+                text: 'Export to CSV'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Product Items Report',
+                text: 'Export to PDF',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                title: 'Product Items Report',
+                text: 'Print Report'
+            }
+        ],
+        responsive: true,
+        lengthChange: true,
+        pageLength: 10,
+        ordering: true,
+        columnDefs: [
+            { orderable: true, targets: [0, 6, 7] } // Disable ordering for Image, Edit, and Delete columns
+        ]
     });
-  });
+});
+
 </script>
 

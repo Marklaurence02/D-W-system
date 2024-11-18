@@ -1,4 +1,3 @@
-
 <div class="admin-table">
   <h2>Admin and Staff Management</h2>
 
@@ -12,8 +11,8 @@
 
   <!-- Admin/Staff List -->
   <div class="user-list">
-    <table id="userTable" class="table table-bordered">
-      <thead>
+  <table id="userTable" class="table">
+    <thead>
         <tr>
             <th class="text-center">S.N.</th>
             <th class="text-center">Full Name</th>
@@ -23,8 +22,8 @@
             <th class="text-center">Email</th>
             <th class="text-center" colspan="2">Action</th>
         </tr>
-      </thead>
-      <tbody id="user_table_body">
+    </thead>
+    <tbody id="user_table_body">
         <!-- Admin/Staff rows will be dynamically updated here -->
         <?php
         include_once "../assets/config.php"; // Ensure this path is correct
@@ -58,12 +57,14 @@
             echo "<tr><td colspan='8' class='text-center'>No Admin or Staff found</td></tr>";
         }
         ?>
-      </tbody>
-    </table>
+    </tbody>
+</table>
+
+
   </div>
 
-  <!-- Modal for Adding Admin/Staff -->
-  <div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+<!-- Modal for Adding Admin/Staff -->
+<div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -120,22 +121,61 @@
             </div>
         </div>
     </div>
-  </div>
-
 </div>
 
-<!-- Initialize DataTable -->
+
+ <!-- Modal for Editing Admin/Staff -->
+<!-- Modal for Editing Admin/Staff -->
+<div class="modal fade" id="editAdminModal" role="dialog" tabindex="-1" aria-labelledby="editAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editAdminModalLabel">Edit Admin/Staff</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editAdminFormContainer">
+                <!-- The edit form will be loaded here via AJAX -->
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal" style="height: 50px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+</div>
 <script>
 $(document).ready(function() {
-    // Initialize DataTable
+    // Initialize DataTable with additional options for better functionality
     $('#userTable').DataTable({
-        paging: true,        // Enable pagination
-        searching: true,     // Enable searching
-        ordering: true,      // Enable sorting
+        paging: true,                  // Enable pagination
+        searching: true,               // Enable searching
+        ordering: true,                // Enable sorting
+        responsive: true,              // Make the table responsive
+        autoWidth: false,              // Disable automatic column width adjustments for better layout
         columnDefs: [
-            { orderable: false, targets: [6, 7] } // Disable sorting on Action columns
+            { orderable: false, targets: [6, 7] } // Disable ordering for Action columns
         ],
-        responsive: true,    // Make the table responsive
+        pageLength: 10,                // Set the default number of rows per page
+        lengthMenu: [5, 10, 25, 50],   // Options for rows per page dropdown
+        language: {
+            search: "_INPUT_",         // Customize the search input placeholder
+            searchPlaceholder: "Search admins or staff...",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            infoEmpty: "No entries available",
+            infoFiltered: "(filtered from _MAX_ total entries)",
+            paginate: {
+                first: "<<",
+                last: ">>",
+                next: ">",
+                previous: "<"
+            }
+        }
     });
 });
 </script>

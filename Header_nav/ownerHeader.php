@@ -99,7 +99,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 125px;
+    height: 80px;
 }
 
 .bg-orange {

@@ -70,7 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
         <h2>Edit Admin/Staff</h2>
         <p>Editing as: <strong><?= htmlspecialchars($username); ?></strong> (Role: <?= htmlspecialchars($role); ?>)</p>
 
-        <form id="editAdminForm" onsubmit="updateadmin(<?= $user['user_id']; ?>); return false;">
+        <form id="editAdminForm" onsubmit="updateadmin(<?= $user['user_id']; ?>); return false;" class="container">
+    <div class="row">
+        <!-- First Column -->
+        <div class="col-md-6">
             <div class="form-group">
                 <label for="first_name">First Name:</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" value="<?= htmlspecialchars($user['first_name']); ?>" required>
@@ -82,14 +85,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
             </div>
 
             <div class="form-group">
-                <label for="last_name">Last Name:</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" value="<?= htmlspecialchars($user['last_name']); ?>" required>
-            </div>
-
-
-            <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" class="form-control" id="username" name="username" value="<?= htmlspecialchars($user['username']); ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact_number">Contact Number:</label>
+                <input type="text" class="form-control" id="contact_number" name="contact_number" value="<?= htmlspecialchars($user['contact_number']); ?>" required pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control" id="address" name="address" value="<?= htmlspecialchars($user['address']); ?>">
+            </div>
+        </div>
+
+        <!-- Second Column -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="<?= htmlspecialchars($user['last_name']); ?>" required>
             </div>
 
             <div class="form-group">
@@ -101,24 +116,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
             </div>
 
             <div class="form-group">
-                <label for="contact_number">Contact Number:</label>
-                <input type="text" class="form-control" id="contact_number" name="contact_number" value="<?= htmlspecialchars($user['contact_number']); ?>" required pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
-            </div>
-
-            <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email']); ?>" required>
             </div>
 
             <div class="form-group">
-                <label for="address">Address:</label>
-                <input type="text" class="form-control" id="address" name="address" value="<?= htmlspecialchars($user['address']); ?>">
+                <label for="zip_code">ZIP Code:</label>
+                <input type="text" class="form-control" id="zip_code" name="zip_code" value="<?= htmlspecialchars($user['zip_code']); ?>" pattern="\d{5}" title="ZIP code must be exactly 5 digits.">
             </div>
 
+            <!-- Hidden input for user ID -->
+            <input type="hidden" id="user_id" name="user_id" value="<?= $user['user_id']; ?>">
+        </div>
+    </div>
+
+    <div class="form-group text-center mt-4">
+        <button type="submit" class="btn btn-primary">Update Admin/Staff</button>
+    </div>
+</form>
 
 
-            <button type="submit" class="btn btn-primary">Update Admin/Staff</button>
-        </form>
     </div>
     <?php
     $form_html = ob_get_clean();

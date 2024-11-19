@@ -732,12 +732,15 @@ function tableEditForm(id) {
 function updateTables(event) {
     event.preventDefault(); // Prevent default form submission
 
-    // Get the values from the form fields
-    var table_id = document.getElementById('table_id').value;
-    var table_number = document.getElementById('table_number').value;
-    var seating_capacity = document.getElementById('seating_capacity').value;
-    var area = document.getElementById('area').value;
-    var is_available = document.getElementById('is_available').value;
+    // Get the form element
+    const form = document.getElementById('update-Table'); // Ensure this matches the form's ID
+
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // Get the product_id from the form and append it to the FormData object
+    const product_id = document.getElementById('table_id').value;
+    formData.append('table_id', product_id);
 
     // Collect file inputs for different views
     var back_view = document.getElementById('back_view').files[0];
@@ -745,42 +748,37 @@ function updateTables(event) {
     var right_view = document.getElementById('right_view').files[0];
     var front_view = document.getElementById('front_view').files[0];
 
-    // Create FormData object to handle file uploads and form fields
-    var fd = new FormData();
-    fd.append('table_id', table_id);
-    fd.append('table_number', table_number);
-    fd.append('seating_capacity', seating_capacity);
-    fd.append('area', area);
-    fd.append('is_available', is_available);
-
-    // Append the image files if they are uploaded
-    if (back_view) fd.append('new_image_back_view', back_view);
-    if (left_view) fd.append('new_image_left_view', left_view);
-    if (right_view) fd.append('new_image_right_view', right_view);
-    if (front_view) fd.append('new_image_front_view', front_view);
+    // Append the image files to FormData if they are uploaded
+    if (back_view) formData.append('new_image_back_view', back_view);
+    if (left_view) formData.append('new_image_left_view', left_view);
+    if (right_view) formData.append('new_image_right_view', right_view);
+    if (front_view) formData.append('new_image_front_view', front_view);
 
     // Send the AJAX request to update the table
     $.ajax({
         url: '/Ocontrols/updateTableController.php',
         type: 'POST',
-        data: fd,
+        data: formData,
         processData: false,
         contentType: false,
         success: function (data) {
             try {
                 // Parse the response
                 var response = JSON.parse(data);
-                
+
                 // Handle success case
                 if (response.status === 'success') {
                     alert('Table updated successfully.');
+
                     // Hide the modal after success
                     $('#editTableModal').modal('hide');  // Bootstrap hides the modal
 
                     // Manually remove the modal backdrop and close classes to prevent the grey overlay
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
-                    refreshUpdateTableList(); // Optionally refresh the table list or UI here
+
+                    // Optionally refresh the table list or UI here
+                    refreshUpdateTableList(); 
                 } else {
                     // Handle error cases
                     alert('Error: ' + response.message);
@@ -797,6 +795,7 @@ function updateTables(event) {
         }
     });
 }
+
 
 
 // Function to refresh the table list

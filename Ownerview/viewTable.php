@@ -29,7 +29,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
   <!-- Table List (Visible on Desktop) -->
   <div class="table-responsive">
-  <table id="tableData" class="table table-bordered">
+  <table id="tableData" class="display nowrap" style="width:100%">
   <thead class="thead-dark">
     <tr>
       <th class="text-center">S.N.</th>
@@ -226,28 +226,52 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <script>
 $(document).ready(function () {
-    // Initialize DataTable
+    // Initialize DataTable with export buttons
     var table = $('#tableData').DataTable({
-        paging: true,
-        searching: true,
+        dom: 'Bfrtip', // Elements to include: Buttons, Filtering, Table, Pagination
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Product Items Report',
+                text: 'Export to Excel'
+            },
+            {
+                extend: 'csvHtml5',
+                title: 'Product Items Report',
+                text: 'Export to CSV'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Product Items Report',
+                text: 'Export to PDF',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                title: 'Product Items Report',
+                text: 'Print Report'
+            }
+        ],
+        responsive: true,
+        lengthChange: true,
+        pageLength: 10,
         ordering: true,
         columnDefs: [
             { orderable: false, targets: [4, 5, 6] } // Disable ordering for certain columns
         ]
     });
 
-    // Add event listener to the "Filter by Area" dropdown
-    $('#filter_area').on('change', function () {
+    // Filter by Item Type
+    $('#filter_item_type').on('change', function () {
         var selectedValue = $(this).val();
-
         if (selectedValue === 'All') {
-            // Show all rows when "All" is selected
-            table.column(3).search('').draw();
+            table.column(2).search('').draw();
         } else {
-            // Filter rows based on selected value
-            table.column(3).search(selectedValue).draw();
+            table.column(2).search(selectedValue).draw();
         }
     });
 });
+
 
 </script>

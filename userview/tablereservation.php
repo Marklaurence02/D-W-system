@@ -30,6 +30,11 @@ function getTableImages($conn, $tableId) {
 ?>
 <div class="container p-5"> 
     <h4 class="text-center">Reserve a Table</h4>
+    <div class="menu_nav text-center mb-3">
+    <button class="menu-nav" id="indoorButton">Indoor</button>
+    <button class="menu-nav" id="outdoorButton">Outdoor</button>
+</div>
+
     <h1 class="text-center">Choose Your Preferred Table!</h1>
 
     <!-- Table Selection Section -->
@@ -211,9 +216,33 @@ function loadAvailableTimes() {
                     }
                 });
 
-                // Filter available times
-                const availableTimes = allTimes.filter(time => !unavailableSet.has(time));
+                // Get the current date and time
+                const currentDate = new Date();
+                const currentDateString = currentDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                const currentTimeString = currentDate.toTimeString().split(' ')[0]; // Get time in HH:MM:SS
 
+                // If the selected date is in the past, remove all times
+                if (date < currentDateString) {
+                    timeSelect.innerHTML = '<option value="">Selected date is in the past</option>';
+                    return; // Exit the function if the date is in the past
+                }
+
+                // Filter available times
+                const availableTimes = allTimes.filter(time => {
+                    // If the selected date is today, exclude past times
+                    if (date === currentDateString) {
+                        const [hour, minute] = time.split(':').map(Number);
+                        const time24String = `${hour}:${minute}`;
+                        
+                        // Compare the time to the current time
+                        if (time24String < currentTimeString) {
+                            return false; // Exclude past times
+                        }
+                    }
+                    return !unavailableSet.has(time); // Exclude unavailable times
+                });
+
+                // Display available times
                 if (availableTimes.length > 0) {
                     availableTimes.forEach(time24 => {
                         const [hour, minute] = time24.split(':');
@@ -301,6 +330,63 @@ function openReservationForm(tableId) {
 
     // Auto-hide the modal after 3 seconds
     setTimeout(() => $('#tableAlertModal').modal('hide'), 3000);
+}
+
+// filter
+let selectedArea = null; // Variable to store the selected area (Indoor/Outdoor)
+
+document.addEventListener('DOMContentLoaded', function() {
+    showAllTables(); // Default: Show all tables
+});
+
+// Add event listeners to buttons
+document.getElementById('indoorButton').addEventListener('click', function() {
+    filterTables('Indoor', this);
+});
+
+document.getElementById('outdoorButton').addEventListener('click', function() {
+    filterTables('Outdoor', this);
+});
+
+document.getElementById('showAllButton').addEventListener('click', function() {
+    filterTables(null, this); // Show all tables
+});
+
+// Function to toggle active class and filter tables based on selected area
+function filterTables(area, button) {
+    const tables = document.querySelectorAll('.table-item');
+    const noTablesMessage = document.getElementById('noTablesMessage');
+    const buttons = document.querySelectorAll('.menu-nav');
+    
+    // Toggle the active state of the button
+    if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        selectedArea = null; // Reset the filter to show all tables
+    } else {
+        buttons.forEach(btn => btn.classList.remove('active')); // Remove active from all buttons
+        button.classList.add('active'); // Add active to the clicked button
+        selectedArea = area; // Set selected area
+    }
+
+    let hasVisibleTables = false;
+
+    // Show or hide tables based on selected area (Indoor/Outdoor)
+    tables.forEach(table => {
+        const tableArea = table.getAttribute('data-area');
+        if (selectedArea === null || tableArea === selectedArea) {
+            table.style.display = 'block';
+            hasVisibleTables = true; // At least one table is visible
+        } else {
+            table.style.display = 'none';
+        }
+    });
+
+    // Show or hide the "No Tables Available" message
+    if (hasVisibleTables) {
+        noTablesMessage.style.display = 'none';
+    } else {
+        noTablesMessage.style.display = 'block';
+    }
 }
 
 

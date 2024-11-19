@@ -1,3 +1,6 @@
+
+
+
 function ordertable() {  
     $.ajax({
         url: "userview/ordertable.php",

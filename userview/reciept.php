@@ -1,6 +1,6 @@
 <?php
 session_name("user_session");
-session_start(); // Start the session at the beginning of the script
+session_start();
 
 include '../assets/config.php'; // Include your database configuration file
 
@@ -10,19 +10,34 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Get the current date for displaying today's receipts
 $current_date = date('Y-m-d');
 $user_id = $_SESSION['user_id']; // Get the user ID from the session
 
-// Fetch all orders and their related reservations for the logged-in user, grouped by date
 $query_orders = "
-    SELECT o.*, DATE(o.order_time) as order_date, r.reservation_date, r.table_id, r.status as reservation_status, r.custom_note, t.table_number
+    SELECT o.*, 
+           DATE(o.order_time) AS order_date, 
+           r.reservation_date, 
+           r.table_id, 
+           r.status AS reservation_status, 
+           r.custom_note, 
+           t.table_number, 
+           re.receipt_id,
+           re.payment_method, 
+           ri.product_id, 
+           ri.quantity, 
+           ri.item_total_price, 
+           pi.product_name, 
+           pi.price AS product_price
     FROM orders o
     LEFT JOIN reservations r ON o.reservation_id = r.reservation_id
     LEFT JOIN tables t ON r.table_id = t.table_id
+    LEFT JOIN receipts re ON o.order_id = re.order_id
+    LEFT JOIN receipt_items ri ON re.receipt_id = ri.receipt_id
+    LEFT JOIN product_items pi ON ri.product_id = pi.product_id
     WHERE o.user_id = ? AND o.status != 'Canceled'
     ORDER BY DATE(o.order_time) DESC, o.order_time DESC
 ";
+
 $stmt_orders = $conn->prepare($query_orders);
 $stmt_orders->bind_param('i', $user_id);
 $stmt_orders->execute();
@@ -30,28 +45,59 @@ $orders_result = $stmt_orders->get_result();
 $orders = $orders_result->fetch_all(MYSQLI_ASSOC);
 $stmt_orders->close();
 
-// Group orders by date
-$orders_grouped_by_date = [];
+// Group orders by receipt_id and reservation_id
+$orders_grouped = [];
 foreach ($orders as $order) {
-    $order_date = $order['order_date'];
-    $orders_grouped_by_date[$order_date][] = $order;
+    $receipt_id = $order['receipt_id'];
+
+    if (!isset($orders_grouped[$receipt_id])) {
+        $orders_grouped[$receipt_id] = [
+            'reservation_id' => $order['reservation_id'],
+            'order_date' => $order['order_date'],
+            'reservation_date' => $order['reservation_date'],
+            'table_number' => $order['table_number'],
+            'reservation_status' => $order['reservation_status'],
+            'custom_note' => $order['custom_note'],
+            'payment_method' => $order['payment_method'],
+            'products' => []
+        ];
+    }
+
+    $orders_grouped[$receipt_id]['products'][] = [
+        'product_name' => $order['product_name'],
+        'quantity' => $order['quantity'],
+        'item_total_price' => $order['item_total_price'],
+        'product_price' => $order['product_price'],
+    ];
 }
 ?>
 
 <div class="container py-4">
     <h2>Receipts</h2>
-    <?php if ($orders_grouped_by_date): ?>
-        <?php foreach ($orders_grouped_by_date as $order_date => $orders): ?>
-            <h3 class="text-success"><?= date('l, F j, Y', strtotime($order_date)); ?></h3>
+    <?php if ($orders_grouped): ?>
+        <?php 
+        // Group orders by their date
+        $orders_by_date = [];
+        foreach ($orders_grouped as $receipt_id => $order) {
+            $order_date = date('Y-m-d', strtotime($order['order_date'])); // Get the date in Y-m-d format
+            if (!isset($orders_by_date[$order_date])) {
+                $orders_by_date[$order_date] = [];
+            }
+            $orders_by_date[$order_date][] = ['receipt_id' => $receipt_id, 'order' => $order];
+        }
+
+        // Loop through each date and display orders
+        foreach ($orders_by_date as $date => $orders): ?>
+            <h3 class="text-success"><?= date('l, F j, Y', strtotime($date)); ?></h3>
             <?php foreach ($orders as $order): ?>
-                <div class="card mb-2" onclick="showOrderDetails(<?= $order['order_id']; ?>)">
+                <div class="card mb-2" onclick="showOrderDetails(this)" data-receipt='<?= json_encode($order['order']); ?>'>
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="mb-0"><strong>&#x20B1;<?= htmlspecialchars(number_format($order['total_amount'], 2)); ?></strong></p>
-                            <small><?= date('g:i A', strtotime($order['order_time'])); ?></small>
+                            <p class="mb-0"><strong>&#x20B1;<?= htmlspecialchars(number_format(array_sum(array_column($order['order']['products'], 'item_total_price')), 2)); ?></strong></p>
+                            <small><?= date('g:i A', strtotime($order['order']['order_date'])); ?></small>
                         </div>
                         <div>
-                            <small class="text-muted">#<?= htmlspecialchars($order['order_id']); ?></small>
+                            <small class="text-muted">#<?= htmlspecialchars($order['receipt_id']); ?></small>
                         </div>
                     </div>
                 </div>
@@ -61,6 +107,7 @@ foreach ($orders as $order) {
         <p>No receipts found.</p>
     <?php endif; ?>
 </div>
+
 
 <!-- Receipt Modal -->
 <div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel" aria-hidden="true">
@@ -88,8 +135,7 @@ foreach ($orders as $order) {
                 </div>
             </div>
             <div class="modal-footer">
-                <!-- Cancel Button -->
-                <button type="button" class="btn btn-danger btn-sm" onclick="cancelReservation()">Cancel Reservation</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="addOrder()">Add Order</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Go Back</button>
             </div>
         </div>
@@ -97,51 +143,74 @@ foreach ($orders as $order) {
 </div>
 
 <script>
-function showOrderDetails(orderId) {
-    const orders = <?= json_encode($orders); ?>; // Pass PHP order and reservation data to JS
-    const order = orders.find(o => o.order_id == orderId);
+function showOrderDetails(element) {
+    try {
+        const order = JSON.parse(element.getAttribute('data-receipt'));
 
-    if (!order) {
-        alert('Order details not found.');
-        return;
-    }
+        if (!order) {
+            alert('Order details not found.');
+            return;
+        }
 
-    // Populate order summary
-    let orderSummary = `
-        <p><strong>Order ID:</strong> #${order.order_id}</p>
-        <p><strong>Total Amount:</strong> &#x20B1;${parseFloat(order.total_amount).toFixed(2)}</p>
-        <p><strong>Order Time:</strong> ${new Date(order.order_time).toLocaleString()}</p>
-        <p><strong>Status:</strong> ${order.status}</p>
-        <p><strong>Payment Method:</strong> ${order.payment_method}</p>
-    `;
+        // Populate order summary
+        let orderSummary = `
+            <div class="d-flex justify-content-between">
+                <div>
+                    <p><strong>Order ID:</strong> #${order.reservation_id || 'N/A'}</p>
+                    <p><strong>Total Amount:</strong> &#x20B1;${parseFloat(order.products.reduce((sum, product) => sum + (parseFloat(product.product_price) * product.quantity), 0)).toFixed(2)}</p>
+                    <p><strong>Order Time:</strong> ${order.order_date ? new Date(order.order_date).toLocaleString() : 'N/A'}</p>
+                    <p><strong>Status:</strong> ${order.reservation_status || 'N/A'}</p>
+                    <p><strong>Payment Method:</strong> ${order.payment_method || 'N/A'}</p>
+                </div>
+            </div>
+        `;
 
-    // Populate reservation summary if available
-    let reservationSummary = '';
-    if (order.reservation_id) {
-        reservationSummary = `
-            <p><strong>Reservation ID:</strong> ${order.reservation_id}</p>
-            <p><strong>Reservation Date:</strong> ${order.reservation_date}</p>
+        // Add all product details to the order summary
+        let productDetails = '';
+        let totalProductPrice = 0; // Variable to track the total product price
+
+        order.products.forEach(product => {
+            const productTotal = parseFloat(product.product_price) * product.quantity; // Calculate the total price for this product
+            totalProductPrice += productTotal; // Add to the total price for all products
+
+            productDetails += `
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>${product.product_name}</strong>
+                    </div>
+                    <div>
+                        <span>Quantity: ${product.quantity}</span>
+                    </div>
+                    <div>
+                        <span>₱${parseFloat(product.product_price).toFixed(2)} x ${product.quantity} = ₱${productTotal.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        orderSummary += productDetails;
+
+        document.getElementById('orderSummary').innerHTML = orderSummary;
+
+        // Populate reservation summary
+        let reservationSummary = `
+            <p><strong>Reservation Date:</strong> ${order.reservation_date || 'N/A'}</p>
             <p><strong>Table Number:</strong> ${order.table_number || 'N/A'}</p>
-            <p><strong>Reservation Status:</strong> ${order.reservation_status}</p>
+            <p><strong>Reservation Status:</strong> ${order.reservation_status || 'N/A'}</p>
             <p><strong>Note:</strong> ${order.custom_note || 'N/A'}</p>
         `;
-    } else {
-        reservationSummary = '<p class="text-muted">No reservation associated with this order.</p>';
-    }
 
-    document.getElementById('orderSummary').innerHTML = orderSummary;
-    document.getElementById('reservationSummary').innerHTML = reservationSummary;
-    document.getElementById('totalPayment').innerText = parseFloat(order.total_amount).toFixed(2);
+        document.getElementById('reservationSummary').innerHTML = reservationSummary;
 
-    // Show modal
-    $('#receiptModal').modal('show');
-}
+        // Display the total payment (sum of price * quantity for all products)
+        document.getElementById('totalPayment').innerText = totalProductPrice.toFixed(2);
 
-function cancelReservation() {
-    if (confirm('Are you sure you want to cancel this reservation?')) {
-        alert('Reservation cancelled successfully.');
-        // Add AJAX code here to handle the backend cancellation process
-        $('#receiptModal').modal('hide');
+        // Show modal
+        $('#receiptModal').modal('show');
+    } catch (error) {
+        console.error("Error showing order details:", error);
+        alert('Failed to load order details. Please try again.');
     }
 }
+
 </script>

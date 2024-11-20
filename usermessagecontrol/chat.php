@@ -4,7 +4,7 @@ session_start();
 require_once '../assets/config.php'; // Include your database configuration file
 
 if (!isset($_SESSION['user_id'])) {
-    die(json_encode(['error' => 'User  not logged in.']));
+    die(json_encode(['error' => 'User not logged in.']));
 }
 
 $currentUserId = $_SESSION['user_id'];
@@ -36,13 +36,33 @@ function saveChatMessage($senderId, $receiverId, $message) {
 
 function getChatMessages($userId) {
     global $conn;
-    $stmt = $conn->prepare("SELECT sender_id, message, timestamp FROM chat_messages WHERE receiver_id = ? ORDER BY timestamp ASC");
-    $stmt->bind_param("i", $userId);
+    // Fetch messages between the user and the staff assigned to them
+    $stmt = $conn->prepare("SELECT sender_id, message, timestamp FROM chat_messages WHERE (sender_id = ? OR receiver_id = ?) ORDER BY timestamp ASC");
+    $stmt->bind_param("ii", $userId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
     $messages = [];
+
+    // If no previous messages, add the welcome message
+    if ($result->num_rows === 0) {
+        $messages[] = [
+            'sender_id' => 0, // 0 represents the virtual assistant
+            'sender_role' => 'assistant', // Add role to distinguish assistant
+            'message' => 'Welcome to Dine&Watch! I am your Dine&Watch virtual assistant. I\'ll be happy to answer your questions. For an uninterrupted conversation, please ensure that you have a stable internet connection. Please tell me what you would like to know:',
+            'timestamp' => date('Y-m-d H:i:s')
+        ];
+    }
+
+    // Fetch all messages and assign sender_role
     while ($row = $result->fetch_assoc()) {
-        $messages[] = $row;
+        // Get the role of the sender (user or staff)
+        $sender_role = ($row['sender_id'] == $userId) ? 'user' : 'assistant'; // Assume other side is the assistant
+        $messages[] = [
+            'sender_id' => $row['sender_id'],
+            'sender_role' => $sender_role, // Add the sender role for distinction
+            'message' => $row['message'],
+            'timestamp' => $row['timestamp']
+        ];
     }
     return $messages;
 }
@@ -66,5 +86,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $messages = getChatMessages($currentUserId);
     echo json_encode(['messages' => $messages]);
-    exit();
 }
+?>

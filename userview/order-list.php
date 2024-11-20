@@ -106,9 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
 <div class="container mt-4">
     <div class="d-flex justify-content-end">
         <button class="btn proceed-button" onclick="ordertable()">Back</button>
-        <form action="User-panel.php" method="post" class="ml-2">
-            <button type="submit" class="btn proceed-button">Complete</button>
-        </form>
+        <form id="reservationForm" method="post" class="ml-2">
+    <input type="hidden" name="record" value="1">
+    <button type="button" class="btn proceed-button" onclick="submitReservationForm()">Complete</button>
+</form>
+
     </div>
 </div>
 

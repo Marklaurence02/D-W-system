@@ -53,7 +53,7 @@ $message = $_GET['message'] ?? null;
     <select id="filter_status" class="form-select d-inline-block" style="width: 200px;">
         <option value="All">All</option>
         <option value="Pending">Pending</option>
-        <option value="Confirmed">Confirmed</option>
+        <option value="Complete">Complete</option>
         <option value="Canceled">Canceled</option>
         <option value="Rescheduled">Rescheduled</option>
         <option value="Paid">Paid</option>
@@ -85,7 +85,7 @@ $message = $_GET['message'] ?? null;
                         <td>
                             <span class="badge bg-<?= match ($row['status']) {
                                 'Pending' => 'warning',
-                                'Confirmed' => 'success',
+                                'Complete' => 'success',
                                 'Canceled' => 'danger',
                                 'Rescheduled' => 'info',
                                 default => 'primary'
@@ -99,7 +99,7 @@ $message = $_GET['message'] ?? null;
                                 <input type="hidden" name="ajax" value="1">
                                 <select name="status" class="form-select mb-2">
                                     <option value="Pending" <?= $row['status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="Confirmed" <?= $row['status'] === 'Confirmed' ? 'selected' : '' ?>>Confirmed</option>
+                                    <option value="Complete" <?= $row['status'] === 'Complete' ? 'selected' : '' ?>>Complete</option>
                                     <option value="Canceled" <?= $row['status'] === 'Canceled' ? 'selected' : '' ?>>Canceled</option>
                                     <option value="Rescheduled" <?= $row['status'] === 'Rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
                                     <option value="Paid" <?= $row['status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>

@@ -183,37 +183,55 @@ include_once "assets/config.php"; // Database connection
                     </div>
                 </div>
                 
-                <!-- Popular Reserved Tables -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body p-3">
-            <h5 class="card-title">Popular Reserved Tables</h5>
-            <ul class="list-group">
-                <?php
-                    $sql = "
-                        SELECT tables.table_number, COUNT(reservations.table_id) AS reservation_count, 
-                               MIN(table_images.image_path) AS image_path
-                        FROM reservations
-                        JOIN tables ON reservations.table_id = tables.table_id
-                        LEFT JOIN table_images ON tables.table_id = table_images.table_id
-                        WHERE reservations.status IN ('Complete', 'Paid')
-                        GROUP BY tables.table_number
-                        ORDER BY reservation_count DESC
-                        LIMIT 5
-                    ";
-                    $result = $conn->query($sql);
-                    if ($result) {
-                        while ($row = $result->fetch_assoc()) {
-                            $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
-                            echo "<li class='list-group-item d-flex align-items-center'>
-                                    <img src='$imagePath' alt='Table Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
-                                    Table #" . htmlspecialchars($row['table_number']) . " - " . $row['reservation_count'] . " reservations
-                                  </li>";
-                        }
+<!-- Popular Reserved Tables -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-3">
+        <h5 class="card-title">All Reserved Tables</h5>
+        <ul class="list-group">
+            <?php
+                // SQL Query to fetch the number of reservations for each table_id and associated image path
+                $sql = "
+                    SELECT 
+                        tables.table_number, 
+                        tables.table_id, 
+                        COUNT(DISTINCT reservations.reservation_id) AS reservation_count,
+                        MIN(table_images.image_path) AS image_path
+                    FROM reservations
+                    JOIN tables ON reservations.table_id = tables.table_id
+                    LEFT JOIN table_images ON tables.table_id = table_images.table_id
+                    WHERE reservations.status IN ('Complete', 'Paid') 
+                    GROUP BY tables.table_id
+                    ORDER BY reservation_count DESC
+                ";
+
+                // Execute the query
+                $result = $conn->query($sql);
+
+                if ($result) {
+                    // Loop through the results and display table reservation counts
+                    while ($row = $result->fetch_assoc()) {
+                        // Check if the image path exists, otherwise use a placeholder image
+                        $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
+                        
+                        // Log for debugging purposes
+                        error_log("Table #" . htmlspecialchars($row['table_number']) . " has " . $row['reservation_count'] . " reservations.");
+
+                        // Display each table reservation data
+                        echo "<li class='list-group-item d-flex align-items-center'>
+                                <img src='$imagePath' alt='Table Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
+                                <div>
+                                    <strong>Table #" . htmlspecialchars($row['table_number']) . "</strong> - " . $row['reservation_count'] . " Reservation
+                                </div>
+                              </li>";
                     }
-                ?>
-            </ul>
-        </div>
+                } else {
+                    // If no reservations found, display a message
+                    echo "<li class='list-group-item'>No reservations found.</li>";
+                }
+            ?>
+        </ul>
     </div>
+</div>
 </div>
             </div>
 

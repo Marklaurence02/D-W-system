@@ -14,7 +14,9 @@ $sql = "SELECT activity_logs.*, users.first_name, users.last_name, users.role
         ORDER BY activity_logs.created_at DESC";
 $result = $conn->query($sql);
 ?>
+<div class="container-fluid">
 
+<h2 class="text-center">Activity Logs Report</h2>
 
 <!-- Display Activity Logs Table -->
 <div class="allContent-section">
@@ -48,6 +50,7 @@ $result = $conn->query($sql);
             ?>
         </tbody>
     </table>
+</div>
 </div>
 
 <!-- Initialize DataTables -->

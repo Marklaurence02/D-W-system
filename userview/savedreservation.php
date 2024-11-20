@@ -310,6 +310,9 @@ function loadAvailableTimesForEdit(currentTime) {
                 timeSelect.innerHTML = '<option value="">Select a time</option>'; // Clear previous options
 
                 const allTimes = [];
+                const currentDate = new Date(); // Get current date and time
+                const selectedDate = new Date(date); // Parse the selected date
+
                 for (let hour = 7; hour <= 18; hour++) {
                     for (let minutes = 0; minutes < 60; minutes += 15) {
                         const hourString = hour < 10 ? `0${hour}` : `${hour}`;
@@ -320,20 +323,19 @@ function loadAvailableTimesForEdit(currentTime) {
                 }
 
                 const unavailableSet = new Set();
-                data.unavailable.forEach(time => {
-                    unavailableSet.add(time);
+                data.unavailable.forEach(time => unavailableSet.add(time));
+
+                const availableTimes = allTimes.filter(time => {
+                    // Check if time is unavailable
+                    if (unavailableSet.has(time)) return false;
+
+                    // Check if time is in the past for the current date
                     const [hour, minute] = time.split(':').map(Number);
-                    let currentTimeIncrement = new Date(0, 0, 0, hour, minute);
+                    const timeDate = new Date(selectedDate);
+                    timeDate.setHours(hour, minute, 0, 0);
 
-                    for (let i = 0; i < 60; i++) {
-                        currentTimeIncrement.setMinutes(currentTimeIncrement.getMinutes() + 1);
-                        const currentHour = currentTimeIncrement.getHours().toString().padStart(2, '0');
-                        const currentMinute = currentTimeIncrement.getMinutes().toString().padStart(2, '0');
-                        unavailableSet.add(`${currentHour}:${currentMinute}`);
-                    }
+                    return selectedDate > currentDate || timeDate > currentDate;
                 });
-
-                const availableTimes = allTimes.filter(time => !unavailableSet.has(time));
 
                 if (availableTimes.length > 0) {
                     availableTimes.forEach(time24 => {
@@ -363,6 +365,8 @@ function loadAvailableTimesForEdit(currentTime) {
             .catch(() => alert('Error fetching available times. Please try again.'));
     }
 }
+
+
 
 // Function to show the notification modal
 function showNotificationModal(message, type) {

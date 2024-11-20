@@ -32,6 +32,9 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
     <a href="#orders" onclick="order_list()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
     <a href="#reservation" onclick="savedreservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
     <a href="#reservation" onclick="recieptrecords()"><i class="fa fa-calendar-check-o"></i> Receipt</a>
+    <a href="#reschedule" onclick="reschedule()"><i class="fa fa-calendar-check-o"></i> Reschedule</a>
+    <a href="#reschedule" onclick="Feedback()"><i class="fa fa-calendar-check-o"></i>FeedBack</a>
+
     <a href="#Message"onclick="messageview()"><i class="fa fa-cog"></i> Message</a>
     <a href="assets/log-out.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>

@@ -18,82 +18,82 @@
 <form id="update-Items" onsubmit="updateItems(event, <?= $row1['product_id'] ?>); return false;" enctype="multipart/form-data">
     <input type="hidden" class="form-control" name="product_id" id="product_id" value="<?= $row1['product_id'] ?>">
 
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="product_name">Product Name:</label>
+    <!-- First Row for Product Name and Quantity -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" id="product_name" value="<?= $row1['product_name'] ?>" required>
+            </div>
         </div>
-        <div class="col-md-8">
-            <input type="text" class="form-control" name="product_name" id="product_name" value="<?= $row1['product_name'] ?>" required>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" class="form-control" name="quantity" id="quantity" value="<?= $row1['quantity'] ?>" required>
+            </div>
         </div>
     </div>
 
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="category_id">Item Type:</label>
-        </div>
-        <div class="col-md-8">
-            <select id="category_id" name="category_id" class="form-control" required>
-                <?php
-                // Dynamically generate option elements from the product_categories table
-                if ($category_result->num_rows > 0) {
-                    while ($category_row = $category_result->fetch_assoc()) {
-                        echo '<option value="' . htmlspecialchars($category_row['category_id']) . '"' . ($row1['category_id'] == $category_row['category_id'] ? ' selected' : '') . '>' . htmlspecialchars($category_row['category_name']) . '</option>';
+    <!-- Second Row for Category and Price -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="category_id">Item Type:</label>
+                <select id="category_id" name="category_id" class="form-control" required>
+                    <?php
+                    if ($category_result->num_rows > 0) {
+                        while ($category_row = $category_result->fetch_assoc()) {
+                            echo '<option value="' . htmlspecialchars($category_row['category_id']) . '"' . ($row1['category_id'] == $category_row['category_id'] ? ' selected' : '') . '>' . htmlspecialchars($category_row['category_name']) . '</option>';
+                        }
                     }
-                }
-                ?>
-            </select>
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="price">Unit Price:</label>
+                <input type="number" class="form-control" name="price" id="price" value="<?= $row1['price'] ?>" step="0.01" required>
+            </div>
         </div>
     </div>
 
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="quantity">Quantity:</label>
-        </div>
-        <div class="col-md-8">
-            <input type="number" class="form-control" name="quantity" id="quantity" value="<?= $row1['quantity'] ?>" required>
-        </div>
-    </div>
-
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="price">Unit Price:</label>
-        </div>
-        <div class="col-md-8">
-            <input type="number" class="form-control" name="price" id="price" value="<?= $row1['price'] ?>" step="0.01" required>
+    <!-- Special Instructions Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="special_instructions">Special Instructions:</label>
+                <textarea class="form-control" name="special_instructions" id="special_instructions"><?= $row1['special_instructions'] ?></textarea>
+            </div>
         </div>
     </div>
 
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="special_instructions">Special Instructions:</label>
-        </div>
-        <div class="col-md-8">
-            <textarea class="form-control" name="special_instructions" id="special_instructions"><?= $row1['special_instructions'] ?></textarea>
-        </div>
-    </div>
-
-    <div class="row form-group">
-        <div class="col-md-4">
-            <label for="product_image">Product Image:</label>
-        </div>
-        <div class="col-md-8">
-            <!-- Display current image if it exists -->
-            <?php if (!empty($row1['product_image'])): ?>
-                <p>Current Image:</p>
-                <img src="<?= htmlspecialchars($row1['product_image']) ?>" alt="Product Image" style="max-width: 150px; height: auto;" />
-            <?php endif; ?>
-            <!-- Allow new image upload -->
-            <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*">
-            <small class="form-text text-muted">Leave empty if you don't want to change the image.</small>
+    <!-- Image Upload Section -->
+    <div class="form-group text-center">
+        <label>Product Image:</label>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4 text-center">
+                <label for="product_image">Product Image:</label>
+                <?php if (!empty($row1['product_image'])): ?>
+                    <img src="<?= htmlspecialchars($row1['product_image']) ?>" alt="Product Image" class="img-thumbnail mb-2" style="max-width: 150px;">
+                <?php endif; ?>
+                <input type="file" class="form-control-file mt-2" name="item_image" id="item_image" accept="image/*">
+                <small class="form-text text-muted">Leave empty if you don't want to change the image.</small>
+            </div>
         </div>
     </div>
 
-    <div class="row form-group">
-        <div class="col-md-12 text-center">
-            <button type="submit" class="btn btn-primary">Update Item</button>
-        </div>
+    <!-- Submit Button -->
+    <div class="form-group text-center">
+        <button type="submit" class="btn btn-primary">Update Item</button>
     </div>
 </form>
+
+
+
+
 
 
 

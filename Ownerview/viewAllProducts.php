@@ -213,10 +213,6 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="modal-body" id="editProductContent">
                 <!-- Form content will be dynamically loaded here -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" onclick="updateItems(event)">Save changes</button>
-            </div>
         </div>
     </div>
 </div>

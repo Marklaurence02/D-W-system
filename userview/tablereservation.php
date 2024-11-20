@@ -219,7 +219,7 @@ function loadAvailableTimes() {
                 // Get the current date and time
                 const currentDate = new Date();
                 const currentDateString = currentDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-                const currentTimeString = currentDate.toTimeString().split(' ')[0]; // Get time in HH:MM:SS
+                const currentTimeString = currentDate.toTimeString().split(' ')[0].slice(0, 5); // Get time in HH:MM format
 
                 // If the selected date is in the past, remove all times
                 if (date < currentDateString) {
@@ -231,11 +231,7 @@ function loadAvailableTimes() {
                 const availableTimes = allTimes.filter(time => {
                     // If the selected date is today, exclude past times
                     if (date === currentDateString) {
-                        const [hour, minute] = time.split(':').map(Number);
-                        const time24String = `${hour}:${minute}`;
-                        
-                        // Compare the time to the current time
-                        if (time24String < currentTimeString) {
+                        if (time < currentTimeString) {
                             return false; // Exclude past times
                         }
                     }
@@ -265,7 +261,6 @@ function loadAvailableTimes() {
             .catch(() => alert('Error fetching available times. Please try again.'));
     }
 }
-
 
 
 function openReservationForm(tableId) {

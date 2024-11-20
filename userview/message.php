@@ -1,4 +1,5 @@
 <?php
+session_name("user_session");
 session_start();
 ?>
 
@@ -28,7 +29,6 @@ session_start();
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
 function loadMessages() {
     $.ajax({

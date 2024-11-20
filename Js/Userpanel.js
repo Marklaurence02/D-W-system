@@ -47,6 +47,52 @@ function recieptrecords() {
     });
 }
 
+function reschedule() {  
+    $.ajax({
+        url: "userview/reschedule.php",
+        method: "post",
+        data: { record: 1 },
+        success: function(data) {
+            $('.allContent-section').html(data);
+        }
+    });
+}
+
+
+
+// Function to load the updated feedback form and reservation list
+function reschedule() {  
+    $.ajax({
+        url: "userview/reschedule.php",
+        method: "POST",
+        data: { record: 1 }, // Data sent to the server (you can adjust this as necessary)
+        success: function(data) {
+            // Replace content of the relevant section with the updated data
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading feedback content:", error);
+            alert("Failed to refresh content. Please try again.");
+        }
+    });
+}
+
+function Feedback() {
+    $.ajax({
+        url: "userview/Feedback.php", // PHP file that handles feedback and reservation display
+        method: "POST",
+        data: { record: 1 }, // Data sent to the server (you can adjust this as necessary)
+        success: function(data) {
+            // Replace content of the relevant section with the updated data
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading feedback content:", error);
+            alert("Failed to refresh content. Please try again.");
+        }
+    });
+}
+
 
 function reservetable() {  
     $.ajax({
@@ -58,6 +104,24 @@ function reservetable() {
         }
     });
 }
+
+function submitReservationForm() {
+    var form = $('#reservationForm');
+    $.ajax({
+        url: "userview/tablereservation.php",
+        method: "post",
+        data: form.serialize(), // Serializes form data for AJAX
+        success: function(data) {
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error:", error); // Optional: Debugging purposes
+        }
+    });
+}
+
+
+
 
 function savedreservation() {  
     $.ajax({

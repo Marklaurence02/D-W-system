@@ -1,4 +1,4 @@
-<footer class="footer bg-dark  py-4 d-flex justify-content-between align-items-center">
+<footer class="footer  py-4 d-flex justify-content-between align-items-center">
     <div class="footer-left">
         <!-- Content for the left side -->
         <p>© 2024 - Made by Sound System Group - BSU - TNEU - Lipa Campus</p>

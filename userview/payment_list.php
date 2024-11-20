@@ -12,7 +12,7 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch order items for the user
 $orderQuery = "
-    SELECT oi.order_item_id, oi.order_id, oi.quantity, oi.totalprice, pi.product_name, pi.price
+    SELECT oi.order_item_id, oi.order_id, oi.quantity, pi.product_name, pi.price
     FROM order_items oi
     JOIN product_items pi ON oi.product_id = pi.product_id
     WHERE oi.user_id = ?
@@ -25,8 +25,12 @@ $orderResult = $stmt->get_result();
 $totalPayment = 0;
 $orders = [];
 while ($row = $orderResult->fetch_assoc()) {
+    // Compute total price for each item
+    $row['totalprice'] = $row['price'] * $row['quantity']; 
     $orders[] = $row;
-    $totalPayment += $row['totalprice'];
+
+    // Add to total payment
+    $totalPayment += $row['totalprice']; 
 }
 $stmt->close();
 
@@ -127,6 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     handleSuccessfulPayment($conn, $user_id, $totalPayment);
     exit();
 }
+
+
+
 ?>
 
 <div class="container mt-5">
@@ -137,9 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <div class="card-header">
             <h4>Your Orders</h4>
         </div>
-        <div class="card-body ">
+        <div class="card-body">
             <?php if (count($orders) > 0): ?>
-                <table class="table table-bordered " >
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -166,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 
     <!-- Reservation Details Section -->
-    <div class="card mb-4"style="background-color: #D9D9D9; border-radius: 10px;">
+    <div class="card mb-4" style="background-color: #D9D9D9; border-radius: 10px;">
         <div class="card-header">
             <h4>Your Reservation</h4>
         </div>

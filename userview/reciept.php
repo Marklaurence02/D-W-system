@@ -79,7 +79,7 @@ foreach ($orders as $order) {
         // Group orders by their date
         $orders_by_date = [];
         foreach ($orders_grouped as $receipt_id => $order) {
-            $order_date = date('Y-m-d', strtotime($order['order_date'])); // Get the date in Y-m-d format
+            $order_date = date('Y-m-d', strtotime($order['order_date']));
             if (!isset($orders_by_date[$order_date])) {
                 $orders_by_date[$order_date] = [];
             }
@@ -89,11 +89,21 @@ foreach ($orders as $order) {
         // Loop through each date and display orders
         foreach ($orders_by_date as $date => $orders): ?>
             <h3 class="text-success"><?= date('l, F j, Y', strtotime($date)); ?></h3>
-            <?php foreach ($orders as $order): ?>
-                <div class="card mb-2" onclick="showOrderDetails(this)" data-receipt='<?= json_encode($order['order']); ?>'>
+            <?php foreach ($orders as $order): 
+                // Pre-calculate total price
+                $total_amount = array_sum(array_map(
+                    fn($product) => $product['quantity'] * $product['product_price'], 
+                    $order['order']['products']
+                ));
+            ?>
+                <div class="card mb-2" onclick="showOrderDetails(this)" 
+                     data-receipt='<?= htmlspecialchars(json_encode([
+                         'order' => $order['order'],
+                         'total_amount' => $total_amount
+                     ])); ?>'>
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="mb-0"><strong>&#x20B1;<?= htmlspecialchars(number_format(array_sum(array_column($order['order']['products'], 'item_total_price')), 2)); ?></strong></p>
+                            <p><strong>Total Amount:</strong> &#x20B1;<?= number_format($total_amount, 2); ?></p>
                             <small><?= date('g:i A', strtotime($order['order']['order_date'])); ?></small>
                         </div>
                         <div>
@@ -107,6 +117,7 @@ foreach ($orders as $order) {
         <p>No receipts found.</p>
     <?php endif; ?>
 </div>
+
 
 
 <!-- Receipt Modal -->
@@ -143,69 +154,56 @@ foreach ($orders as $order) {
 </div>
 
 <script>
+
 function showOrderDetails(element) {
     try {
-        const order = JSON.parse(element.getAttribute('data-receipt'));
+        const data = JSON.parse(element.getAttribute('data-receipt'));
 
-        if (!order) {
+        if (!data || !data.order) {
             alert('Order details not found.');
             return;
         }
 
-        // Populate order summary
+        const order = data.order;
+        const totalAmount = data.total_amount;
+
+        // Order Summary
         let orderSummary = `
-            <div class="d-flex justify-content-between">
-                <div>
-                    <p><strong>Order ID:</strong> #${order.reservation_id || 'N/A'}</p>
-                    <p><strong>Total Amount:</strong> &#x20B1;${parseFloat(order.products.reduce((sum, product) => sum + (parseFloat(product.product_price) * product.quantity), 0)).toFixed(2)}</p>
-                    <p><strong>Order Time:</strong> ${order.order_date ? new Date(order.order_date).toLocaleString() : 'N/A'}</p>
-                    <p><strong>Status:</strong> ${order.reservation_status || 'N/A'}</p>
-                    <p><strong>Payment Method:</strong> ${order.payment_method || 'N/A'}</p>
-                </div>
-            </div>
+            <p><strong>Order ID:</strong> #${order.reservation_id || 'N/A'}</p>
+            <p><strong>Total Amount:</strong> &#x20B1;${totalAmount.toFixed(2)}</p>
+            <p><strong>Order Time:</strong> ${order.order_date ? new Date(order.order_date).toLocaleString() : 'N/A'}</p>
+            <p><strong>Status:</strong> ${order.reservation_status || 'N/A'}</p>
+            <p><strong>Payment Method:</strong> ${order.payment_method || 'N/A'}</p>
         `;
 
-        // Add all product details to the order summary
+        // Product Details
         let productDetails = '';
-        let totalProductPrice = 0; // Variable to track the total product price
-
         order.products.forEach(product => {
-            const productTotal = parseFloat(product.product_price) * product.quantity; // Calculate the total price for this product
-            totalProductPrice += productTotal; // Add to the total price for all products
-
+            const productTotal = product.quantity * parseFloat(product.product_price);
             productDetails += `
                 <div class="d-flex justify-content-between">
-                    <div>
-                        <strong>${product.product_name}</strong>
-                    </div>
-                    <div>
-                        <span>Quantity: ${product.quantity}</span>
-                    </div>
-                    <div>
-                        <span>₱${parseFloat(product.product_price).toFixed(2)} x ${product.quantity} = ₱${productTotal.toFixed(2)}</span>
-                    </div>
+                    <div><strong>${product.product_name}</strong></div>
+                    <div>Quantity: ${product.quantity}</div>
+                    <div>&#x20B1;${productTotal.toFixed(2)}</div>
                 </div>
             `;
         });
 
-        orderSummary += productDetails;
+        document.getElementById('orderSummary').innerHTML = orderSummary + productDetails;
 
-        document.getElementById('orderSummary').innerHTML = orderSummary;
-
-        // Populate reservation summary
+        // Reservation Summary
         let reservationSummary = `
             <p><strong>Reservation Date:</strong> ${order.reservation_date || 'N/A'}</p>
             <p><strong>Table Number:</strong> ${order.table_number || 'N/A'}</p>
             <p><strong>Reservation Status:</strong> ${order.reservation_status || 'N/A'}</p>
             <p><strong>Note:</strong> ${order.custom_note || 'N/A'}</p>
         `;
-
         document.getElementById('reservationSummary').innerHTML = reservationSummary;
 
-        // Display the total payment (sum of price * quantity for all products)
-        document.getElementById('totalPayment').innerText = totalProductPrice.toFixed(2);
+        // Display Total Payment
+        document.getElementById('totalPayment').innerText = totalAmount.toFixed(2);
 
-        // Show modal
+        // Show Modal
         $('#receiptModal').modal('show');
     } catch (error) {
         console.error("Error showing order details:", error);

@@ -83,7 +83,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
                     <div class="slide-content-box active-slide">
                         <div class="slide-button">
                             <div class="title">Menu</div>
-                            <button class="select" onclick="ordertable()">
+                            <button class="select" onclick="ordertable()" style="background-color: #FD6AA5;">
                                 <span class="image-box">
                                     <i class="fa fa-cutlery big" aria-hidden="true"></i>
                                 </span>
@@ -95,8 +95,8 @@ if ($first_reservation && $first_reservation['reservation_time']) {
                     <div class="slide-content-box">
                         <div class="slide-button">
                             <div class="title">Table</div>
-                            <button class="select" id="tableButton" onclick="reservetable()">
-                                <div class="image-box">
+                            <button class="select" id="tableButton" onclick="reservetable()" style="background-color: #E6A513;">
+                            <div class="image-box">
                                     <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
                                 </div>
                             </button>
@@ -107,7 +107,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
                     <div class="slide-content-box">
                         <div class="slide-button">
                             <div class="title">Payment</div>
-                            <button class="select" onclick="paymentlist()" id="paymentButton">
+                            <button class="select" onclick="paymentlist()" id="paymentButton" style="background-color: #EAC784;">
                                 <div class="image-box">
                                     <i class="fa fa-credit-card big" aria-hidden="true"></i>
                                 </div>

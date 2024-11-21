@@ -4,6 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Set session timeout (e.g., 30 minutes)
+$timeout_duration = 1800; // 30 minutes
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout_duration) {
+    session_unset(); // Unset session variables
+    session_destroy(); // Destroy session
+}
+$_SESSION['last_activity'] = time(); // Update last activity time
+
 include 'config.php';
 $message = '';
 $error = '';
@@ -12,56 +20,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim(htmlspecialchars($_POST['email']));
     $password = trim(htmlspecialchars($_POST['password']));
 
-    if (!empty($email) && !empty($password)) {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Invalid email format.";
-        } else {
-            $sql = "SELECT user_id, first_name, last_name, username, password_hash, role 
-                    FROM users WHERE email = ? AND role = 'General User'";
-            $stmt = $conn->prepare($sql);
-            
-            if ($stmt) {
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                $result = $stmt->get_result();
+    // CAPTCHA validation
+    $recaptcha_secret = ''; // Your secret key
+    $recaptcha_response = $_POST['g-recaptcha-response'];
 
-                if ($result && $result->num_rows > 0) {
-                    $user = $result->fetch_assoc();
+    // Verify CAPTCHA
+    $recaptcha_verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+    $response = file_get_contents($recaptcha_verify_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response);
+    $response_keys = json_decode($response, true);
 
-                    if (password_verify($password, $user['password_hash'])) {
-                        $_SESSION['email'] = $email;
-                        $_SESSION['role'] = 'General User';
-                        $_SESSION['username'] = $user['username'];
-                        $_SESSION['user_id'] = $user['user_id'];
-
-                        // Update the user's status to 'online'
-                        $updateStatusSQL = "UPDATE users SET status = 'online' WHERE user_id = ?";
-                        $updateStmt = $conn->prepare($updateStatusSQL);
-                        $updateStmt->bind_param('i', $user['user_id']);
-                        $updateStmt->execute();
-                        $updateStmt->close();
-
-                        // Assign a staff member to the user if not already assigned
-                        if (!checkExistingAssignment($user['user_id'], $conn)) {
-                            assignStaffToUser($user['user_id'], $conn);
-                        }
-
-                        // Redirect to the user panel
-                        header('Location: User-panel.php');
-                        exit();
-                    } else {
-                        $error = "Invalid password. Please try again.";
-                    }
-                } else {
-                    $error = "No user found with this email.";
-                }
-                $stmt->close();
-            } else {
-                $error = "Database query error: " . $conn->error;
-            }
-        }
+    if ($response_keys['success'] !== true) {
+        $error = "Please complete the CAPTCHA.";
     } else {
-        $error = "Please fill in all the required fields.";
+        if (!empty($email) && !empty($password)) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = "Invalid email format.";
+            } else {
+                $sql = "SELECT user_id, first_name, last_name, username, password_hash, role 
+                        FROM users WHERE email = ? AND role = 'General User'";
+                $stmt = $conn->prepare($sql);
+
+                if ($stmt) {
+                    $stmt->bind_param('s', $email);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    if ($result && $result->num_rows > 0) {
+                        $user = $result->fetch_assoc();
+
+                        if (password_verify($password, $user['password_hash'])) {
+                            $_SESSION['email'] = $email;
+                            $_SESSION['role'] = 'General User';
+                            $_SESSION['username'] = $user['username'];
+                            $_SESSION['user_id'] = $user['user_id'];
+
+                            // Update the user's status to 'online'
+                            $updateStatusSQL = "UPDATE users SET status = 'online' WHERE user_id = ?";
+                            $updateStmt = $conn->prepare($updateStatusSQL);
+                            $updateStmt->bind_param('i', $user['user_id']);
+                            $updateStmt->execute();
+                            $updateStmt->close();
+
+                            // Assign a staff member to the user if not already assigned
+                            if (!checkExistingAssignment($user['user_id'], $conn)) {
+                                assignStaffToUser($user['user_id'], $conn);
+                            }
+
+                            // Redirect to the user panel
+                            header('Location: User-panel.php');
+                            exit();
+                        } else {
+                            $error = "Invalid password. Please try again.";
+                        }
+                    } else {
+                        $error = "No user found with this email.";
+                    }
+                    $stmt->close();
+                } else {
+                    $error = "Database query error: " . $conn->error;
+                }
+            }
+        } else {
+            $error = "Please fill in all the required fields.";
+        }
     }
 }
 
@@ -81,7 +102,7 @@ function checkExistingAssignment($userId, $conn) {
 
     $isAssigned = $stmt->num_rows > 0;
     $stmt->close();
-    
+
     return $isAssigned;
 }
 

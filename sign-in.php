@@ -2,96 +2,197 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dine&Watch</title>
-    <link rel="stylesheet" href="css/Style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            background-color: #ff6700; /* Orange header */
+            color: white;
+            padding: 20px 40px;
+            text-align: center; /* Center the header text */
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .footer {
+            background-color: #ff6700;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .logo-container {
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .signup-card {
+            background-color: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        .signup-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 12px;
+            color: #ff6700;
+        }
+
+        .recaptcha {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 15px;
+        }
+
+        .btn-next {
+            background-color: #333;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            border: none;
+            margin-top: 20px;
+        }
+
+        .btn-next:hover {
+            background-color: #ff6700;
+            color: white;
+        }
+
+        .small-text {
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .small-text a {
+            color: #ff6700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .small-text a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
 
-    <div class="page">
-        <div class="head">
-            <div class="return">
-                <a href="index.php"><img src="Images/back.png" alt="Go back"></a>
+    <!-- Header -->
+    <header class="header d-flex align-items-center justify-content-center">
+        <h1>DINE&WATCH</h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row align-items-center">
+            <!-- Logo Section -->
+            <div class="col-12 col-md-6 text-center">
+                <img src="Images/logo.png" alt="Dine&Watch Logo" class="logo-container img-fluid">
+            </div>
+
+            <!-- Sign-In Form Section -->
+            <div class="col-12 col-md-6">
+                <div class="signup-card mx-auto">
+                    <h2>Sign In</h2>
+                    <?php include 'assets/process_log-in.php'; ?>
+                    <form method="POST">
+                        <!-- Email Input -->
+                        <div class="form-group position-relative">
+                            <input type="email" class="form-control" name="email" id="email" placeholder=" " required>
+                            <label for="email">Email</label>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="form-group position-relative">
+                            <input type="password" class="form-control" name="password" id="password" placeholder=" " required>
+                            <label for="password">Password</label>
+                            <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
+                        </div>
+
+                        <!-- Google reCAPTCHA -->
+                        <div class="recaptcha">
+                            <div class="g-recaptcha" data-sitekey=""></div>
+                        </div>
+
+                        <button type="submit" class="btn-next">Next</button>
+
+                        <div class="small-text">
+                            <p>Forgot your password? <a href="forgot_password.php">Reset it here</a></p>
+                            <p>Already have an account? <a href="signup.php">Sign-up here</a></p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-       
-        <div class="S-section ">
-            <div class="log-container">
-                <h1>Sign-In</h1>
-
-                <?php 
-                    // Include the form processing logic
-                    include 'assets/process_log-in.php'; 
-                    
-                    // Display any error messages
-                    if (!empty($error)):  // Check if $error is not empty
-                ?>
-                    <p style="color: red;"><?php echo htmlspecialchars($error); ?></p> <!-- Error message -->
-                <?php endif; ?>
-
-                <?php if (!empty($message)): ?>  <!-- Check if a message exists -->
-                    <p style="color: green;">
-                        <img src="Images/check-icon.png" alt="Success" style="width: 20px; vertical-align: middle;">
-                        <?php echo htmlspecialchars($message); ?>
-                    </p> <!-- Success message -->
-                <?php endif; ?>
-
-                <!-- Sign-In Form -->
-                <form class="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-                    <input type="email" name="email" placeholder="Email" required>
-                    
-                    <!-- Password Field with Show/Hide toggle -->
-                    <div class="password-container">
-                        <input type="password" name="password" id="password" placeholder="Password" required>
-                        
-                        <!-- Use Boxicons for show/hide password -->
-                        <span id="togglePassword" class="eye-icon">
-                            <!-- Show Eye Icon (Initially Hidden) -->
-                            <box-icon id="showIcon" name="show" type="solid" style="cursor: pointer;"></box-icon>
-                            <!-- Hide Eye Icon (Initially Visible) -->
-                            <box-icon id="hideIcon" name="hide" type="solid" style="cursor: pointer;"></box-icon>
-                        </span>
-                    </div>
-
-                    <div class="forgot-password">
-                        <a href="forgot_password.php">Forgot your password?</a>
-                    </div>
-                    <button type="submit">Sign In</button>
-                </form>
-
-            </div>
-        </div>
-    
-        <footer class="footer"></footer>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Dine&Watch. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS and Boxicons -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- Password Toggle -->
     <script>
-        // Toggle Password Visibility
-        const togglePassword = document.querySelector('#togglePassword');
-        const passwordField = document.querySelector('#password');
-        const showIcon = document.querySelector('#showIcon');
-        const hideIcon = document.querySelector('#hideIcon');
+        const togglePassword = document.querySelector("#togglePassword");
+        const passwordField = document.querySelector("#password");
 
-        // Initially hide the "show" icon
-        showIcon.style.display = 'none';
-
-        togglePassword.addEventListener('click', function () {
-            const isPasswordHidden = passwordField.getAttribute('type') === 'password';
-            
-            // Toggle the password field type
-            passwordField.setAttribute('type', isPasswordHidden ? 'text' : 'password');
-            
-            // Show or hide the appropriate icon
-            if (isPasswordHidden) {
-                hideIcon.style.display = 'none';
-                showIcon.style.display = 'inline';
-            } else {
-                hideIcon.style.display = 'inline';
-                showIcon.style.display = 'none';
-            }
+        togglePassword.addEventListener("click", function () {
+            const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+            passwordField.setAttribute("type", type);
+            this.classList.toggle("bx-show");
+            this.classList.toggle("bx-hide");
         });
     </script>
 

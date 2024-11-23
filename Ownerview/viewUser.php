@@ -5,7 +5,7 @@
   <!-- Users Table -->
   <div class="table-responsive">
     <table id="generalUsersTable" class="table table-bordered">
-      <thead>
+      <thead class="thead">
         <tr>
           <th class="text-center">S.N.</th>
           <th class="text-center">Username</th>

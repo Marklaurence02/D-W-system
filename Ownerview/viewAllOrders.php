@@ -15,7 +15,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
             <!-- Responsive table with DataTables -->
             <div class="table-responsive">
                 <table id="ordersTable" class="table table-striped table-hover table-bordered display nowrap">
-                    <thead class="thead-dark">
+                    <thead>
                         <tr>
                             <th>O.N.</th>
                             <th>Customer</th>

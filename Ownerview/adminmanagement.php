@@ -11,8 +11,8 @@
 
   <!-- Admin/Staff List -->
   <div class="user-list">
-  <table id="userTable" class="table">
-    <thead>
+  <table id="userTable" class="table table-striped">
+    <thead class="thead">
         <tr>
             <th class="text-center">S.N.</th>
             <th class="text-center">Full Name</th>
@@ -24,7 +24,6 @@
         </tr>
     </thead>
     <tbody id="user_table_body">
-        <!-- Admin/Staff rows will be dynamically updated here -->
         <?php
         include_once "../assets/config.php"; // Ensure this path is correct
 
@@ -59,6 +58,7 @@
         ?>
     </tbody>
 </table>
+
 
 
   </div>
@@ -116,15 +116,12 @@
                     <button type="submit" class="btn btn-primary btn-block my-3" style="height: 50px;">Add Admin/Staff</button>
                 </form>
             </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal" style="height: 50px;">Close</button>
-            </div>
+
         </div>
     </div>
 </div>
 
 
- <!-- Modal for Editing Admin/Staff -->
 <!-- Modal for Editing Admin/Staff -->
 <div class="modal fade" id="editAdminModal" role="dialog" tabindex="-1" aria-labelledby="editAdminModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -138,9 +135,7 @@
             <div class="modal-body" id="editAdminFormContainer">
                 <!-- The edit form will be loaded here via AJAX -->
             </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal" style="height: 50px;">Close</button>
-            </div>
+
         </div>
     </div>
 </div>
@@ -179,3 +174,5 @@ $(document).ready(function() {
     });
 });
 </script>
+
+

@@ -30,7 +30,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <!-- Table List (Visible on Desktop) -->
   <div class="table-responsive">
   <table id="tableData" class="display nowrap" style="width:100%">
-  <thead class="thead-dark">
+  <thead class="thead">
     <tr>
       <th class="text-center">S.N.</th>
       <th class="text-center">Table Number</th>

@@ -158,7 +158,7 @@
 
                         <!-- Google reCAPTCHA -->
                         <div class="recaptcha">
-                            <div class="g-recaptcha" data-sitekey="6LcL4IcqAAAAAPB8-0U66IZDAWf0xYVhi8qtQjL9"></div>
+                            <div class="g-recaptcha" data-sitekey=""></div>
                         </div>
 
                         <button type="submit" class="btn-next">Next</button>

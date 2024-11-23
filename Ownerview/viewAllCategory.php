@@ -56,7 +56,6 @@ include_once "../assets/config.php"; // Include database connection
     </div>
 </div>
 <!-- Modal for Adding Category -->
-<!-- Modal for Adding Category -->
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

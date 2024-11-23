@@ -23,7 +23,7 @@ $result = $conn->query($sql);
     <table id="activityLogTable" class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th class='text-center'>S.N.</th>
+                <th class='text-center'>O.N.</th>
                 <th class='text-center'>Action By (Role)</th>
                 <th class='text-center'>Action Type</th>
                 <th class='text-center'>Details</th>

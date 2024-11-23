@@ -2,7 +2,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 18px;
 }
 
@@ -43,29 +43,26 @@
     border-radius: 12px 12px 0 0;
     margin-bottom: 50px;
   }
+td,
+th {
+  padding: 10px 16px;            /* Adequate padding for cells */
+  text-align: center;            /* Center-align text */
+  font-family: 'Montserrat', sans-serif;  /* Smooth and modern font */
+}
 
-  td,
-  th {
-    padding: 10px 16px;
-    text-align: center;
-  }
+/* Table header styles */
+th {
+  background-color: #FF5722;     /* Orange color for header */
+  color: #fafafa;                /* Light text color for contrast */
+  font-family: 'Open Sans', sans-serif;  /* Clean font for header */
+  font-weight: bold;             /* Make header text bold */
+}
 
-  th {
-    background-color: #584e46;
-    color: #fafafa;
-    font-family: 'Open Sans', Sans-serif;
-    font-weight: bold;
-  }
-
-  tr {
-    width: 100%;
-    background-color: #fafafa;
-    font-family: 'Montserrat', sans-serif;
-  }
-
-  tr:nth-child(even) {
-    background-color: #eeeeee;
-  }
+/* Row styling */
+tr {
+  width: 100%;                   /* Ensure rows take full width */
+  background-color: #fafafa;     /* Light background for rows */
+}
 
 
 /************************ login and sign up styling  ******************************/

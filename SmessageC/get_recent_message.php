@@ -1,9 +1,7 @@
 <?php
 include '../assets/config.php';
-session_name("staff_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+
 // Start output buffering to handle any unexpected output
 ob_start();
 

@@ -73,12 +73,21 @@
         <div class="card mx-auto user-list" id="user-list">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Messages</h5>
-                <div class="input-group">
-                    <input type="text" id="search-input" class="form-control search-input d-none" placeholder="Search..." oninput="searchMessage()">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" onclick="toggleSearchInput()"><i class='bx bx-search-alt-2'></i></button>
-                    </div>
-                </div>
+        <div class="input-group-append">
+            <!-- Search Button -->
+            <button class="btn btn-outline-secondary" onclick="toggleSearchInput()">
+                <i class='bx bx-search-alt-2'></i>
+            </button>
+
+            <!-- Missing Search Input Field -->
+            <input type="text" id="search-input" class="form-control ml-2 d-none" 
+                   placeholder="Search by name or role..." onkeyup="searchUsers()">
+
+            <!-- Dashboard Link -->
+            <a href="Owner-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
+                <i class='bx bxs-dashboard mr-1'></i> Dashboard
+            </a>
+        </div>
             </div>
             <div class="list-group list-group-flush" id="user-list-content">
                 <?php if (!empty($users)): ?>

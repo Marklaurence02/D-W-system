@@ -1,45 +1,72 @@
+
 <div>
-  <h2>All Customers</h2>
+  <h2>All General Users Report</h2>
 
-  <!-- Search and Date Filter Form -->
-  <form id="filterForm" class="mb-3">
-    <div class="row">
-      <!-- Search Input -->
-      <div class="col-md-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search by username, email, or contact number">
-      </div>
-      
-      <!-- Start Date -->
-      <div class="col-md-3">
-        <input type="date" id="startDate" class="form-control" placeholder="Start Date">
-      </div>
-
-      <!-- End Date -->
-      <div class="col-md-3">
-        <input type="date" id="endDate" class="form-control" placeholder="End Date">
-      </div>
-
-      <!-- Filter and Clear Buttons -->
-      <div class="col-md-2">
-        <button type="button" class="btn btn-primary" onclick="UfilterItems()">Filter</button>
-        <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
-      </div>
-    </div>
-  </form>
-
-  <!-- Table for displaying users -->
-  <table class="table">
-    <thead>
-      <tr>
-        <th class="text-center">S.N.</th>
-        <th class="text-center">Username</th>
-        <th class="text-center">Email</th>
-        <th class="text-center">Contact Number</th>
-        <th class="text-center">Joining Date</th>
-      </tr>
-    </thead>
-    <tbody id="usersTableBody">
-      <!-- Table rows will be populated here dynamically via AJAX -->
-    </tbody>
-  </table>
+  <!-- Users Table -->
+  <div class="table-responsive">
+    <table id="generalUsersTable" class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="text-center">S.N.</th>
+          <th class="text-center">Username</th>
+          <th class="text-center">Email</th>
+          <th class="text-center">Contact Number</th>
+          <th class="text-center">Joining Date</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('#generalUsersTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/Ocontrols/loadAllUsers.php',
+            type: 'POST',
+        },
+        columns: [
+            { data: 'sn', className: 'text-center', orderable: false },
+            { data: 'username', className: 'text-center' },
+            { data: 'email', className: 'text-center' },
+            { data: 'contact_number', className: 'text-center' },
+            { data: 'created_at', className: 'text-center' }
+        ],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[4, 'desc']],
+        dom: 'Bfrtip', // Add buttons to the table
+        buttons: [
+            {
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-info'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Export to Excel',
+                className: 'btn btn-success'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'Generate PDF',
+                className: 'btn btn-danger',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                title: 'General Users Report'
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'btn btn-warning',
+                title: 'All General Users Report',
+                customize: function (win) {
+                    $(win.document.body).css('font-size', '10pt')
+                        .prepend('<h3>All General Users</h3>');
+                }
+            }
+        ]
+    });
+});
+</script>

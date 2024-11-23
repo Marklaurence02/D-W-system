@@ -125,7 +125,7 @@
 <body>
 
     <!-- Header -->
-    <header class="header d-flex align-items-center justify-content-center">
+    <header class="header d-flex align-items-center">
         <h1>DINE&WATCH</h1>
     </header>
 

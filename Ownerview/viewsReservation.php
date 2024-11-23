@@ -46,6 +46,7 @@ $reservations = $conn->query($sql);
 $message = $_GET['message'] ?? null;
 ?>
 
+<h2 class="text-center">Product Items</h2>
 
 
 <div class="mb-2">

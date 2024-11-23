@@ -103,45 +103,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
   </div>
 
-  <!-- Product List Card View (Visible on Mobile) -->
-  <div class="d-md-none">
-    <?php
-    if ($result->num_rows > 0) {
-      mysqli_data_seek($result, 0); // Reset result pointer for reuse in card view
-      $count = 1;
-      while ($row = $result->fetch_assoc()) {
-    ?>
-      <div class="card mb-3">
-        <div class="card-header">
-          <strong>Product #<?= $count ?></strong>
-        </div>
-        <div class="card-body">
-          <p><strong>Item Name:</strong> <?= htmlspecialchars($row["product_name"]) ?></p>
-          <p><strong>Item Type:</strong> <?= htmlspecialchars($row["category_name"]) ?></p>
-          <p><strong>Stock:</strong> <?= htmlspecialchars($row["quantity"]) ?></p>
-          <p><strong>Unit Price:</strong> &#8369;<?= htmlspecialchars($row["price"]) ?></p>
-          <p><strong>Details:</strong> <?= htmlspecialchars($row["special_instructions"]) ?></p>
-          <p><strong>Image:</strong><br>
-            <?php if ($row["product_image"]): ?>
-              <img src="<?= htmlspecialchars($row["product_image"]) ?>" alt="<?= htmlspecialchars($row["product_name"]) ?>" style="width: 100px; height: 100px;">
-            <?php else: ?>
-              No Image
-            <?php endif; ?>
-          </p>
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="itemDelete('<?= $row['product_id'] ?>')">Delete</button>
-          </div>
-        </div>
-      </div>
-    <?php
-          $count++;
-        }
-      } else {
-        echo "<div class='text-center'>No items found</div>";
-      }
-    ?>
-  </div>
 
   <!-- Modal for Adding Product -->
 <div class="modal fade" id="myModal" role="dialog">
@@ -223,43 +184,128 @@ if (session_status() === PHP_SESSION_NONE) {
 <?php $conn->close(); ?>
 
 
- <script>
+<script>
 $(document).ready(function () {
-    $('#productTable').DataTable({
+    // Get the current date in the format YYYY-MM-DD
+    var today = new Date();
+    var formattedDate = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
+
+    var table = $('#productTable').DataTable({
         dom: 'Bfrtip',
         buttons: [
             {
                 extend: 'excelHtml5',
-                title: 'Product Items Report',
-                text: 'Export to Excel'
+                title: function() {
+                    return 'Product Items Report - ' + formattedDate;
+                },
+                text: 'Export to Excel',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5]
+                },
+                customize: function(xlsx) {
+                    var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                    var logo = '<image xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" x="0" y="0" width="1" height="1" r="1" c="1"><imageData r:id="rId1"/></image>';
+                    sheet.insertBefore(logo, sheet.firstChild);
+                    var sheetHeader = sheet.querySelector('sheetData');
+                    sheetHeader.insertBefore('<row><c r="A1" t="inlineStr"><is><t style="font-size:14px; font-weight:bold; color:#FF6A13;">Product Items Report - ' + formattedDate + '</t></is></c></row>', sheetHeader.firstChild);
+                }
             },
             {
                 extend: 'csvHtml5',
-                title: 'Product Items Report',
-                text: 'Export to CSV'
+                title: function() {
+                    return 'Product Items Report - ' + formattedDate;
+                },
+                text: 'Export to CSV',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5]
+                }
             },
             {
                 extend: 'pdfHtml5',
-                title: 'Product Items Report',
+                title: function() {
+                    return 'Product Items Report - ' + formattedDate;
+                },
                 text: 'Export to PDF',
-                orientation: 'landscape',
-                pageSize: 'A4'
+                orientation: 'portrait',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5]
+                },
+                customize: function(doc) {
+                    doc.content.splice(0, 0, {
+                        image: '/Images/logo.png',
+                        width: 100,
+                        height: 100
+                    });
+                    doc.content.splice(1, 0, {
+                        text: 'Product Items Report - ' + formattedDate,
+                        alignment: 'center',
+                        fontSize: 16,
+                        margin: [0, 10],
+                        color: '#FF6A13'
+                    });
+                    doc.styles.tableHeader = {
+                        fillColor: '#FF6A13',
+                        color: '#fff',
+                        fontSize: 12,
+                        bold: true
+                    };
+                    doc.styles.tableBodyEven = { fillColor: '#FFEBE0' };
+                    doc.styles.tableBodyOdd = { fillColor: '#FFE0CC' };
+                }
             },
             {
                 extend: 'print',
-                title: 'Product Items Report',
-                text: 'Print Report'
+                title: function() {
+                    return 'Product Items Report - ' + formattedDate;
+                },
+                text: 'Print Report',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5]
+                },
+                customize: function(win) {
+                    $(win.document.body).prepend('<img src="/Images/logo.png" style="width: 100px; height: auto; margin-bottom: 20px;"/>');
+                    $(win.document.body).prepend('<h2 style="text-align: center; color: #FF6A13; font-family: Arial, sans-serif; font-weight: bold; font-size: 20px;">Product Items Report - ' + formattedDate + '</h2>');
+                    $(win.document.body).find('th').css({
+                        'background-color': '#FF6A13',
+                        'color': 'white',
+                        'font-weight': 'bold',
+                        'font-size': '14px',
+                        'text-align': 'center'
+                    });
+                    $(win.document.body).find('tr:nth-child(even)').css('background-color', '#FFEBE0');
+                    $(win.document.body).find('tr:nth-child(odd)').css('background-color', '#FFE0CC');
+                }
             }
         ],
         responsive: true,
         lengthChange: true,
         pageLength: 10,
+        lengthMenu: [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100]
+        ],
         ordering: true,
         columnDefs: [
-            { orderable: true, targets: [0, 6, 7] } // Disable ordering for Image, Edit, and Delete columns
+            { orderable: true, targets: [0, 1, 6, 7] }
         ]
+    });
+
+    // Add filter functionality to DataTable
+    $('#filter_item_type').change(function () {
+        var selectedType = $(this).val();
+        // If "All" is selected, clear the search
+        if (selectedType === 'All') {
+            table.search('').draw();
+        } else {
+            // Use the DataTable search function to filter by category name
+            table.column(2).search(selectedType).draw();  // Column 2 is the Item Type column
+        }
     });
 });
 
 </script>
+
+
+
 

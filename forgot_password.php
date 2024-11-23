@@ -150,7 +150,7 @@ input:not(:placeholder-shown) + label {
                     </form>
 
                     <div class="small-text">
-                        <p>Already have an account? <a href="login.php">Log in here</a></p>
+                        <p>Already have an account? <a href="sign-in.php">Log in here</a></p>
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@ input:not(:placeholder-shown) + label {
                     </form>
 
                     <div class="small-text">
-                        <p>Remember your password? <a href="login.php">Log in here</a></p>
+                        <p>Remember your password? <a href="sign-in.php">Log in here</a></p>
                     </div>
                 </div>
             </div>
@@ -193,7 +193,7 @@ input:not(:placeholder-shown) + label {
 
     <script>
         function sendOTP(event) {
-            event.preventDefault(); // Prevent form submission
+            event.preventDefault(); // Prevent form submissionF
 
             const contact = document.getElementById('contact').value;
 

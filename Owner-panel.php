@@ -49,13 +49,14 @@ include_once "assets/config.php"; // Database connection
 
     <div class="d-flex" style="min-height: 100vh; overflow-x: hidden;">
         <!-- Sidebar -->
-        <div id="mySidebar" class="flex-shrink-0">
+ <!-- Sidebar -->
+ <div id="mySidebar" class="flex-shrink-0">
 <?php
         include "Header_nav/own-sidebar.php"; // Sidebar for navigation
 
 ?>        
 </div>
-    <div id="main-content" class="container-fluid allContent-section py-4 text-center ">
+    <div id="main-content" class="container-fluid allContent-section py-4 text-center " >
         <h1 class="text-center">Dashboard</h1>
         <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
             <!-- Total Sales -->

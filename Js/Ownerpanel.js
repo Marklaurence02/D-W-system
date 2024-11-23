@@ -643,21 +643,7 @@ function itemDelete(id) {
 
 
 
-// filter items
-function filterItems() {
-    var selectedType = document.getElementById("filter_item_type").value;
-    var rows = document.querySelectorAll(".product-row");
 
-    rows.forEach(function(row) {
-        var itemType = row.getAttribute("data-item-type");
-
-        if (selectedType === "All" || itemType === selectedType) {
-            row.style.display = "";  // Show the row
-        } else {
-            row.style.display = "none";  // Hide the row
-        }
-    });
-}
 
 $(document).ready(function () {
     // Automatically load all users when the page loads
@@ -902,6 +888,8 @@ function categoryEditForm(id) {
         }
     });
 }
+
+
 // Add Category function
 function addCategory() {
     var categoryName = document.getElementById('add_category_name').value.trim(); // Get the input value
@@ -943,6 +931,7 @@ function addCategory() {
         }
     });
 }
+
 
 // Update catesgory data without image handling
 function updateCategory(event) {

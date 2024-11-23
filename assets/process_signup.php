@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             // Redirect with a success message
-            header("Location: index.php?signup=success");
-            exit; // Ensure no further code is executed
+            header("Location: ../index.php?signup=success");
+            exit; // Ensure no further code is executed after the redirect
         } else {
             $error = "Error executing query: " . $stmt->error;
         }

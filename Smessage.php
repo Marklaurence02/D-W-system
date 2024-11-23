@@ -12,12 +12,7 @@
 <body>
     <?php include "Header_nav/staffHeader .php"; 
     ?>
-<div id="main">
-    <a href="Staff-panel.php" class="openbtn">
-        <i class='bx bxs-dashboard'></i>
-        <span>Dashboard</span>
-    </a>
-</div>
+
 <?php
 include 'assets/config.php';
 header('Content-Type: text/html; charset=UTF-8');
@@ -92,12 +87,14 @@ $conn->close();
         <div class="card mx-auto user-list" id="user-list">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Messages</h5>
-                <div class="input-group">
-                    <input type="text" id="search-input" class="form-control search-input d-none" placeholder="Search..." oninput="searchMessage()">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" onclick="toggleSearchInput()"><i class='bx bx-search-alt-2'></i></button>
-                    </div>
-                </div>
+                <div class="input-group-append">
+    <button class="btn btn-outline-secondary" onclick="toggleSearchInput()">
+        <i class='bx bx-search-alt-2'></i>
+    </button>
+    <a href="Staff-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
+        <i class='bx bxs-dashboard mr-1'></i> Dashboard
+    </a>
+</div>
             </div>
             <div class="list-group list-group-flush" id="user-list-content">
                 <?php if (!empty($users)): ?>
@@ -311,28 +308,33 @@ $conn->close();
     <script src="Js/viewmessage.js"></script>
 
     <script>
-        // Toggle the visibility of the search input field
-        function toggleSearchInput() {
-            const searchInput = document.getElementById('search-input');
-            searchInput.classList.toggle('d-none');
-        }
+// Toggle the visibility of the search input field
+function toggleSearchInput() {
+    const searchInput = document.getElementById('search-input');
+    searchInput.classList.toggle('d-none');
+    if (!searchInput.classList.contains('d-none')) {
+        searchInput.focus(); // Focus on the input field when visible
+    }
+}
 
-        // Search function that filters messages based on name, date, or content
-        function searchMessage() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const users = document.querySelectorAll('.user-item');
-            users.forEach(user => {
-                const username = user.querySelector('.username').textContent.toLowerCase();
-                const message = user.querySelector('.recent-message').textContent.toLowerCase();
-                const date = user.querySelector('.message-date').textContent.toLowerCase();
-                
-                if (username.includes(query) || message.includes(query) || date.includes(query)) {
-                    user.style.display = '';
-                } else {
-                    user.style.display = 'none';
-                }
-            });
+// Enhanced Search Functionality
+function searchMessage() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const users = document.querySelectorAll('.user-item');
+    users.forEach(user => {
+        const username = user.querySelector('.username').textContent.toLowerCase();
+        const role = user.querySelector('.role').textContent.toLowerCase();
+        const message = user.querySelector('.recent-message').textContent.toLowerCase();
+
+        // Check if the query matches the username, role, or recent message
+        if (username.includes(query) || role.includes(query) || message.includes(query)) {
+            user.style.display = ''; // Show the user item
+        } else {
+            user.style.display = 'none'; // Hide the user item
         }
+    });
+}
+
     </script>
 </body>
 </html>

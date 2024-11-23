@@ -1,3 +1,6 @@
+<?php
+include_once "assets/config.php"; // Database connection
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,27 +10,24 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/panel.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <link rel="stylesheet" href="css/Opanel.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa; /* Light background */
-        }
-        #main, #main-content {
-  transition: margin-left 0.3s; /* Smooth transition */
-}
+    
         .card {
-        background-color: #ADADAD; /* Set background color */
-        border: none; /* Remove default border */
-        border-radius: 10px; /* Rounded corners */
-        transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effects */
-    }
-    .card:hover {
-        transform: translateY(-5px); /* Lift effect on hover */
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Add shadow */
-    }
+            background-color: #ADADAD;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
         .card i {
-            font-size: 60px;
+            font-size: 40px;
             margin-bottom: 10px;
         }
         .text-title {
@@ -44,161 +44,146 @@
     </style>
 </head>
 <body>
-    <?php
+<?php
         include "Header_nav/staffHeader .php"; // Header for admin panel
-        include "Header_nav/staffsidebar.php"; // Sidebar for navigation
-        include_once "assets/config.php"; // Database connection
     ?>
 
-<div id="main-content" class="container allContent-section py-4 text-center">
-        <h1 class=" text-center">Dashboard</h1>
-        <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
-    <!-- Total Sales -->
-    <div class="col-md-3 col-12 mb-4">
-        <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
-            <div class="card-body">
-                <i class="fa fa-dollar"></i>
-                <p class="text-title">Total Sales</p>
-                <h5 id="totalSales">
-                    <?php
-                        $sql = "SELECT SUM(orders.total_amount) AS total_sales FROM orders WHERE orders.status IN ('Completed', 'paid in advance')";
-                        $result = $conn->query($sql);
-                        echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sales'] ?? 0, 2) : '0.00');
-                    ?>
-                </h5>
-            </div>
-        </div>
-    </div>
+    <div class="d-flex" >
+        <!-- Sidebar -->
+        <div id="mySidebar" class="flex-shrink-0">
+<?php
+        include "Header_nav/staffsidebar.php"; // Sidebar for navigation
 
-    <!-- Total Orders -->
-    <div class="col-md-3 col-12 mb-4">
-        <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
-            <div class="card-body">
-                <i class="fa fa-list"></i>
-                <p class="text-title">Total Orders</p>
-                <h5 id="totalOrders">
-                    <?php
-                        $sql = "SELECT COUNT(orders.order_id) AS total_orders FROM orders WHERE orders.status != 'Canceled'";
-                        $result = $conn->query($sql);
-                        echo $result && $row = $result->fetch_assoc() ? $row['total_orders'] ?? 0 : '0';
-                    ?>
-                </h5>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total Sold -->
-    <div class="col-md-3 col-12 mb-4">
-        <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
-            <div class="card-body">
-                <i class="fa fa-bar-chart"></i>
-                <p class="text-title">Total Sold</p>
-                <h5 id="totalSold">
-                    <?php
-                        $sql = "
-                            SELECT SUM(receipt_items.item_total_price) AS total_sold 
-                            FROM receipt_items 
-                            JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
-                            JOIN orders ON receipts.order_id = orders.order_id 
-                            WHERE orders.status IN ('Completed', 'paid in advance')
-                        ";
-                        $result = $conn->query($sql);
-                        echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sold'] ?? 0, 2) : '0.00');
-                    ?>
-                </h5>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total Customers -->
-    <div class="col-md-3 col-12 mb-4">
-        <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
-            <div class="card-body">
-                <i class="fa fa-users"></i>
-                <p class="text-title">Total Customers</p>
-                <h5 id="totalCustomers">
-                    <?php
-                        $sql = "SELECT COUNT(DISTINCT orders.user_id) AS total_customers FROM orders";
-                        $result = $conn->query($sql);
-                        echo $result && $row = $result->fetch_assoc() ? $row['total_customers'] ?? 0 : '0';
-                    ?>
-                </h5>
-            </div>
-        </div>
-    </div>
+?>        
 </div>
+    <div id="main-content" class="container-fluid allContent-section py-4 text-center ">
+        <h1 class="text-center">Dashboard</h1>
+        <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
+            <!-- Total Sales -->
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
+                    <div class="card-body">
+                        <i class="fa fa-dollar"></i>
+                        <p class="text-title">Total Sales</p>
+                        <h5 id="totalSales">
+                            <?php
+                                $sql = "SELECT SUM(orders.total_amount) AS total_sales FROM orders WHERE orders.status IN ('Completed', 'paid in advance')";
+                                $result = $conn->query($sql);
+                                echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sales'] ?? 0, 2) : '0.00');
+                            ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Total Orders -->
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
+                    <div class="card-body">
+                        <i class="fa fa-list"></i>
+                        <p class="text-title">Total Orders</p>
+                        <h5 id="totalOrders">
+                            <?php
+                                $sql = "SELECT COUNT(orders.order_id) AS total_orders FROM orders WHERE orders.status != 'Canceled'";
+                                $result = $conn->query($sql);
+                                echo $result && $row = $result->fetch_assoc() ? $row['total_orders'] ?? 0 : '0';
+                            ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Total Sold -->
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
+                    <div class="card-body">
+                        <i class="fa fa-bar-chart"></i>
+                        <p class="text-title">Total Sold</p>
+                        <h5 id="totalSold">
+                            <?php
+                                $sql = "
+                                    SELECT SUM(receipt_items.item_total_price) AS total_sold 
+                                    FROM receipt_items 
+                                    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
+                                    JOIN orders ON receipts.order_id = orders.order_id 
+                                    WHERE orders.status IN ('Completed', 'paid in advance')
+                                ";
+                                $result = $conn->query($sql);
+                                echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sold'] ?? 0, 2) : '0.00');
+                            ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Total Customers -->
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
+                    <div class="card-body">
+                        <i class="fa fa-users"></i>
+                        <p class="text-title">Total Customers</p>
+                        <h5 id="totalCustomers">
+                            <?php
+                                $sql = "SELECT COUNT(DISTINCT orders.user_id) AS total_customers FROM orders";
+                                $result = $conn->query($sql);
+                                echo $result && $row = $result->fetch_assoc() ? $row['total_customers'] ?? 0 : '0';
+                            ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Charts Section -->
         <div class="row mt-5">
             <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Sales Trend</h5>
-        <canvas id="salesTrendChart" width="600" height="300"></canvas>
-    </div>
-</div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Sales Trend</h5>
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
 
-
-<div class="card shadow-sm mt-4">
-    <div class="card-body">
-        <h5 class="card-title">Orders Distribution</h5>
-        <canvas id="ordersDistributionChart" width="600" height="300"></canvas>
-    </div>
-</div>
+                <div class="card shadow-sm mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Orders Distribution</h5>
+                        <canvas id="ordersDistributionChart"></canvas>
+                    </div>
+                </div>
             </div>
 
-           <!-- Recent Activity & Popular Products -->
-           <div class="col-lg-4">
-    <div class="card shadow-sm mb-4">
-        <div class="card-body p-3">
-            <h5 class="card-title">Recent Activity</h5>
-            <ul class="list-group">
-                <?php
-                    $sql = "SELECT action_details, created_at FROM activity_logs ORDER BY created_at DESC LIMIT 5";
-                    $result = $conn->query($sql);
-                    if ($result) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<li class='list-group-item'>" . htmlspecialchars($row['action_details']) . " - " . date('Y-m-d H:i', strtotime($row['created_at'])) . "</li>";
-                        }
-                    }
-                ?>
-            </ul>
-        </div>
-    </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body p-3">
-            <h5 class="card-title">Popular Products</h5>
-            <ul class="list-group">
-                <?php
-                    $sql = "
-                        SELECT product_items.product_name, product_items.product_image, SUM(receipt_items.quantity) AS total_sold 
-                        FROM receipt_items 
-                        JOIN product_items ON receipt_items.product_id = product_items.product_id 
-                        GROUP BY product_items.product_name, product_items.product_image 
-                        ORDER BY total_sold DESC 
-                        LIMIT 5
-                    ";
-                    $result = $conn->query($sql);
-                    if ($result) {
-                        while ($row = $result->fetch_assoc()) {
-                            $imagePath = $row['product_image'] ? htmlspecialchars($row['product_image']) : '../uploads/default-placeholder.jpg';
-                            echo "<li class='list-group-item d-flex align-items-center'>
-                                    <img src='$imagePath' alt='Product Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
-                                    <div>
-                                        <strong>" . htmlspecialchars($row['product_name']) . "</strong> - " . $row['total_sold'] . " sold
-                                    </div>
-                                  </li>";
-                        }
-                    }
-                ?>
-            </ul>
-        </div>
-    </div>
-
+            <!-- Recent Activity & Popular Products -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-3">
+                        <h5 class="card-title">Popular Products</h5>
+                        <ul class="list-group">
+                            <?php
+                                $sql = "
+                                    SELECT product_items.product_name, product_items.product_image, SUM(receipt_items.quantity) AS total_sold 
+                                    FROM receipt_items 
+                                    JOIN product_items ON receipt_items.product_id = product_items.product_id 
+                                    GROUP BY product_items.product_name, product_items.product_image 
+                                    ORDER BY total_sold DESC 
+                                    LIMIT 5
+                                ";
+                                $result = $conn->query($sql);
+                                if ($result) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        $imagePath = $row['product_image'] ? htmlspecialchars($row['product_image']) : '../uploads/default-placeholder.jpg';
+                                        echo "<li class='list-group-item d-flex align-items-center'>
+                                                <img src='$imagePath' alt='Product Image' class='rounded' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
+                                                <div>
+                                                    <strong>" . htmlspecialchars($row['product_name']) . "</strong> - " . $row['total_sold'] . " sold
+                                                </div>
+                                              </li>";
+                                    }
+                                }
+                            ?>
+                        </ul>
+                    </div>
+                </div>
+                
 <!-- Popular Reserved Tables -->
 <div class="card shadow-sm mb-4">
     <div class="card-body p-3">
@@ -248,30 +233,15 @@
         </ul>
     </div>
 </div>
-
-
-
-
-
-
 </div>
+            </div>
 
-
-
+            
         </div>
     </div>
+    </div>
 
-
-
-
-
-
-
-
-
-
-    
-    <!-- Script Loading Order and Dependencies -->
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
@@ -280,9 +250,35 @@
     <script src="Js/staffpanel.js"></script>
     <script src="Js/navb.js"></script>
     <script src="Js/viewmessage.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
 
-    <script>
+<!-- generate report -->
+ <!-- Include jQuery -->
+
+
+
+
+<!-- Include DataTables Buttons extension CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+  <script src="Js/viewmessage.js"></script>
+</body>
+</html>
+
+<script>
+
 fetch('../assets/fetch_data.php')
     .then(response => {
         if (!response.ok) {
@@ -411,8 +407,3 @@ fetch('../assets/fetch_data.php')
 
 
 </script>
-
-
-
-</body>
-</html>

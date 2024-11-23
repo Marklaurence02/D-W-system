@@ -2,7 +2,6 @@
 include_once "../assets/config.php";
 
 // Assume user_id is stored in session (modify based on your authentication system)
-session_name("admin_session");
 session_start();
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 

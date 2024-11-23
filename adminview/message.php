@@ -1,6 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="stylesheet" href="css/panel.css">
+    
+    
+</head>
+<body>
+    <?php
+        include "Header_nav/ownerHeader.php"; // Header for admin panel
+        include "Header_nav/own-sidebar.php"; // Sidebar for navigation
+        
+
+    ?>
+
 <?php
-session_start();
-include '../assets/config.php';
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+include 'assets/config.php';
 
 header('Content-Type: text/html; charset=UTF-8');
 
@@ -58,27 +83,39 @@ if (!empty($rolesToFetch)) {
 $conn->close();
 ?>
 
-<div class="container mt-5">
+<div class="container">
     <!-- User List -->
     <div class="card mx-auto user-list" id="user-list">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Messages</h5>
+            <input type="text" id="search-input" class="form-control search-input d-none" placeholder="Search..." oninput="searchMessage()">
+            <i class='bx bx-search-alt-2' onclick="toggleSearchInput()"></i>
         </div>
         <div class="list-group list-group-flush" id="user-list-content">
             <?php if (!empty($users)): ?>
                 <?php foreach ($users as $user): ?>
-                    <div class="list-group-item d-flex justify-content-between align-items-center user-item" 
+                    <div class="list-group-item d-flex justify-content-between align-items-center user-item border-blue" 
                          data-user-id="<?php echo $user['user_id']; ?>" 
                          onclick="openConversation(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')">
                         <div class="d-flex align-items-center">
                             <div class="user-initial">
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             </div>
-                            <div>
-                                <div class="username"><?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?></div>
-                                <small class="text-muted"><?php echo htmlspecialchars($user['role'], ENT_QUOTES); ?></small>
+                            <div class="user-details">
+                                <div class="username">
+                                    <?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>
+                                    <span class="role">(<?php echo htmlspecialchars($user['role'], ENT_QUOTES); ?>)</span>
+                                </div>
+                                <small class="text-muted recent-message">
+                                    Loading...
+                                </small>
+                                <div class="message-date text-muted">
+                                    <!-- This will display the timestamp -->
+                                </div>
                             </div>
                         </div>
+                        <!-- Blue dot for unread messages -->
+                        <span class="blue-dot d-none"></span>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -86,6 +123,8 @@ $conn->close();
             <?php endif; ?>
         </div>
     </div>
+</div>
+
 
     <!-- Conversation View -->
     <div class="card mx-auto conversation-view d-none" id="conversation-view">
@@ -105,16 +144,15 @@ $conn->close();
     </div>
 </div>
 
-<script src="Js/viewmessage.js"></script>
 
 
 
 <style>
 /* Container and Card */
-/* Container and Card */
 .container {
-    max-width: 600px;
+    max-width: 100%;
     padding-top: 40px;
+    align-items: center;
 }
 
 /* Card */
@@ -124,9 +162,34 @@ $conn->close();
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-width: 100%;
+    width: 100%;
+}
+/* Centered Date Separator */
+.separator-centered {
+    text-align: center;
+    margin: 10px 0;
+    position: relative;
+    font-size: 0.85rem;
+    color: #888;
 }
 
+.separator-centered .timestamp {
+    background-color: #f8f9fa; /* Matches the chat background */
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.separator-centered::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+    z-index: 0;
+}
 /* Header */
 .card-header {
     background-color: #3B3131;
@@ -145,21 +208,51 @@ $conn->close();
     color: #ffffff;
 }
 
+/* Search Bar */
+.input-group .search-input {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #333333;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+.input-group-text {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #333333;
+}
+
 /* Conversation List */
 .list-group-item {
     background-color: #ffffff;
     color: #333333;
-    padding: 20px 25px;
+    padding: 15px 20px;
     border-bottom: 1px solid #e0e0e0;
+    border-left: 5px solid transparent;  /* Default transparent border */
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, border-color 0.2s;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.list-group-item.border-blue {
+    border-left-color: #007bff;  /* Blue border for unread messages */
 }
 
 .list-group-item:hover {
     background-color: #f1f1f1;
 }
-
+/* Blue Dot for Unread Messages */
+.blue-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #007bff;
+    border-radius: 50%;
+    margin-left: 10px;
+    display: inline-block;
+}
 /* User Initial */
 .user-initial {
     width: 45px;
@@ -175,6 +268,28 @@ $conn->close();
     margin-right: 15px;
 }
 
+.username {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.recent-message {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
+
+.unread-count {
+    font-size: 0.75rem;
+    display: inline-block;
+    min-width: 20px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 12px;
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
 .message-history {
     padding: 15px;
     max-height: 400px;
@@ -183,7 +298,7 @@ $conn->close();
 
 .message {
     margin-bottom: 15px;
-    max-width: 80%;
+    max-width: 100%;
 }
 
 .sent p {
@@ -193,6 +308,7 @@ $conn->close();
     border-radius: 12px;
     text-align: right;
     margin-left: auto;
+    width: fit-content;
 }
 
 .received p {
@@ -200,24 +316,70 @@ $conn->close();
     color: #333;
     padding: 10px 15px;
     border-radius: 12px;
+    width: fit-content;
 }
 
-/* Highlight effect for new messages */
-@keyframes new-message-highlight {
-    0% { background-color: #ffff99; }
-    100% { background-color: transparent; }
+
+/* Hidden by default */
+.d-none {
+    display: none;
 }
 
-.new-message {
-    animation: new-message-highlight 1s ease-out;
+#message-box {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.message-form{
+    width: fit-content;
 }
 
-/* Badge notification on user list */
-.user-item.has-new-message::after {
-    content: "•";
-    color: #ff0000;
-    font-size: 1.2rem;
-    margin-left: 8px;
+/* Hide the search input and dots menu by default */
+.search-input {
+    display: none;
 }
+
 
 </style>
+
+<!-- Script Loading Order and Dependencies -->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="Js/Ownerpanel.js"></script>
+<script src="Js/navb.js"></script>
+<script src="Js/viewmessage.js"></script>
+
+</body>
+</html>
+
+
+<script>
+// Toggle the visibility of the search input field
+function toggleSearchInput() {
+    const searchInput = document.getElementById('search-input');
+    searchInput.classList.toggle('d-none');
+}
+
+// Search function that filters messages based on name, date, or content
+function searchMessage() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const users = document.querySelectorAll('.user-item');
+    users.forEach(user => {
+        const username = user.querySelector('.username').textContent.toLowerCase();
+        const message = user.querySelector('.recent-message').textContent.toLowerCase();
+        const date = user.querySelector('.message-date').textContent.toLowerCase();
+        
+        if (username.includes(query) || message.includes(query) || date.includes(query)) {
+            user.style.display = '';
+        } else {
+            user.style.display = 'none';
+        }
+    });
+}
+
+
+
+
+
+</script>

@@ -1,9 +1,7 @@
 <?php
 include '../assets/config.php';
-session_name("staff_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+
 header('Content-Type: application/json');
 
 // Check if the required data is present

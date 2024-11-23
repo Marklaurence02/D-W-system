@@ -1,12 +1,8 @@
 <?php
 // get_messages
-include '../assets/config.php';
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-// Ensure output buffering is started to avoid any unexpected output
-ob_start();
+session_start();
+
+
 
 if (!isset($_SESSION['user_id'], $_GET['receiver'])) {
     http_response_code(401);

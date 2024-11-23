@@ -17,7 +17,7 @@ function loadUserRecentMessages() {
         const usernameElement = userItem.querySelector('.username'); // Element for the username
 
         // Fetch the most recent message and unread count for each user
-        fetch(`/OmessageC/get_recent_message.php?user_id=${userId}`)
+        fetch(`/SmessageC/get_recent_message.php?user_id=${userId}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
                 return response.json();
@@ -27,9 +27,9 @@ function loadUserRecentMessages() {
                 if (data && data.recent_message) {
                     recentMessageElement.textContent = data.recent_message; // Update the recent message text
 
-                    // Format the timestamp (assuming it's in `YYYY-MM-DD HH:MM:SS` format)
+                    // Format the timestamp (removing seconds)
                     const messageDate = new Date(data.timestamp);
-                    const formattedDate = messageDate.toLocaleString(); // Format the date as per local timezone
+                    const formattedDate = formatMessageDate(messageDate);
 
                     // Display the formatted date
                     messageDateElement.textContent = formattedDate;
@@ -65,6 +65,21 @@ function loadUserRecentMessages() {
     });
 }
 
+// Function to format the timestamp without seconds
+function formatMessageDate(messageDate) {
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true, // Use 12-hour clock with AM/PM
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    };
+
+    // Return the formatted date without seconds
+    return messageDate.toLocaleString('en-US', options); // You can adjust 'en-US' as needed
+}
+
 function openConversation(userId, username) {
     selectedUserId = userId;  // Corrected variable name
     latestMessageTimestamp = null;
@@ -93,7 +108,7 @@ function loadMessages() {
     }
 
     const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
-    const url = `/OmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
+    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
                 (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
     let lastMessageMinute = null;
@@ -154,7 +169,7 @@ function sendMessage(event) {
         return;
     }
 
-    fetch("/OmessageC/post_message.php", {
+    fetch("/SmessageC/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data

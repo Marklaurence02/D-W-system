@@ -233,10 +233,12 @@ function updateProfile() {
 #mySidebar {
     width: fit-content;
     transition: all 0.4s ease;
+    height: 100%;
 }
 
 #mySidebar.collapsed {
     width: fit-content;
+    height: 100%;
 }
 
 #mySidebar.collapsed .nav-link span {

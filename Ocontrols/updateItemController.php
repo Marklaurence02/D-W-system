@@ -1,7 +1,6 @@
 <?php
 include_once "../assets/config.php"; // Ensure correct path to config file
 
-session_name("admin_session");
 session_start();
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 

@@ -10,23 +10,24 @@ include_once "assets/config.php"; // Database connection
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/panel.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <link rel="stylesheet" href="css/Opanel.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa; /* Light background */
-        }
+    
         .card {
-            border: none; /* Remove border */
-            border-radius: 10px; /* Rounded corners */
-            transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effects */
+            background-color: #ADADAD;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         .card:hover {
-            transform: translateY(-5px); /* Lift effect */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow */
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         .card i {
-            font-size: 60px;
+            font-size: 40px;
             margin-bottom: 10px;
         }
         .text-title {
@@ -43,17 +44,24 @@ include_once "assets/config.php"; // Database connection
     </style>
 </head>
 <body>
-    <?php
-        include "Header_nav/adminHeader.php"; // Header for admin panel
-        include "Header_nav/ad-sidebar.php"; // Sidebar for navigation
+<?php
+        include "Header_nav/staffHeader .php"; // Header for admin panel
     ?>
 
-    <div id="main-content" class="container allContent-section py-4">
+    <div class="d-flex" >
+        <!-- Sidebar -->
+        <div id="mySidebar" class="flex-shrink-0">
+<?php
+        include "Header_nav/staffsidebar.php"; // Sidebar for navigation
+
+?>        
+</div>
+    <div id="main-content" class="container-fluid allContent-section py-4 text-center ">
         <h1 class="text-center">Dashboard</h1>
-        <div class="row">
+        <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
             <!-- Total Sales -->
-            <div class="col-sm-3 mb-4">
-                <div class="card text-center bg-success text-white shadow-sm">
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
                     <div class="card-body">
                         <i class="fa fa-dollar"></i>
                         <p class="text-title">Total Sales</p>
@@ -69,8 +77,8 @@ include_once "assets/config.php"; // Database connection
             </div>
 
             <!-- Total Orders -->
-            <div class="col-sm-3 mb-4">
-                <div class="card text-center bg-warning text-white shadow-sm">
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
                     <div class="card-body">
                         <i class="fa fa-list"></i>
                         <p class="text-title">Total Orders</p>
@@ -86,8 +94,8 @@ include_once "assets/config.php"; // Database connection
             </div>
 
             <!-- Total Sold -->
-            <div class="col-sm-3 mb-4">
-                <div class="card text-center bg-info text-white shadow-sm">
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
                     <div class="card-body">
                         <i class="fa fa-bar-chart"></i>
                         <p class="text-title">Total Sold</p>
@@ -109,8 +117,8 @@ include_once "assets/config.php"; // Database connection
             </div>
 
             <!-- Total Customers -->
-            <div class="col-sm-3 mb-4">
-                <div class="card text-center bg-primary text-white shadow-sm">
+            <div class="col-lg-3 col-md-6 col-12 mb-4">
+                <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
                     <div class="card-body">
                         <i class="fa fa-users"></i>
                         <p class="text-title">Total Customers</p>
@@ -129,16 +137,17 @@ include_once "assets/config.php"; // Database connection
         <!-- Charts Section -->
         <div class="row mt-5">
             <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Sales Trend</h5>
-        <canvas id="salesTrendChart" width="600" height="300"></canvas>
-    </div>
-</div>
-                <div class="card shadow-sm">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Sales Trend</h5>
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mt-4">
                     <div class="card-body">
                         <h5 class="card-title">Orders Distribution</h5>
-                        <canvas id="ordersDistributionChart" width="600" height="300"></canvas>
+                        <canvas id="ordersDistributionChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -146,118 +155,255 @@ include_once "assets/config.php"; // Database connection
             <!-- Recent Activity & Popular Products -->
             <div class="col-lg-4">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Recent Activity</h5>
-                        <ul class="list-group">
-                            <?php
-                                $sql = "SELECT action_details, created_at FROM activity_logs ORDER BY created_at DESC LIMIT 5";
-                                $result = $conn->query($sql);
-                                if ($result) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<li class='list-group-item'>" . htmlspecialchars($row['action_details']) . " - " . date('Y-m-d H:i', strtotime($row['created_at'])) . "</li>";
-                                    }
-                                }
-                            ?>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body p-3">
                         <h5 class="card-title">Popular Products</h5>
                         <ul class="list-group">
                             <?php
                                 $sql = "
-                                    SELECT product_items.product_name, SUM(receipt_items.quantity) AS total_sold 
+                                    SELECT product_items.product_name, product_items.product_image, SUM(receipt_items.quantity) AS total_sold 
                                     FROM receipt_items 
                                     JOIN product_items ON receipt_items.product_id = product_items.product_id 
-                                    GROUP BY product_items.product_name 
+                                    GROUP BY product_items.product_name, product_items.product_image 
                                     ORDER BY total_sold DESC 
                                     LIMIT 5
                                 ";
                                 $result = $conn->query($sql);
                                 if ($result) {
                                     while ($row = $result->fetch_assoc()) {
-                                        echo "<li class='list-group-item'>" . htmlspecialchars($row['product_name']) . " - " . $row['total_sold'] . " sold</li>";
+                                        $imagePath = $row['product_image'] ? htmlspecialchars($row['product_image']) : '../uploads/default-placeholder.jpg';
+                                        echo "<li class='list-group-item d-flex align-items-center'>
+                                                <img src='$imagePath' alt='Product Image' class='rounded' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
+                                                <div>
+                                                    <strong>" . htmlspecialchars($row['product_name']) . "</strong> - " . $row['total_sold'] . " sold
+                                                </div>
+                                              </li>";
                                     }
                                 }
                             ?>
                         </ul>
                     </div>
                 </div>
+                
+<!-- Popular Reserved Tables -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-3">
+        <h5 class="card-title">All Reserved Tables</h5>
+        <ul class="list-group">
+            <?php
+                // SQL Query to fetch the number of reservations for each table_id and associated image path
+                $sql = "
+                    SELECT 
+                        tables.table_number, 
+                        tables.table_id, 
+                        COUNT(DISTINCT reservations.reservation_id) AS reservation_count,
+                        MIN(table_images.image_path) AS image_path
+                    FROM reservations
+                    JOIN tables ON reservations.table_id = tables.table_id
+                    LEFT JOIN table_images ON tables.table_id = table_images.table_id
+                    WHERE reservations.status IN ('Complete', 'Paid') 
+                    GROUP BY tables.table_id
+                    ORDER BY reservation_count DESC
+                ";
+
+                // Execute the query
+                $result = $conn->query($sql);
+
+                if ($result) {
+                    // Loop through the results and display table reservation counts
+                    while ($row = $result->fetch_assoc()) {
+                        // Check if the image path exists, otherwise use a placeholder image
+                        $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
+                        
+                        // Log for debugging purposes
+                        error_log("Table #" . htmlspecialchars($row['table_number']) . " has " . $row['reservation_count'] . " reservations.");
+
+                        // Display each table reservation data
+                        echo "<li class='list-group-item d-flex align-items-center'>
+                                <img src='$imagePath' alt='Table Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
+                                <div>
+                                    <strong>Table #" . htmlspecialchars($row['table_number']) . "</strong> - " . $row['reservation_count'] . " Reservation
+                                </div>
+                              </li>";
+                    }
+                } else {
+                    // If no reservations found, display a message
+                    echo "<li class='list-group-item'>No reservations found.</li>";
+                }
+            ?>
+        </ul>
+    </div>
+</div>
+</div>
             </div>
+
+            
         </div>
     </div>
+    </div>
 
-    <!-- Script Loading Order and Dependencies -->
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="Js/sales_chart.js"></script>
-    <script src="Js/panel.js"></script>
-        <script src="Js/navb.js"></script>
+    <script src="Js/staffpanel.js"></script>
+    <script src="Js/navb.js"></script>
+    <script src="Js/viewmessage.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
-    <script>
-    fetch('assets/fetch_data.php')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const chartLabels = data.chartLabels ?? [];
-            const chartData = data.chartData ?? [];
-            const totalSales = data.totalSales ?? 0;
-            const totalOrders = data.totalOrders ?? 0;
-            const totalSold = data.totalSold ?? 0;
-            const totalCustomers = data.totalCustomers ?? 0;
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
 
-            // Display values in HTML
-            document.getElementById('totalSales').innerText = '₱' + totalSales.toLocaleString();
-            document.getElementById('totalOrders').innerText = totalOrders;
-            document.getElementById('totalSold').innerText = totalSold;
-            document.getElementById('totalCustomers').innerText = totalCustomers;
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
-            // Create Sales Trend chart using Chart.js
-            const trendCtx = document.getElementById('salesTrendChart').getContext('2d');
-            new Chart(trendCtx, {
-                type: 'line',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Sales Trend (₱)',
-                        data: chartData,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.3, // Smooth curve
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Month'
-                            }
+
+<!-- generate report -->
+ <!-- Include jQuery -->
+
+
+
+
+<!-- Include DataTables Buttons extension CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+  <script src="Js/viewmessage.js"></script>
+</body>
+</html>
+
+<script>
+
+fetch('../assets/fetch_data.php')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Extract data with default fallbacks
+        const chartLabels = data.chartLabels ?? [];
+        const chartData = data.chartData ?? [];
+        const totalSales = data.totalSales ?? 0;
+        const totalOrders = data.totalOrders ?? 0;
+        const totalSold = data.totalSold ?? 0;
+        const totalCustomers = data.totalCustomers ?? 0;
+        const orderStatuses = data.orderStatuses ?? [];
+        const orderCounts = data.orderCounts ?? [];
+
+        // Display values in HTML
+        document.getElementById('totalSales').innerText = '₱' + totalSales.toLocaleString('en-US');
+        document.getElementById('totalOrders').innerText = totalOrders.toLocaleString('en-US');
+        document.getElementById('totalSold').innerText = totalSold.toLocaleString('en-US');
+        document.getElementById('totalCustomers').innerText = totalCustomers.toLocaleString('en-US');
+
+        // Create Sales Trend chart using Chart.js
+        const trendCtx = document.getElementById('salesTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Sales Trend (₱)',
+                    data: chartData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3, // Smooth curve
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Sales Amount (₱)'
                         },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Sales Amount (₱)'
-                            },
-                            beginAtZero: true
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    afterDraw: (chart) => {
+                        const ctx = chart.ctx;
+                        ctx.save();
+                        ctx.font = '14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = 'gray';
+
+                        // Display current date at the bottom of the chart
+                        const currentDate = new Date();
+                        const formattedDate = currentDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        const chartWidth = chart.width;
+                        const chartHeight = chart.height;
+                        ctx.fillText(
+                            `Date: ${formattedDate}`,
+                            chartWidth / 2,
+                            chartHeight + chart.options.layout.padding.bottom - 10
+                        );
+                        ctx.restore();
+                    }
+                },
+                layout: {
+                    padding: {
+                        bottom: 40 // Ensure space for the date text
+                    }
+                }
+            }
+        });
+
+        // Create Orders Distribution chart using Chart.js
+        const ordersCtx = document.getElementById('ordersDistributionChart').getContext('2d');
+        new Chart(ordersCtx, {
+            type: 'bar',
+            data: {
+                labels: orderStatuses, // Array of order statuses
+                datasets: [{
+                    label: 'Number of Orders',
+                    data: orderCounts, // Array of counts for each status
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Order Status'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
                         }
                     }
                 }
-            });
-        })
-        .catch(error => console.error('Error fetching data:', error));
-</script>
+            }
+        });
+    })
+    .catch(error => console.error('Error fetching data:', error));
 
-</body>
-</html>
+
+</script>

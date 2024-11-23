@@ -27,9 +27,9 @@ function loadUserRecentMessages() {
                 if (data && data.recent_message) {
                     recentMessageElement.textContent = data.recent_message; // Update the recent message text
 
-                    // Format the timestamp (assuming it's in `YYYY-MM-DD HH:MM:SS` format)
+                    // Format the timestamp (removing seconds)
                     const messageDate = new Date(data.timestamp);
-                    const formattedDate = messageDate.toLocaleString(); // Format the date as per local timezone
+                    const formattedDate = formatMessageDate(messageDate);
 
                     // Display the formatted date
                     messageDateElement.textContent = formattedDate;
@@ -65,6 +65,23 @@ function loadUserRecentMessages() {
     });
 }
 
+// Function to format the timestamp without seconds
+function formatMessageDate(messageDate) {
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true, // Use 12-hour clock with AM/PM
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    };
+
+    // Return the formatted date without seconds
+    return messageDate.toLocaleString('en-US', options); // You can adjust 'en-US' as needed
+}
+
+
+// Open a conversation with the selected user
 function openConversation(userId, username) {
     selectedUserId = userId;  // Corrected variable name
     latestMessageTimestamp = null;
@@ -86,6 +103,8 @@ function openConversation(userId, username) {
     loadMessages();
 }
 
+// Load the messages of the selected conversation
+// Load the messages of the selected conversation
 function loadMessages() {
     if (!selectedUserId) {  // Corrected variable name
         console.error("No user selected.");
@@ -133,8 +152,13 @@ function loadMessages() {
                 lastMessageMinute = currentMessageMinute;
             });
 
+            // After messages are loaded, update the recent message and status for the selected user
             if (messages.length > 0) {
+                // Update the latest message timestamp for future loads
                 latestMessageTimestamp = messages[messages.length - 1].timestamp;
+
+                // Add the blue dot and border for unread messages for the selected user
+                updateRecentMessageForUser(selectedUserId, messages[messages.length - 1].message);
             }
 
             if (isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
@@ -142,63 +166,98 @@ function loadMessages() {
         .catch(error => console.error("Error loading messages:", error));
 }
 
+
+
+// Send a message to the selected user
 let lastSentMessageMinute = null;  // Track the last message minute for sent messages
 
+// Send a message to the selected user
 function sendMessage(event) {
-    event.preventDefault();
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
+    event.preventDefault();  // Prevent form submission if it's a button click
 
-    if (!message || !selectedUserId) {  // Ensure message and selected user exist
+    const messageInput = document.getElementById('message-input');  // Get the message input field
+    const message = messageInput.value.trim();  // Get the trimmed value from the input field
+
+    // Ensure that the message is not empty and that a user is selected
+    if (!message || !selectedUserId) {  
         alert("Please enter a message.");
         return;
     }
 
+    // Send the message to the server
     fetch("/SmessageC/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data
+        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send the message data to backend
     })
-    .then(response => response.json())
+    .then(response => response.json())  // Parse the JSON response
     .then(result => {
         if (result.status === 'success') {
-            const msgDate = new Date();  // Current timestamp for the new message
-            const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();  // Minute of the day
+            const msgDate = new Date();  // Get the current timestamp for the new message
+            const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();  // Get the minute of the day
 
-            // Only add a timestamp if this message is in a new minute
+            // Check if the message should have a timestamp (if it's in a new minute)
             if (lastSentMessageMinute !== currentMessageMinute) {
                 const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                // Create a separator element with the timestamp
+                // Create a separator element to show the timestamp
                 const separatorElement = document.createElement('div');
                 separatorElement.classList.add('separator', 'separator-centered');
                 separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
                 MessageBox.appendChild(separatorElement);
 
-                // Update the last message minute
+                // Update the last sent message minute
                 lastSentMessageMinute = currentMessageMinute;
             }
 
-            // Add the message directly to the message box
+            // Create a new message element
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message', 'sent');  // Mark as sent message
-            messageElement.innerHTML = `
+            messageElement.classList.add('message', 'sent');  // Mark the message as sent
+            messageElement.innerHTML = ` 
                 <p><strong>You:</strong> ${message}</p>
             `;
 
-            // Append message and auto-scroll to the bottom
+            // Append the message to the message box and scroll to the bottom
             MessageBox.appendChild(messageElement);
             MessageBox.scrollTop = MessageBox.scrollHeight;
 
-            // Clear the input field
+            // Clear the input field for the next message
             messageInput.value = '';
+
+            // Update the recent message for the selected user
+            updateRecentMessageForUser(selectedUserId, message);
         } else {
-            console.error("Error sending message:", result.message);
+            console.error("Error sending message:", result.message);  // Handle sending error
         }
     })
-    .catch(error => console.error("Error sending message:", error));
+    .catch(error => console.error("Error sending message:", error));  // Catch network errors
 }
 
+
+// Function to update the recent message for the selected user
+function updateRecentMessageForUser(userId, message, isConversationOpen) {
+    const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
+    const recentMessageElement = userItem.querySelector('.recent-message');
+    const messageDateElement = userItem.querySelector('.message-date');
+    const blueDotElement = userItem.querySelector('.blue-dot');
+    
+    // Get the current time for the message
+    const messageDate = new Date();
+    const formattedDate = messageDate.toLocaleString(); // Format the date as per local timezone
+    messageDateElement.textContent = formattedDate;
+
+    if (isConversationOpen) {
+        // If the conversation is open, show the actual messages and hide the recent message notification
+        recentMessageElement.textContent = ""; // Clear the recent message
+        blueDotElement.classList.add('d-none'); // Hide the blue dot
+        userItem.classList.remove('border-blue'); // Remove the blue border
+    } else {
+        // If the conversation is not open, show the "New Message" notification and blue dot
+        recentMessageElement.textContent = message;
+        blueDotElement.classList.remove('d-none'); // Show the blue dot
+        userItem.classList.add('border-blue'); // Add blue border for unread messages
+    }
+}
 
 
 // Switch back to user list view

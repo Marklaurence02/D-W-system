@@ -1,74 +1,68 @@
-<div>
-  <h2>Category List</h2>
+<?php
+session_name("owner_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include_once "../assets/config.php"; // Include database connection
+?>
 
-  <!-- Add Category Button at the Top -->
-  <div class="d-flex justify-content-between mb-3">
-    <!-- Filter Categories (Optional) -->
-    <div>
-      <label for="filter_category_type">Filter by Category: </label>
-      <select id="filter_category_type" class="form-control" style="width: 200px; display: inline-block;" onchange="filterCategories()">
-        <option value="All">All</option>
-        <!-- Add your specific category options if needed -->
-      </select>
-    </div>
-
-    <!-- Add Category Button -->
-    <button type="button" class="btn btn-secondary" style="height:40px" data-toggle="modal" data-target="#categoryModal">
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h2 class="text-center">Category Management</h2>
+            <button type="button" class="btn btn-secondary" style="height:40px" data-toggle="modal" data-target="#categoryModal">
       Add Category
     </button>
-  </div>
+            <!-- Table for Categories -->
+            <div class="table-responsive">
+                <table id="categoriesTable" class="table table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Category Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $sql = "SELECT * FROM product_categories";
+                        $result = $conn->query($sql);
 
-  <div class="category-list">
-    <table class="table">
-        <thead>
-            <tr>
-                <th class="text-center">S.N.</th>
-                <th class="text-center">Category Name</th>
-                <th class="text-center" colspan="2">Action</th>
-            </tr>
-        </thead>
-        <tbody id="category_table_body">
-            <!-- Category rows will be dynamically updated here via refreshCategoryList() -->
-            <?php
-            include_once "../assets/config.php";
-
-            // Fetch all categories
-            $sql = "SELECT * FROM product_categories";
-            $result = $conn->query($sql);
-            $count = 1;
-
-            if ($result->num_rows > 0) {
-              while ($row = $result->fetch_assoc()) {
-            ?>
-            <tr class="category-row">
-              <td class="text-center"><?= $count ?></td>
-              <td class="text-center"><?= htmlspecialchars($row["category_name"]) ?></td>
-              <td class="text-center">
-                <button class="btn btn-primary" style="height:40px" onclick="categoryEditForm('<?= $row['category_id'] ?>')">Edit</button>
-              </td>
-              <td class="text-center">
-                <button class="btn btn-danger" style="height:40px" onclick="categoryDelete('<?= $row['category_id'] ?>')">Delete</button>
-              </td>
-            </tr>
-            <?php
-                $count++;
-              }
-            } else {
-              echo "<tr><td colspan='4' class='text-center'>No categories found</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+                        if ($result && $result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                        ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row["category_id"]) ?></td>
+                                <td><?= htmlspecialchars($row["category_name"]) ?></td>
+                                <td>
+                                    <button 
+                                        class="btn btn-primary openPopup" 
+                                        data-id="<?= htmlspecialchars($row['category_id']) ?>">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="categoryDelete('<?= $row['category_id'] ?>')">Delete</button>
+                                    </td>
+                            </tr>
+                        <?php
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>No categories found.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 <!-- Modal for Adding Category -->
-<div class="modal fade" id="categoryModal" role="dialog">
+<!-- Modal for Adding Category -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">New Category</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="categoryForm" onsubmit="addCategory(); return false;">
@@ -82,10 +76,44 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" style="height:40px">Close</button>
+                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal" style="height:40px">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editModalLabel">Edit Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editCategoryContent">
+                <!-- Form content will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // Handle Edit Button Click
+        $('.openPopup').on('click', function () {
+            const categoryId = $(this).data('id'); // Get category ID
+            $('#editCategoryContent').html('Loading...'); // Show loading text
+
+            // Load the form dynamically from editcategory-form.php
+            $.post('../Ownerview/editcategory-form.php', { record: categoryId }, function (data) {
+                $('#editCategoryContent').html(data); // Load form into modal body
+                $('#editModal').modal('show'); // Show the modal
+            });
+        });
+
+        // DataTable Initialization
+        new DataTable('#categoriesTable');
+    });
+</script>

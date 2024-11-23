@@ -73,6 +73,7 @@
             pointer-events: none;
         }
 
+        
         input:focus + label,
         input:not(:placeholder-shown) + label {
             top: -10px;

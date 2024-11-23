@@ -4,6 +4,9 @@
 include_once "../assets/config.php"; // Ensure the path to the config file is correct
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Debugging line: uncomment to check received POST data
+    // var_dump($_POST);
+
     // Check if all necessary fields are set
     if (!empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['username']) 
         && !empty($_POST['password']) && !empty($_POST['role']) && !empty($_POST['contact_number']) 
@@ -17,10 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $role = $_POST['role'];
         $contact_number = htmlspecialchars(trim($_POST['contact_number']));
         $email = htmlspecialchars(trim($_POST['email']));
-
-        // Assume that the logged-in user's ID is stored in a session or similar method
-        session_start(); // If you're using session for user login
-        $user_id = $_SESSION['user_id']; // Make sure you set 'user_id' when the user logs in
 
         // Check if email or username already exists in the database
         $check_sql = "SELECT user_id, email, username FROM users WHERE email = ? OR username = ?";
@@ -62,20 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("sssssss", $first_name, $last_name, $username, $password, $role, $contact_number, $email);
 
         if ($stmt->execute()) {
-            // Log the activity for adding a new admin or staff member
-            $action_type = "Add Admin"; // Correct action type
-            $action_details = "$username added a new admin/staff member: $first_name $last_name";
-
-            // Log the activity into the activity logs table
-            $log_stmt = $conn->prepare("INSERT INTO activity_logs (action_by, action_type, action_details, created_at) VALUES (?, ?, ?, NOW())");
-            if ($log_stmt === false) {
-                error_log("MySQL prepare error: " . $conn->error);
-            } else {
-                $log_stmt->bind_param('iss', $user_id, $action_type, $action_details);
-                $log_stmt->execute();
-                $log_stmt->close();
-            }
-
             echo json_encode(['status' => 'success', 'message' => 'Admin/Staff added successfully!']);
         } else {
             error_log("Execute error: " . $stmt->error);

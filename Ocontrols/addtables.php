@@ -1,10 +1,29 @@
 <?php
+session_start();
 include_once "../assets/config.php"; // Ensure correct DB connection
 
 // Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+// Function to log user activities
+function logActivity($conn, $user_id, $action_type, $action_details) {
+    if (is_null($user_id)) {
+        error_log("logActivity error: User ID is null");
+        return;
+    }
+    
+    $query = "INSERT INTO activity_logs (action_by, action_type, action_details) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    if ($stmt) {
+        $stmt->bind_param("iss", $user_id, $action_type, $action_details);
+        $stmt->execute();
+        $stmt->close();
+    } else {
+        error_log("Error logging activity: " . $conn->error);
+    }
+}
 
 // Check if form is submitted with "upload" key
 if (isset($_POST['upload'])) {
@@ -47,6 +66,12 @@ if (isset($_POST['upload'])) {
     if ($stmt->execute()) {
         // Get the inserted table ID
         $table_id = $stmt->insert_id;
+
+        // Log the table addition activity in the activity_logs table
+        $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : null;
+        $action_type = 'Add Table';
+        $action_details = "Added table number $table_number in $area area with seating capacity of $seating_capacity.";
+        logActivity($conn, $user_id, $action_type, $action_details);
     } else {
         echo json_encode(["status" => "error", "message" => "Error inserting table: " . $stmt->error]);
         exit;

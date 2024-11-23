@@ -231,7 +231,7 @@ function updateProfile() {
 <style>
 /* Sidebar Styling */
 #mySidebar {
-    width: fit-content;
+    width:200px;
     transition: all 0.4s ease;
     height: 100%;
 }

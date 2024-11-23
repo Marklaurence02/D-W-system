@@ -10,28 +10,26 @@ if ($page < 1) {
 $offset = ($page - 1) * $limit;
 
 // Retrieve the filter inputs (if provided)
-$search = isset($_GET['search']) ? $conn->real_escape_string(trim($_GET['search'])) : '';
-$startDate = isset($_GET['start_date']) ? $_GET['start_date'] : '';
-$endDate = isset($_GET['end_date']) ? $_GET['end_date'] : '';
+$search = isset($_GET['search']) ? htmlspecialchars($conn->real_escape_string(trim($_GET['search']))) : '';
+$startDate = isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '';
+$endDate = isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '';
 
 // Construct the SQL query to show all users by default or filter if conditions are provided
 $sql = "SELECT * FROM users WHERE role = 'General User'";
 
-//search
+// Search conditions
 if (!empty($search)) {
     // Split search term into words for better matching on first_name and last_name
-    $searchTerms = explode(' ', $search); // Split search into words
+    $searchTerms = explode(' ', $search);
     $searchConditions = [];
 
-    // Combine first_name and last_name for a full name search
-    $fullNameSearch = $conn->real_escape_string($search); // Escape the full search term
-
     // Add a condition to search by full name (concatenated first_name and last_name)
+    $fullNameSearch = $conn->real_escape_string($search);
     $searchConditions[] = "CONCAT(first_name, ' ', last_name) LIKE '%$fullNameSearch%'";
 
-    // For each term, add conditions for first_name, last_name, email, and contact_number
+    // Add conditions for first_name, last_name, email, and contact_number for each term
     foreach ($searchTerms as $term) {
-        $term = $conn->real_escape_string($term); // Ensure each term is properly escaped
+        $term = $conn->real_escape_string($term);
         $searchConditions[] = "(first_name LIKE '%$term%' 
                                 OR last_name LIKE '%$term%' 
                                 OR email LIKE '%$term%' 
@@ -42,9 +40,7 @@ if (!empty($search)) {
     $sql .= " AND (" . implode(' AND ', $searchConditions) . ")";
 }
 
-
-
-// Add date range filter if provided
+// Date range filter if provided
 if (!empty($startDate) && !empty($endDate)) {
     $sql .= " AND DATE(created_at) BETWEEN '$startDate' AND '$endDate'";
 } elseif (!empty($startDate)) {
@@ -53,13 +49,24 @@ if (!empty($startDate) && !empty($endDate)) {
     $sql .= " AND DATE(created_at) <= '$endDate'";
 }
 
-// Count total users for pagination
+// Count total users for pagination with filters
 $total_sql = "SELECT COUNT(*) FROM users WHERE role='General User'";
+
 if (!empty($search)) {
     $total_sql .= " AND (" . implode(' AND ', $searchConditions) . ")";
 }
+
+if (!empty($startDate) && !empty($endDate)) {
+    $total_sql .= " AND DATE(created_at) BETWEEN '$startDate' AND '$endDate'";
+} elseif (!empty($startDate)) {
+    $total_sql .= " AND DATE(created_at) >= '$startDate'";
+} elseif (!empty($endDate)) {
+    $total_sql .= " AND DATE(created_at) <= '$endDate'";
+}
+
+// Execute total count query for pagination
 $total_result = $conn->query($total_sql);
-$total_users = $total_result->fetch_array()[0];
+$total_users = $total_result ? $total_result->fetch_array()[0] : 0;
 $total_pages = ceil($total_users / $limit);
 
 // Append LIMIT and OFFSET for pagination
@@ -67,7 +74,7 @@ $sql .= " LIMIT $limit OFFSET $offset";
 $result = $conn->query($sql);
 
 // Output the results (either all or filtered)
-if ($result->num_rows > 0) {
+if ($result && $result->num_rows > 0) {
     $count = $offset + 1;
     while ($row = $result->fetch_assoc()) {
         echo "<tr>
@@ -82,8 +89,6 @@ if ($result->num_rows > 0) {
 } else {
     echo '<tr><td colspan="5" class="text-center">No users found.</td></tr>';
 }
-
-
 
 // Pagination controls
 if ($total_pages > 1) {
@@ -108,5 +113,3 @@ if ($total_pages > 1) {
     echo '</ul></nav></td></tr>';
 }
 ?>
-
-

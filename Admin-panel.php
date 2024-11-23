@@ -15,6 +15,9 @@ include_once "assets/config.php"; // Database connection
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        #Sidebar{
+            height:auto;
+        }
     
         .card {
             background-color: #ADADAD;
@@ -42,17 +45,19 @@ include_once "assets/config.php"; // Database connection
             border-radius: 5px;
         }
     </style>
+
+
 </head>
 <body>
 <?php
-        include "Header_nav/staffHeader .php"; // Header for admin panel
+        include "Header_nav/adminHeader.php"; // Header for admin panel
     ?>
 
     <div class="d-flex" >
         <!-- Sidebar -->
-        <div id="mySidebar" class="flex-shrink-0">
+        <div id="Sidebar" class="flex-shrink-0">
 <?php
-        include "Header_nav/staffsidebar.php"; // Sidebar for navigation
+        include "Header_nav/ad-sidebar.php"; // Sidebar for navigation
 
 ?>        
 </div>
@@ -233,6 +238,67 @@ include_once "assets/config.php"; // Database connection
         </ul>
     </div>
 </div>
+
+<!-- Feedback Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-3">
+        <h5 class="card-title">Recent Feedback</h5>
+        <ul class="list-group">
+            <?php
+                // SQL Query to fetch the 5 most recent feedback entries
+                $sql = "
+                    SELECT 
+                        feedbacks.feedback_text,
+                        feedbacks.rating,
+                        feedbacks.created_at,
+                        users.first_name,
+                        users.last_name,
+                        users.username
+                    FROM feedbacks
+                    JOIN users ON feedbacks.user_id = users.user_id
+                    ORDER BY feedbacks.created_at DESC
+                    LIMIT 3
+                ";
+
+                // Execute the query
+                $result = $conn->query($sql);
+
+                if ($result && $result->num_rows > 0) {
+                    // Loop through the feedbacks
+                    while ($row = $result->fetch_assoc()) {
+                        // Escape data for security
+                        $userFullName = htmlspecialchars($row['first_name'] . " " . $row['last_name']);
+                        $username = htmlspecialchars($row['username']);
+                        $feedbackText = htmlspecialchars($row['feedback_text']);
+                        $rating = intval($row['rating']);
+                        $createdAt = date("F j, Y, g:i a", strtotime($row['created_at']));
+
+                        // Display feedback
+                        echo "
+                            <li class='list-group-item'>
+                                <div class='d-flex justify-content-between align-items-center'>
+                                    <div>
+                                        <strong>$userFullName (@$username)</strong>
+                                        <small class='text-muted d-block'>$createdAt</small>
+                                        <p class='mb-1'>$feedbackText</p>
+                                    </div>
+                                    <div>
+                                        <span class='badge bg-primary rounded-pill'>$rating ★</span>
+                                    </div>
+                                </div>
+                            </li>
+                        ";
+                    }
+                } else {
+                    // Display a message if no feedback is found
+                    echo "<li class='list-group-item'>No feedback available.</li>";
+                }
+            ?>
+        </ul>
+    </div>
+</div>
+
+
 </div>
             </div>
 
@@ -247,7 +313,7 @@ include_once "assets/config.php"; // Database connection
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="Js/sales_chart.js"></script>
-    <script src="Js/staffpanel.js"></script>
+    <script src="Js/panel.js"></script>
     <script src="Js/navb.js"></script>
     <script src="Js/viewmessage.js"></script>
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
@@ -407,3 +473,4 @@ fetch('../assets/fetch_data.php')
 
 
 </script>
+

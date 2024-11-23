@@ -20,17 +20,19 @@ function fetchSingleValue($conn, $query, &$variable, $label) {
     return true;
 }
 
-// Fetch total sales using receipt_items table
+// Fetch total sales using receipt_items table (Paid in advance and completed)
 if (!fetchSingleValue($conn, "
     SELECT SUM(receipt_items.item_total_price) AS totalSales 
     FROM receipt_items
+    JOIN orders ON receipt_items.receipt_id = orders.order_id 
+    WHERE orders.status IN ('paid in advance', 'completed')
 ", $totalSales, 'totalSales')) {
     echo json_encode(['error' => 'Failed to fetch total sales']);
     $conn->close();
     exit;
 }
 
-// Fetch total orders
+// Fetch total orders (excluding canceled orders)
 if (!fetchSingleValue($conn, "
     SELECT COUNT(order_id) AS totalOrders 
     FROM orders 
@@ -41,7 +43,7 @@ if (!fetchSingleValue($conn, "
     exit;
 }
 
-// Fetch total items sold
+// Fetch total items sold (only completed or paid in advance)
 if (!fetchSingleValue($conn, "
     SELECT SUM(receipt_items.quantity) AS totalSold 
     FROM receipt_items 
@@ -63,7 +65,7 @@ if (!fetchSingleValue($conn, "
     exit;
 }
 
-// Fetch order distribution data
+// Fetch order distribution data (status counts)
 $orderStatuses = [];
 $orderCounts = [];
 $sql = "
@@ -81,20 +83,20 @@ if ($result) {
     error_log("Error fetching order distribution data: " . $conn->error);
 }
 
-// Fetch monthly sales data for chart
+// Fetch monthly sales data for chart (All Statuses)
 $chartLabels = [];
 $chartData = [];
 $sql = "
-    SELECT MONTHNAME(receipts.receipt_date) AS month, SUM(receipt_items.item_total_price) AS total_sales 
+    SELECT DATE_FORMAT(order_time, '%Y-%m-%d') AS date, SUM(receipt_items.item_total_price) AS total_sales 
     FROM receipt_items 
-    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
-    GROUP BY month 
-    ORDER BY MONTH(receipts.receipt_date)
+    JOIN orders ON receipt_items.receipt_id = orders.order_id
+    GROUP BY date 
+    ORDER BY date
 ";
 $result = $conn->query($sql);
 if ($result) {
     while ($row = $result->fetch_assoc()) {
-        $chartLabels[] = $row['month'];
+        $chartLabels[] = $row['date'];
         $chartData[] = $row['total_sales'];
     }
 } else {

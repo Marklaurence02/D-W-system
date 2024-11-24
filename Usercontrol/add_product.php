@@ -1,4 +1,6 @@
 <?php
+session_name("user_session");
+session_start();
 include '../assets/config.php';  // Include DB connection
 
 // Check if required POST data is provided

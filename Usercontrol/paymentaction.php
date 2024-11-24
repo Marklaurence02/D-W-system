@@ -3,6 +3,14 @@ include_once "../assets/config.php";
 session_name("user_session");
 session_start();
 
+// Include the PHPMailer files
+require '../otpphpmailer/PHPMailer-master/src/Exception.php';
+require '../otpphpmailer/PHPMailer-master/src/PHPMailer.php';
+require '../otpphpmailer/PHPMailer-master/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Enable error reporting for debugging (remove or set to 0 in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -11,6 +19,42 @@ error_reporting(E_ALL);
 // Start output buffering to prevent any accidental output before JSON response
 ob_start();
 
+// Function to send payment receipt email using PHPMailer
+function sendPaymentReceiptEmail($email, $totalPayment, $orderDetails) {
+    $mail = new PHPMailer(true);
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Use Gmail SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'dinewatchph@gmail.com'; // Your Gmail email
+        $mail->Password = 'ywed icaf boco yrzx'; // Your generated Google App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Recipients
+        $mail->setFrom('dinewatchph@gmail.com', 'Dine&Watch Support');
+        $mail->addAddress($email); // Recipient email
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Payment Receipt - Dine&Watch';
+        $mail->Body    = "<p>Dear User,</p>
+                          <p>Your payment of <strong>$" . number_format($totalPayment, 2) . "</strong> has been successfully processed. Below are your order details:</p>
+                          <p><strong>Order Details:</strong><br>" . nl2br($orderDetails) . "</p>
+                          <p>Thank you for using Dine&Watch!</p>
+                          <p>Best Regards,<br>Dine&Watch Support Team</p>";
+
+        // Send email
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Mailer Error: {$mail->ErrorInfo}");
+        return false;
+    }
+}
+
+// Function to handle successful payment
 function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
     $conn->begin_transaction();
 
@@ -24,8 +68,8 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
 
         // Transfer reservations to the reservations table
         $transferReservationsQuery = "
-            INSERT INTO reservations (reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at)
-            SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, feedback, created_at, updated_at
+            INSERT INTO reservations (reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, created_at, updated_at)
+            SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, created_at, updated_at
             FROM data_reservations
             WHERE user_id = ? AND status = 'Paid'
         ";
@@ -103,6 +147,19 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->execute();
         $stmt->close();
 
+        // Fetch user email for sending payment receipt
+        $getUserEmailQuery = "SELECT email FROM users WHERE user_id = ?";
+        $stmt = $conn->prepare($getUserEmailQuery);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($email);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Send the payment receipt email
+        $orderDetails = "Your total payment: $" . number_format($totalPayment, 2); // You can customize this based on your order details
+        sendPaymentReceiptEmail($email, $totalPayment, $orderDetails);
+
         $conn->commit();
         ob_end_clean(); // Clean the buffer to ensure only JSON is sent
         echo json_encode(['status' => 'success', 'message' => 'Payment processed, status updated, and data transferred successfully.']);
@@ -129,3 +186,4 @@ if (isset($_POST['user_id']) && isset($_POST['totalPayment'])) {
 }
 
 $conn->close();
+?>

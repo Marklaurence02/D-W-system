@@ -108,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
         <button class="btn proceed-button" onclick="ordertable()">Back</button>
         <form id="reservationForm" method="post" class="ml-2">
     <input type="hidden" name="record" value="1">
-    <button type="button" class="btn proceed-button" onclick="submitReservationForm()">Complete</button>
-</form>
+    <button type="button" class="btn proceed-button" id="proceedbutton" onclick="submitReservationForm()">Complete</button> 
+    </form>
 
     </div>
 </div>
@@ -268,6 +268,36 @@ function showAlertlist(message, type) {
 }
 
 
+$(document).ready(function() {
+    // AJAX call to check if orders and reservations exist
+    $.ajax({
+        url: '/Usercontrol/disabletable.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                // Disable the table button if no orders exist
+                if (!response.has_orders) {
+                    $('#proceedbutton')
+                        .attr('disabled', true)
+                        .css({
+                            'cursor': 'not-allowed',
+                            'opacity': '0.5'
+                        })
+                        .on('click', function(e) {
+                            e.preventDefault(); // Prevent default behavior
+                            alert("Please add an order before completing the reservation.");
+                        });
+                }
+            } else {
+                console.error("Failed to fetch table status:", response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error during AJAX request:", error);
+        }
+    });
+});
 
 </script>
 

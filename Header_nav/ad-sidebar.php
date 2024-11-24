@@ -11,11 +11,9 @@ include_once "assets/config.php";
 
     <!-- Profile picture and welcome message displayed when expanded -->
     <div class="position-relative">
-        <img src="./images/admin.png" class="rounded-circle profile-pic" width="80" height="80" alt="Dine&Watch">
+        <img src="./images/admin.png" class="rounded-circle profile-pic" width="80" height="80" alt="Dine&Watch" id="editProfileBtn">
         <!-- Pen Icon for Editing Profile -->
-        <span id="editProfileBtn" class="position-absolute bottom-0 end-0 p-1" style="cursor: pointer;">
-            <i class="fa fa-pencil text-white"></i>
-        </span>
+
     </div>
 
     <h5 class="mt-3 d-none d-md-block" id="welcomeText">

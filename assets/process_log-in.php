@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim(htmlspecialchars($_POST['password']));
 
     // CAPTCHA validation
-    $recaptcha_secret = ''; // Your secret key
+    $recaptcha_secret = '6LcL4IcqAAAAAIrgTS5nOBBsUwrzDbNKj4GjqQFD'; // Your secret key
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
     // Verify CAPTCHA

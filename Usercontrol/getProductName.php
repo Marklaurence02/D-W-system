@@ -1,6 +1,7 @@
 <?php
 include '../assets/config.php'; // Include database configuration
-
+session_name("user_session");
+session_start();
 if (isset($_GET['product_id'])) {
     $product_id = $_GET['product_id'];
 

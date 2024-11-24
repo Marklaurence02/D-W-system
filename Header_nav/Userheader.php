@@ -10,8 +10,8 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
 
 <header class="custom-header d-flex justify-content-between align-items-center p-3">
     <!-- Logo linking to the landing page -->
-    <a href="landing_page.php">
-        <img src="Images/logo.png" alt="Go back" class="img-fluid" style="width: 100px;">
+    <a>
+    <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img">
     </a>
     
     <!-- Menu icon to open the sidebar -->
@@ -21,7 +21,7 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
 <!-- Sidebar structure -->
 <div id="mySidebar" class="sidebar">
     <div class="side-header text-center">
-        <img src="Images/user.png" width="100" height="100" alt="User" class="rounded-circle">
+        <img src="Images/admin.png" width="100" height="100" alt="User" class="rounded-circle" id="editProfileBtn">
         <h5 class="mt-3">
             <div class="welc">Welcome, <?= $first_name; ?> (<?= $role; ?>)</div>
         </h5>
@@ -125,3 +125,160 @@ function toggleSidebar() {
     right: 10px;
 }
 </style>
+<!-- Update Profile Modal -->
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateProfileForm" onsubmit="event.preventDefault(); updateProfile();">
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="zip_code" class="form-label">Zip Code</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code">
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="middle_initial" class="form-label">Middle Initial</label>
+                                <input type="text" class="form-control" id="middle_initial" name="middle_initial">
+                            </div>
+                            <div class="mb-3">
+                                <label for="contact_number" class="form-label">Contact Number</label>
+                                <input type="text" class="form-control" id="contact_number" name="contact_number">
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Show modal and pre-fill form fields
+document.getElementById('editProfileBtn').addEventListener('click', function () {
+    // Fetch current user data from the server
+    const userId = <?php echo $_SESSION['user_id']; ?>; // Assuming session has user_id
+
+    // AJAX request to get the current profile information
+    $.ajax({
+        url: 'assets/datauser.php', // PHP file to fetch user data
+        method: 'GET',
+        data: { user_id: userId },
+        success: function (response) {
+            console.log('Profile Data:', response); // Debugging log to check the response
+
+            // Parse the JSON response and check if data exists
+            try {
+                const user = JSON.parse(response);
+                if (user && !user.error) {  // Ensure there is no error in the response
+                    // Populate the form fields with the fetched data
+                    document.getElementById('first_name').value = user.first_name;
+                    document.getElementById('middle_initial').value = user.middle_initial;
+                    document.getElementById('last_name').value = user.last_name;
+                    document.getElementById('contact_number').value = user.contact_number;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('address').value = user.address;
+                    document.getElementById('zip_code').value = user.zip_code;
+
+                    // Ensure username field is correctly populated (no hardcoded "root" value)
+                    if (user.username) {
+                        document.getElementById('username').value = user.username;
+                    } else {
+                        // In case username is not found in response, you can show an error or handle it
+                        alert("Error: Username not found in response.");
+                    }
+
+                    // Show the modal
+                    $('#updateProfileModal').modal('show');
+                } else {
+                    alert('Error: No user data found or ' + user.error);
+                }
+            } catch (e) {
+                console.error('Error parsing JSON response:', e);
+                alert('Error fetching profile data');
+            }
+        },
+        error: function () {
+            alert('Error fetching profile data');
+        }
+    });
+});
+
+// Update Profile Function
+function updateProfile() {
+    // Show loading alert
+    alert("Loading... Please wait.");
+
+    // Get the form element
+    const form = document.getElementById('updateProfileForm');
+
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // Use the Fetch API to send the form data to the server
+    fetch('assets/updateuser.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // Ensure the server responds with a valid status
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Network error: ${response.status} - ${text}`);
+            });
+        }
+        return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+        // Handle the server's JSON response
+        if (data.status === 'success') {
+            // Update the alert to show success
+            alert("Profile updated successfully!");
+            // Optionally refresh the UI or close the modal
+            $("#updateProfileModal").modal("hide");
+        } else {
+            // Show error in alert
+            alert('Error updating profile: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        // Log and display any errors that occurred
+        console.error('Error during update operation:', error);
+        alert('An error occurred while updating the profile. Please check your network or try again.');
+    });
+}
+</script>

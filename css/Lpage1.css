@@ -22,7 +22,16 @@
     border: none;
     color: white;
 }
+.logo-img {
+    height: 50px;
+    transition: transform 0.2s ease;
 
+}
+.logo-img {
+    height: 50px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
 .custom-header .btn-primary:hover {
     background-color: #217a7a;
 }

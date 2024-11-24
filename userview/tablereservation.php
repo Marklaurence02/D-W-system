@@ -110,9 +110,7 @@ function getTableImages($conn, $tableId) {
 
     <div class="containers mt-4">
         <div class="d-flex justify-content-end">
-            <form action="User-panel.php" method="post">
-                <button type="submit" class="btn proceed-button">Home</button>
-            </form>
+                <button type="submit" class="btn proceed-button" onclick="order_list()">Home</button>
             <button class="btn proceed-button ml-2" onclick="savedreservation()">Proceed</button>
         </div>
     </div>
@@ -328,7 +326,9 @@ function openReservationForm(tableId) {
 }
 
 // filter
-let selectedArea = null; // Variable to store the selected area (Indoor/Outdoor)
+if (typeof selectedArea === 'undefined') {
+    let selectedArea = null; // Declare only if not already defined
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     showAllTables(); // Default: Show all tables

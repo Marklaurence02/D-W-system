@@ -270,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#paymentModal">Proceed to Payment</button>
+                <button class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#paymentModal" style="width: fit-content;">Proceed to Payment</button>
             </div>
         </div>
     </div>
@@ -347,7 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" >
                 <p>Please carefully read and understand our No Refund Policy:</p>
                 <ul>
                     <li>All sales are final. No refunds or exchanges.</li>
@@ -356,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">I Understand</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" style="width:fit-content">I Understand</button>
             </div>
         </div>
     </div>
@@ -391,8 +391,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 <!-- Custom Loader -->
 <div id="customLoader" class="loader-overlay">
-    <div class="loader"></div>
+    <div class="loader" id="loader"></div>
+    <div class="checkmark hidden" id="checkmark">
+        ✔
+    </div>
 </div>
+
 
 <!-- Payment Modal with Card Options -->
 <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">

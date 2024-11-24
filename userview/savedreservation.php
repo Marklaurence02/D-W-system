@@ -70,16 +70,13 @@ echo '</div>'; // End container
 $stmt->close();
 $conn->close();
 ?>
-
-<!-- button-->
-<div class="container mt-4">
-    <div class="d-flex justify-content-end">
-        <button class="btn proceed-button" onclick="reservetable()">Back</button>
-        <form action="User-panel.php" method="post" class="ml-2">
-            <button type="submit" class="btn proceed-button" >Complete</button>
-        </form>
+  <div class="containers mt-4">
+        <div class="d-flex justify-content-end">
+        <button id="return" class="btn proceed-button" onclick="reservetable()">Back</button>
+            <button id="proceedpayment" class="btn proceed-button ml-2" onclick="paymentlist()" style="width:fit-content;" >Proceed-Payment</button>
+        </div>
     </div>
-</div>
+
 <!-- Notification Modal -->
 <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -397,7 +394,53 @@ function showNotificationModal(message, type) {
     setTimeout(() => $('#notificationModal').modal('hide'), 3000);
 }
 
+$(document).ready(function() {
+    // AJAX call to disabletable.php to check if orders and reservations exist
+    $.ajax({
+        url: '/Usercontrol/disabletable.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+// Disable the Payment button if no reservations exist
+if (!response.has_reservations) {
+                    $('#return').attr('disabled', true).css({
+                        'cursor': 'not-allowed',
+                        'opacity': '0.5'
+                    }).on('click', function(e) {
+                        e.preventDefault();
+                        alert("Please reserve a table before proceeding to payment.");
+                    });
+                }// Disable the Payment button if no reservations exist
+                if (!response.has_reservations) {
+                    $('#proceedpayment').attr('disabled', true).css({
+                        'cursor': 'not-allowed',
+                        'opacity': '0.5'
+                    }).on('click', function(e) {
+                        e.preventDefault();
+                        alert("Please reserve a table before proceeding to payment.");
+                    });
+                }
 
+                // Disable the Payment button if no reservations exist
+                if (!response.has_reservations) {
+                    $('#proceedpayment').attr('disabled', true).css({
+                        'cursor': 'not-allowed',
+                        'opacity': '0.5'
+                    }).on('click', function(e) {
+                        e.preventDefault();
+                        alert("Please reserve a table before proceeding to payment.");
+                    });
+                }
+            } else {
+                console.error("Server error:", response.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error:", textStatus, errorThrown);
+        }
+    });
+});
 
 </script>
 

@@ -131,46 +131,55 @@
 
     <!-- Main Content -->
     <div class="container my-5">
-        <div class="row align-items-center">
-            <!-- Logo Section -->
-            <div class="col-12 col-md-6 text-center">
-                <img src="Images/logo.png" alt="Dine&Watch Logo" class="logo-container img-fluid">
-            </div>
+    <div class="row align-items-center">
+        <!-- Logo Section -->
+        <div class="col-12 col-md-6 text-center">
+            <img src="Images/logo.png" alt="Dine&Watch Logo" class="logo-container img-fluid">
+        </div>
 
-            <!-- Sign-In Form Section -->
-            <div class="col-12 col-md-6">
-                <div class="signup-card mx-auto">
-                    <h2>Sign In</h2>
-                    <?php include 'assets/process_log-in.php'; ?>
-                    <form method="POST">
-                        <!-- Email Input -->
-                        <div class="form-group position-relative">
-                            <input type="email" class="form-control" name="email" id="email" placeholder=" " required>
-                            <label for="email">Email</label>
+        <!-- Sign-In Form Section -->
+        <div class="col-12 col-md-6">
+            <div class="signup-card mx-auto">
+                <h2>Sign In</h2>
+                <?php include 'assets/process_log-in.php'; ?>
+                <form method="POST">
+                    <!-- Email Input -->
+                    <div class="form-group position-relative">
+                        <input type="email" class="form-control" name="email" id="email" placeholder=" " required>
+                        <label for="email">Email</label>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-group position-relative">
+                        <input type="password" class="form-control" name="password" id="password" placeholder=" " required>
+                        <label for="password">Password</label>
+                        <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
+                    </div>
+
+                    <!-- Google reCAPTCHA -->
+                    <div class="recaptcha align-item-center">
+                        <div class="g-recaptcha" data-sitekey="6LcL4IcqAAAAAPB8-0U66IZDAWf0xYVhi8qtQjL9"></div>
+                    </div>
+
+                    <button type="submit" class="btn-next">Next</button>
+
+                    <!-- Links Section -->
+                    <div class="small-text mt-3">
+                        <div class="row justify-content-between">
+                            <div class="col-auto">
+                                <a href="forgot_password.php" class="text-primary">Forgot your password?</a>
+                            </div>
+                            <div class="col-auto text-end">
+                                <a href="signup.php" class="text-primary">Don't have an account?</a>
+                            </div>
                         </div>
-
-                        <!-- Password Input -->
-                        <div class="form-group position-relative">
-                            <input type="password" class="form-control" name="password" id="password" placeholder=" " required>
-                            <label for="password">Password</label>
-                            <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
-                        </div>
-
-                        <!-- Google reCAPTCHA -->
-                        <div class="recaptcha">
-                            <div class="g-recaptcha" data-sitekey=""></div>
-                        </div>
-
-                        <button type="submit" class="btn-next">Next</button>
-
-                        <div class="small-text">
-                            <p>Forgot your password? <a href="forgot_password.php">Reset it here</a></p>
-                            <p>Already have an account? <a href="signup.php">Sign-up here</a></p>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+</div>
+
     </div>
 
     <!-- Footer -->

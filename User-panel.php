@@ -52,7 +52,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/user.css">
-    <link rel="stylesheet" href="css/Lpage.css">
+    <link rel="stylesheet" href="css/Lpage1.css">
 </head>
 <body>
 

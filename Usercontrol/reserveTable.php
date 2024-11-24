@@ -21,7 +21,23 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
     // Format reservation time for SQL query
     $reservation_time_formatted = (new DateTime("$reservation_date $reservation_time"))->format('H:i:s');
 
-    // Check for time conflicts
+    // Check if the user already has a reservation
+    $checkUserReservationQuery = "
+        SELECT COUNT(*) AS reservation_count 
+        FROM data_reservations 
+        WHERE user_id = ?";
+    $stmt = $conn->prepare($checkUserReservationQuery);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userReservation = $result->fetch_assoc();
+
+    if ($userReservation['reservation_count'] > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'You already have a reservation.']);
+        exit();
+    }
+
+    // Check for time conflicts for the selected table
     $conflictCheckQuery = "
         SELECT COUNT(*) AS conflict_count 
         FROM data_reservations 
@@ -39,7 +55,7 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
         exit();
     }
 
-    // Insert reservation into `data_reservations` table without updating table availability
+    // Insert reservation into `data_reservations` table
     $insertReservationQuery = "
         INSERT INTO data_reservations (user_id, table_id, reservation_date, reservation_time, custom_note) 
         VALUES (?, ?, ?, ?, ?)";

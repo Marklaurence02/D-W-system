@@ -92,47 +92,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
   </div>
 
-  <!-- Card View for Table List (Visible on Mobile) -->
-  <div class="d-lg-none">
-    <?php
-    if ($result->num_rows > 0) {
-      mysqli_data_seek($result, 0); // Reset result pointer to re-use in card view
-      $count = 1;
-      while ($row = $result->fetch_assoc()) {
-    ?>
-      <div class="card mb-3">
-        <div class="card-header">
-          <strong>Table #<?= htmlspecialchars($row["table_number"]) ?></strong>
-        </div>
-        <div class="card-body">
-          <p><strong>Seating Capacity:</strong> <?= htmlspecialchars($row["seating_capacity"]) ?></p>
-          <p><strong>Area:</strong> <?= htmlspecialchars($row["area"]) ?></p>
-          <p><strong>Views:</strong><br>
-            <?php
-              if ($row["images"]) {
-                $images = explode(',', $row["images"]);
-                foreach ($images as $image) {
-                  echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 100px; height: 100px; margin-right: 5px;'>";
-                }
-              } else {
-                echo "No Images";
-              }
-            ?>
-          </p>
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
-          </div>
-        </div>
-      </div>
-    <?php
-          $count++;
-        }
-      } else {
-        echo "<div class='text-center'>No tables found</div>";
-      }
-    ?>
-  </div>
+
 
 <!-- Modal for Adding Table -->
 <div class="modal fade" id="addTableModal" role="dialog">
@@ -208,10 +168,6 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <div class="modal-body" id="editTableContent">
                 <!-- The table form will be loaded here dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" onclick="updateTables(event)">Save changes</button>
             </div>
         </div>
     </div>

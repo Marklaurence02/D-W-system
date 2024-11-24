@@ -7,7 +7,7 @@
     <table id="generalUsersTable" class="table table-bordered">
       <thead class="thead">
         <tr>
-          <th class="text-center">S.N.</th>
+          <th class="text-center">O.N.</th>
           <th class="text-center">Username</th>
           <th class="text-center">Email</th>
           <th class="text-center">Contact Number</th>

@@ -78,39 +78,32 @@ function closeModal() {
     }
   });
   
-  // Function to refresh the reservation list dynamically
-  function showReservation() {
-    fetch('/staffview/viewsReservation.php', {
-      method: 'POST',
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        document.querySelector('.allContent-section').innerHTML = data; // Update the table content dynamically
-      });
-  }
+
+
+// Function to refresh the reservation list dynamically using AJAX
+function showReservation() {
+    $.ajax({
+        url: 'staffview/viewsReservation.php',  // The PHP file to call
+        type: 'POST',                          // Send data using POST method
+        data: { record: 1 },                   // The data to send (record = 1)
+        success: function(data) {
+            // On success, update the content of the .allContent-section
+            $('.allContent-section').html(data);
+        },
+        error: function(xhr, status, error) {
+            // Handle errors if any
+            console.error('Error fetching reservation data:', error);
+        }
+    });
+}
+
   
 
-  // Function to refresh the reservation list dynamically
-  function showReservation() {
-    fetch('/staffview/viewsReservation.php', {
-      method: 'POST',
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        document.querySelector('.allContent-section').innerHTML = data; // Update the table content dynamically
-      });
-  }
-  
-
-  function showActivity_log(searchLog = '', actionType = '', page = 1) {
+  function showActivity_log() {
     $.ajax({
         url: "staffview/viewActivity_log-.php",
         method: "POST",
-        data: { 
-            search: searchLog,
-            action: actionType,
-            page: page
-        },
+        data: { record: 1 },                   // The data to send (record = 1)
         success: function(data) {
             $('.allContent-section').html(data);
         },
@@ -120,27 +113,6 @@ function closeModal() {
         }
     });
 }
-
-// Click event for the search button
-$(document).on('click', '#searchLog', function() {
-    const searchValue = $('#searchInput').val().trim();
-    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
-    console.log("Search Button Clicked - Value:", searchValue, "Action:", actionType);
-    
-    showActivity_log(searchValue, actionType, 1); // Reset to page 1 when searching
-});
-
-// Pagination listener to handle clicks on pagination links
-$(document).on('click', '.page-link', function(e) {
-    e.preventDefault();
-    const page = $(this).data('page');
-    const searchValue = $('#searchInput').val().trim();
-    const actionType = $('#actionTypeSelect').val() || ''; // If you have a select field for action types
-    console.log("Pagination Clicked - Page:", page, "Search:", searchValue, "Action:", actionType);
-
-    showActivity_log(searchValue, actionType, page);
-});
-
 
 // Function to show Admin/Staff management view
 function showadmin() {
@@ -156,7 +128,7 @@ function addAdmin() {
     var formData = $('#adminForm').serialize();  // Serialize form data
 
     $.ajax({
-        url: '/Ocontrols/addAdmin.php',  // Backend script to handle adding
+        url: '/Scontrols/addAdmin.php',  // Backend script to handle adding
         method: 'POST',
         data: formData,
         dataType: 'json',  // Expect a JSON response from the server
@@ -177,85 +149,84 @@ function addAdmin() {
 }
 
 
-// Function to show the edit form for Admin/Staff with a confirmation prompt and password verification
+// Function to show the edit form for Admin/Staff
 function adminEditForm(userId) {
     // Confirmation prompt before loading the edit form
     if (!confirm("Are you sure you want to edit this user's details?")) {
         alert("Edit canceled.");
-        return;  // Exit the function if user cancels
+        return; // Exit the function if the user cancels
     }
 
     // Password prompt for security confirmation
     const password = prompt("Please enter your password to confirm editing:");
     if (!password) {
         alert("Edit canceled. Password is required.");
-        return;  // Exit the function if no password is entered
+        return; // Exit the function if no password is entered
     }
 
     // Proceed to load the edit form if confirmed and password is provided
     $.ajax({
-        url: "staffview/editAdminForm.php",  // URL to load the edit form
+        url: "staffview/editAdminForm.php", // URL to load the edit form
         method: "POST",
-        dataType: "json",  // Expect JSON response from server
-        data: { user_id: userId, user_password: password },  // Send the user ID and password to the server
+        dataType: "json",
+        data: { user_id: userId, user_password: password },
         success: function(response) {
-            if (response.status === 'success') {
-                console.log("Edit form loaded successfully.");  // Log for debugging
-                $('.allContent-section').html(response.form_html);  // Load the edit form HTML into the section
+            if (response.status === "success") {
+                // Load the form HTML into the modal container
+                $("#editAdminFormContainer").html(response.form_html);
+                // Show the modal
+                $("#editAdminModal").modal("show");
             } else {
-                // Handle error cases (incorrect password, etc.)
-                alert(response.message);  // Show error message from server response
+                // Display the error message from the server response
+                alert(response.message);
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error loading the form:", status, error);  // Log error for debugging
-            alert("Error loading the form. Please try again.");  // Show error alert if form loading fails
+            console.error("Error loading the form:", status, error); // Log the error
+            alert("Error loading the form. Please try again."); // Show an alert for the error
         }
     });
 }
 
-
-// Function to update Admin/Staff
 function updateadmin(userId) {
-    // Collect form data from the form fields
-    const formData = {
-        user_id: userId,
-        first_name: $('#first_name').val(),
-        middle_initial: $('#middle_initial').val(),
-        last_name: $('#last_name').val(),
-        suffix: $('#suffix').val(),
-        username: $('#username').val(),
-        role: $('#role').val(),
-        contact_number: $('#contact_number').val(),
-        email: $('#email').val(),
-        address: $('#address').val(),
-        zip_code: $('#zip_code').val()
-    };
+    // Get the form element
+    const form = document.getElementById('editAdminForm');
 
-    // Log the form data to ensure it's correct (optional for debugging)
-    console.log("Form data being sent:", formData);
+    // Create a FormData object from the form
+    const formData = new FormData(form);
 
-    // Send the form data via AJAX to updateAdmin.php
-    $.ajax({
-        url: "/Ocontrols/updateAdmin.php",  // The URL of the PHP script to update admin/staff
-        method: "POST",
-        data: formData,  // Form data to be sent
-        dataType: 'json',  // Expect JSON response
-        success: function(response) {
-            console.log("Response from server:", response);  // Log response for debugging
+    // Add the user ID to the FormData object
+    formData.append('user_id', userId);
 
-            if (response.status === 'success') {
-                alert(response.message);  // Show success message
-                showadmin();  // Call the function to refresh the admin list
-            } else {
-                // Show error message returned by the server
-                alert('Error: ' + response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating the user:", status, error);  // Log error for debugging
-            alert("Error updating the user. Please try again.");  // Show error alert
+    // Use the Fetch API to send the form data to the server
+    fetch('/Scontrols/updateAdmin.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // Ensure the server responds with a valid status
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Network error: ${response.status} - ${text}`);
+            });
         }
+        return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+        // Handle the server's JSON response
+        if (data.status === 'success') {
+            alert(data.message); // Show success message from the server
+            // Optionally refresh the UI
+            $("#editAdminModal").modal("hide");
+        } else {
+            // Handle server error messages
+            alert('Error updating user: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        // Log and display any errors that occurred
+        console.error('Error during update operation:', error);
+        alert('An error occurred while updating the user. Please check your network or try again.');
     });
 }
 
@@ -272,7 +243,7 @@ function adminDelete(userId) {
 
     if (confirm('Are you sure you want to delete this user?')) {  // Confirm deletion
         $.ajax({
-            url: '/Ocontrols/deleteAdmin.php',
+            url: '/Scontrols/deleteAdmin.php',
             method: 'POST',
             data: { user_id: userId, user_password: password },  // Send the target user ID and the logged-in user's password
             dataType: 'json',
@@ -336,16 +307,31 @@ function showOrders() {
 }
 
 
-// AJAX to change order status
 function ChangeOrderStatus(orderId, newStatus) {
     $.ajax({
-        url: "/Ocontrols/updateOrderStatus.php",  // Assuming this PHP file handles the status update
+        url: "/Scontrols/updateOrderStatus.php",
         method: "POST",
         data: { record: orderId, new_status: newStatus },
-        success: function(data) {
-            if (data.trim() === "success") {
+        success: function(response) {
+            response = response.trim();
+            if (response === "success") {
                 alert('Order Status updated successfully');
-                refreshOrderList();  // Dynamically refresh the order list
+                
+                // Update the button text immediately
+                const dropdownButton = document.querySelector(`#order-status-button-${orderId}`);
+                if (dropdownButton) {
+                    dropdownButton.textContent = newStatus;
+                }
+
+                // Close the modal after successful update
+                $('#viewModal').modal('hide'); // Close the modal using the correct ID
+                
+                // Ensure the backdrop is hidden
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+
+                // Dynamically refresh the orders list
+                refreshOrderList();
             } else {
                 alert('Failed to update the order status');
             }
@@ -356,14 +342,21 @@ function ChangeOrderStatus(orderId, newStatus) {
     });
 }
 
-
-
-
 // Refresh order list dynamically without redirecting
 function refreshOrderList() {
-    updateContent('staffview/viewAllOrders.php', {}, '.allContent-section');
-
+    $.ajax({
+        url: 'staffview/viewAllOrders.php',  // Adjust the URL if needed
+        method: 'GET',
+        success: function(response) {
+            $('.allContent-section').html(response);  // Replace the content in the section
+        },
+        error: function() {
+            alert('Error refreshing the orders list');
+        }
+    });
 }
+
+
 
 
 
@@ -394,7 +387,7 @@ function addItems() {
     fd.append('upload', '1'); // Add a flag to signify the upload process
 
     $.ajax({
-        url: "/Ocontrols/addItemController.php",  // Ensure the correct path
+        url: "/Scontrols/addItemController.php",  // Ensure the correct path
         method: "POST",
         data: fd,
         processData: false,
@@ -476,7 +469,7 @@ function addTable() {
     fd.append('upload', '1'); 
 
     $.ajax({
-        url: "/Ocontrols/addtables.php",  // Ensure the correct path to your PHP file
+        url: "/Scontrols/addtables.php",  // Ensure the correct path to your PHP file
         method: "POST",
         data: fd,
         processData: false,
@@ -515,27 +508,6 @@ function refreshTableList() {
 
 
 
-// Filter tables by area (Indoor/Outdoor)
-function filterTables() {
-    var area = $('#filter_area').val();
-
-    $.ajax({
-        url: 'staffview/viewTables.php',
-        method: 'POST',
-        data: { area: area },
-        success: function(data) {
-            $('.table-list').html(data);  // Update table list with filtered data
-        },
-        error: function() {
-            alert("Error filtering tables.");
-        }
-    });
-}
-
-
-
-
-
 function showProductItems() {
     $.ajax({
         url: "staffview/viewAllProducts.php",
@@ -551,13 +523,19 @@ function showProductItems() {
 }
 
 // Load the edit form for a product
+// Load the edit form for a product
+// Load the edit form for a product inside the modal
 function itemEditForm(id) {
     $.ajax({
         url: "staffview/editItemForm.php",  // URL to load the edit form
         method: "POST",
         data: { record: id },  // Send the product ID
         success: function(data) {
-            $('.allContent-section').html(data);  // Load the form HTML into the section
+            // Load the form HTML into the modal body
+            $('#editProductContent').html(data);
+
+            // Show the modal after the content is loaded
+            $('#editModal').modal('show');
         },
         error: function() {
             alert("Error loading the form.");
@@ -565,47 +543,44 @@ function itemEditForm(id) {
     });
 }
 
-// update items
+// Update items
 function updateItems(event) {
     event.preventDefault(); // Prevent default form submission
 
-    var product_id = $('#product_id').val();
-    var product_name = $('#product_name').val();
-    var category_id = $('#category_id').val(); // category_id instead of item_type
-    var quantity = $('#quantity').val();
-    var price = $('#price').val();
-    var special_instructions = $('#special_instructions').val();
-    var product_image = $('#item_image')[0].files[0];
+    // Get the form element
+    const form = document.getElementById('update-Items');
 
-    if (!product_name || !category_id || !quantity || !price) {
-        alert('All fields except special instructions and image are required.');
-        return;
-    }
+    // Create a FormData object from the form
+    const formData = new FormData(form);
 
-    var fd = new FormData();
-    fd.append('product_id', product_id);
-    fd.append('product_name', product_name);
-    fd.append('category_id', category_id); // Pass category_id
-    fd.append('quantity', quantity);
-    fd.append('price', price);
-    fd.append('special_instructions', special_instructions);
+    // Get the product_id from the form and append it to the FormData object
+    const product_id = document.getElementById('product_id').value;
+    formData.append('product_id', product_id);
 
-    if (product_image) {
-        fd.append('item_image', product_image);
-    }
-
+    // Send the form data via AJAX
     $.ajax({
-        url: '/Ocontrols/updateItemController.php',
+        url: '/Scontrols/updateItemController.php',  // The URL to your update handler
         method: 'POST',
-        data: fd,
-        processData: false,
-        contentType: false,
-        success: function (data) {
+        data: formData,
+        processData: false,  // Prevent jQuery from processing the data
+        contentType: false,  // Prevent jQuery from setting contentType (needed for FormData)
+        success: function(data) {
             try {
-                var response = JSON.parse(data); 
+                var response = JSON.parse(data);  // Parse the server response
                 if (response.status === 'success') {
                     alert('Product updated successfully.');
-                    refreshProductList(); 
+                    
+                    // Hide the modal after success
+                    $('#editModal').modal('hide');  // Bootstrap hides the modal
+
+                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+
+                    refreshProductList();  // Call your function to refresh the product list
+
+                    // Optional: Clear modal content (reset form) if necessary
+                    $('#editProductContent').html('');
                 } else {
                     alert('Error: ' + response.message);
                 }
@@ -614,12 +589,19 @@ function updateItems(event) {
                 console.error("Response:", data);
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error("Error: " + xhr.responseText);
             alert('Error updating the product item.');
         }
     });
 }
+
+
+
+
+
+
+
 
 
 // Function to refresh the product list without redirecting
@@ -643,7 +625,7 @@ function refreshProductList() {
 function itemDelete(id) {
     if (confirm('Are you sure you want to delete this product?')) {
         $.ajax({
-            url: "/Ocontrols/deleteItemController.php",
+            url: "/Scontrols/deleteItemController.php",
             method: "POST",
             data: { record: id },
             success: function(data) {
@@ -661,21 +643,7 @@ function itemDelete(id) {
 
 
 
-// filter items
-function filterItems() {
-    var selectedType = document.getElementById("filter_item_type").value;
-    var rows = document.querySelectorAll(".product-row");
 
-    rows.forEach(function(row) {
-        var itemType = row.getAttribute("data-item-type");
-
-        if (selectedType === "All" || itemType === selectedType) {
-            row.style.display = "";  // Show the row
-        } else {
-            row.style.display = "none";  // Hide the row
-        }
-    });
-}
 
 $(document).ready(function () {
     // Automatically load all users when the page loads
@@ -690,7 +658,7 @@ function UfilterItems() {
     var endDate = $('#endDate').val();
 
     $.ajax({
-      url: '/Ocontrols/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
+      url: '/Scontrols/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
       method: 'GET',
       data: {
         search: searchTerm,       // Pass search term (empty by default)
@@ -706,7 +674,6 @@ function UfilterItems() {
         }, 100);  // Adjust the delay if needed
       },
       error: function(xhr, status, error) {
-        alert('Error loading users. Please try again.');
         console.error('AJAX error:', status, error);
       }
     });
@@ -737,7 +704,8 @@ function tableEditForm(id) {
         method: "POST",
         data: { record: id },  // Send the table ID
         success: function(data) {
-            $('.allContent-section').html(data);  // Load the form HTML into the section
+            $('#editTableContent').html(data);  // Load the form HTML into the modal body
+            $('#editTableModal').modal('show');  // Show the modal once the content is loaded
         },
         error: function() {
             alert("Error loading the form.");
@@ -749,12 +717,15 @@ function tableEditForm(id) {
 function updateTables(event) {
     event.preventDefault(); // Prevent default form submission
 
-    // Get the values from the form fields
-    var table_id = document.getElementById('table_id').value;
-    var table_number = document.getElementById('table_number').value;
-    var seating_capacity = document.getElementById('seating_capacity').value;
-    var area = document.getElementById('area').value;
-    var is_available = document.getElementById('is_available').value;
+    // Get the form element
+    const form = document.getElementById('update-Table'); // Ensure this matches the form's ID
+
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // Get the product_id from the form and append it to the FormData object
+    const product_id = document.getElementById('table_id').value;
+    formData.append('table_id', product_id);
 
     // Collect file inputs for different views
     var back_view = document.getElementById('back_view').files[0];
@@ -762,36 +733,37 @@ function updateTables(event) {
     var right_view = document.getElementById('right_view').files[0];
     var front_view = document.getElementById('front_view').files[0];
 
-    // Create FormData object to handle file uploads and form fields
-    var fd = new FormData();
-    fd.append('table_id', table_id);
-    fd.append('table_number', table_number);
-    fd.append('seating_capacity', seating_capacity);
-    fd.append('area', area);
-    fd.append('is_available', is_available);
-
-    // Append the image files if they are uploaded
-    if (back_view) fd.append('new_image_back_view', back_view);
-    if (left_view) fd.append('new_image_left_view', left_view);
-    if (right_view) fd.append('new_image_right_view', right_view);
-    if (front_view) fd.append('new_image_front_view', front_view);
+    // Append the image files to FormData if they are uploaded
+    if (back_view) formData.append('new_image_back_view', back_view);
+    if (left_view) formData.append('new_image_left_view', left_view);
+    if (right_view) formData.append('new_image_right_view', right_view);
+    if (front_view) formData.append('new_image_front_view', front_view);
 
     // Send the AJAX request to update the table
     $.ajax({
-        url: '/Ocontrols/updateTableController.php',
+        url: '/Scontrols/updateTableController.php',
         type: 'POST',
-        data: fd,
+        data: formData,
         processData: false,
         contentType: false,
         success: function (data) {
             try {
                 // Parse the response
                 var response = JSON.parse(data);
-                
+
                 // Handle success case
                 if (response.status === 'success') {
                     alert('Table updated successfully.');
-                    refreshUpdateTableList(); // Optionally refresh the table list or UI here
+
+                    // Hide the modal after success
+                    $('#editTableModal').modal('hide');  // Bootstrap hides the modal
+
+                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+
+                    // Optionally refresh the table list or UI here
+                    refreshUpdateTableList(); 
                 } else {
                     // Handle error cases
                     alert('Error: ' + response.message);
@@ -808,6 +780,7 @@ function updateTables(event) {
         }
     });
 }
+
 
 
 // Function to refresh the table list
@@ -833,7 +806,7 @@ function deleteTable(table_id) {
         button.innerHTML = 'Deleting...';
 
         $.ajax({
-            url: '/Ocontrols/deletetableController.php',  // Adjust the path to match your setup
+            url: '/Scontrols/deletetableController.php',  // Adjust the path to match your setup
             method: 'POST',
             data: { table_id: table_id },
             success: function(response) {
@@ -895,35 +868,8 @@ function showCategory() {
     });
 }
 
-// Add Category function
-function addCategory() {
-    var categoryName = document.getElementById('add_category_name').value.trim();  // Get the input value
 
-    // Validate the input for the category name
-    if (categoryName === '') {
-        alert('Category name is required.');
-        return;
-    }
 
-    // AJAX request to add category
-    $.ajax({
-        url: '/Ocontrols/addCatController.php',  // URL to your PHP controller that handles category addition
-        type: 'POST',
-        dataType: 'json',  // Expect JSON response
-        data: { category_name: categoryName },  // Send the category name to the server
-        success: function(response) {
-            if (response.success) {
-                $('#categoryModal').modal('hide');  // Hide the modal after successful addition
-                refreshCategoryList();  // Refresh the category list dynamically
-            } else {
-                alert(response.message || 'An error occurred while adding the category.');  // Display the error message
-            }
-        },
-        error: function(xhr, status, error) {
-            alert('An unexpected error occurred: ' + error);  // Handle server errors
-        }
-    });
-}
 
 
 // Load the edit form for a category
@@ -942,7 +888,51 @@ function categoryEditForm(id) {
     });
 }
 
-// Update category data without image handling
+
+// Add Category function
+function addCategory() {
+    var categoryName = document.getElementById('add_category_name').value.trim(); // Get the input value
+
+    // Validate the input for the category name
+    if (categoryName === '') {
+        alert('Category name is required.');
+        return;
+    }
+
+    // AJAX request to add category
+    $.ajax({
+        url: '/Scontrols/addCatController.php', // URL to your PHP controller
+        type: 'POST',
+        dataType: 'json', // Expect JSON response
+        data: { category_name: categoryName }, // Send the category name to the server
+        success: function(response) {
+            if (response.success) {
+                // Clear the input field
+                document.getElementById('add_category_name').value = '';
+
+                // Hide the modal after successful addition
+                $('#categoryModal').modal('hide');
+                $('.modal-backdrop').remove();  // Remove the backdrop
+                $('#categoryModal').data('bs.modal', null);  // Reset modal state
+
+                // Display a success message
+                alert('Category added successfully.');
+
+                // Refresh the category list dynamically
+                refreshCategoryList();
+            } else {
+                // Display the error message from the server
+                alert(response.message || 'An error occurred while adding the category.');
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('An unexpected error occurred: ' + error); // Handle server errors
+        }
+    });
+}
+
+
+// Update catesgory data without image handling
 function updateCategory(event) {
     event.preventDefault(); // Prevent default form submission
 
@@ -957,7 +947,7 @@ function updateCategory(event) {
 
     // Send the AJAX request to update the category
     $.ajax({
-        url: '/Ocontrols/updatecatController.php',  // URL to your update controller
+        url: '/Scontrols/updatecatController.php',  // URL to your update controller
         type: 'POST',
         data: fd,
         processData: false,  // Prevent jQuery from automatically transforming the data into a query string
@@ -970,6 +960,9 @@ function updateCategory(event) {
                 // Handle success case
                 if (response.success) {
                     alert('Category updated successfully.');
+                    $('#editModal').modal('hide');  // Hide the modal
+                    $('.modal-backdrop').remove();  // Remove the backdrop
+                    $('#editModal').data('bs.modal', null);  // Reset modal state
                     showCategory();  // Call showCategory() to load the updated category list
                 } else {
                     // Handle error cases
@@ -989,12 +982,13 @@ function updateCategory(event) {
 }
 
 
+
 // Delete Category function
 function categoryDelete(categoryId) {
     if (confirm('Are you sure you want to delete this category?')) {
         // AJAX request to delete category
         $.ajax({
-            url: '/Ocontrols/deletecatController.php',  // The URL to your delete category script
+            url: '/Scontrols/deletecatController.php',  // The URL to your delete category script
             type: 'POST',
             dataType: 'json',  // Expect a JSON response from the server
             data: { category_id: categoryId },
@@ -1029,7 +1023,7 @@ function refreshCategoryList() {
 
 function showmessage() {
     $.ajax({
-        url: "staffview/message.php",
+        url: "staffviewstaffviewstaffview/message.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {

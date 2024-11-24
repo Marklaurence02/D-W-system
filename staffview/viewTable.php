@@ -1,5 +1,5 @@
 <?php
-session_name("staff_session");
+session_name("owner_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -27,113 +27,72 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 </div>
 
-
-
-
   <!-- Table List (Visible on Desktop) -->
-  <div class="table-list d-none d-md-block">
-    <table class="table table-bordered">
-      <thead class="thead-dark">
-        <tr>
-          <th class="text-center">S.N.</th>
-          <th class="text-center">Table Number</th>
-          <th class="text-center">Seating Capacity</th>
-          <th class="text-center">Area</th>
-          <th class="text-center">Views</th>
-          <th class="text-center" colspan="2">Action</th>
-        </tr>
-      </thead>
-      <tbody id="table_body">
-        <?php
-        include_once "../assets/config.php";
-
-        // Fetch all tables and their images
-        $sql = "SELECT t.*, GROUP_CONCAT(i.image_path) AS images 
-                FROM tables t 
-                LEFT JOIN table_images i ON t.table_id = i.table_id 
-                GROUP BY t.table_id";
-        $result = $conn->query($sql);
-        $count = 1;
-
-        if ($result->num_rows > 0) {
-          while ($row = $result->fetch_assoc()) {
-        ?>
-        <tr>
-          <td class="text-center"><?= $count ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["table_number"]) ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["seating_capacity"]) ?></td>
-          <td class="text-center"><?= htmlspecialchars($row["area"]) ?></td>
-          <td class="text-center">
-            <?php
-              if ($row["images"]) {
-                $images = explode(',', $row["images"]);
-                foreach ($images as $image) {
-                  echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 50px; height: 50px; margin-right: 5px;'>";
-                }
-              } else {
-                echo "No Images";
-              }
-            ?>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
-          </td>
-        </tr>
-        <?php
-            $count++;
-          }
-        } else {
-          echo "<tr><td colspan='7' class='text-center'>No tables found</td></tr>";
-        }
-        ?>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Card View for Table List (Visible on Mobile) -->
-  <div class="d-lg-none">
+  <div class="table-responsive">
+  <table id="tableData" class="display nowrap" style="width:100%">
+  <thead class="thead">
+    <tr>
+      <th class="text-center">S.N.</th>
+      <th class="text-center">Table Number</th>
+      <th class="text-center">Seating Capacity</th>
+      <th class="text-center">Area</th>
+      <th class="text-center">Views</th>
+      <th class="text-center">Edit</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody id="table_body">
     <?php
+    include_once "../assets/config.php";
+
+    // Fetch all tables and their images
+    $sql = "SELECT t.*, GROUP_CONCAT(i.image_path) AS images 
+            FROM tables t 
+            LEFT JOIN table_images i ON t.table_id = i.table_id 
+            GROUP BY t.table_id";
+    $result = $conn->query($sql);
+    $count = 1;
+
     if ($result->num_rows > 0) {
-      mysqli_data_seek($result, 0); // Reset result pointer to re-use in card view
-      $count = 1;
       while ($row = $result->fetch_assoc()) {
     ?>
-      <div class="card mb-3">
-        <div class="card-header">
-          <strong>Table #<?= htmlspecialchars($row["table_number"]) ?></strong>
-        </div>
-        <div class="card-body">
-          <p><strong>Seating Capacity:</strong> <?= htmlspecialchars($row["seating_capacity"]) ?></p>
-          <p><strong>Area:</strong> <?= htmlspecialchars($row["area"]) ?></p>
-          <p><strong>Views:</strong><br>
-            <?php
-              if ($row["images"]) {
-                $images = explode(',', $row["images"]);
-                foreach ($images as $image) {
-                  echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 100px; height: 100px; margin-right: 5px;'>";
-                }
-              } else {
-                echo "No Images";
-              }
-            ?>
-          </p>
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-primary btn-sm" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
-          </div>
-        </div>
-      </div>
+    <tr>
+      <td class="text-center"><?= $count ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["table_number"]) ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["seating_capacity"]) ?></td>
+      <td class="text-center"><?= htmlspecialchars($row["area"]) ?></td>
+      <td class="text-center">
+        <?php
+          if ($row["images"]) {
+            $images = explode(',', $row["images"]);
+            foreach ($images as $image) {
+              echo "<img src='". htmlspecialchars($image) ."' alt='Table Image' style='width: 50px; height: 50px; margin-right: 5px;'>";
+            }
+          } else {
+            echo "No Images";
+          }
+        ?>
+      </td>
+      <td class="text-center">
+      <button class="btn btn-warning" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
+      </td>
+    </tr>
     <?php
-          $count++;
-        }
-      } else {
-        echo "<div class='text-center'>No tables found</div>";
+        $count++;
       }
+    } else {
+      echo "<tr><td colspan='7' class='text-center'>No tables found</td></tr>";
+    }
     ?>
+  </tbody>
+</table>
+
   </div>
+
+
 
 <!-- Modal for Adding Table -->
 <div class="modal fade" id="addTableModal" role="dialog">
@@ -197,5 +156,78 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 </div>
 
+<!-- Edit Table Modal -->
+<div class="modal fade" id="editTableModal" tabindex="-1" role="dialog" aria-labelledby="editTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editTableModalLabel">Edit Table</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editTableContent">
+                <!-- The table form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 </div>
+
+
+
+<script>
+$(document).ready(function () {
+    // Initialize DataTable with export buttons
+    var table = $('#tableData').DataTable({
+        dom: 'Bfrtip', // Elements to include: Buttons, Filtering, Table, Pagination
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Product Items Report',
+                text: 'Export to Excel'
+            },
+            {
+                extend: 'csvHtml5',
+                title: 'Product Items Report',
+                text: 'Export to CSV'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Product Items Report',
+                text: 'Export to PDF',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                title: 'Product Items Report',
+                text: 'Print Report'
+            }
+        ],
+        responsive: true,
+        lengthChange: true,
+        pageLength: 10,
+        ordering: true,
+        columnDefs: [
+            { orderable: false, targets: [4, 5, 6] } // Disable ordering for certain columns
+        ]
+    });
+
+    // Filter by Item Type
+    $('#filter_item_type').on('change', function () {
+        var selectedValue = $(this).val();
+        if (selectedValue === 'All') {
+            table.column(2).search('').draw();
+        } else {
+            table.column(2).search(selectedValue).draw();
+        }
+    });
+});
+
+
+</script>

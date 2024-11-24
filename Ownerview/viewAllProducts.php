@@ -42,9 +42,9 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 
   <!-- Product List Table (Visible on Desktop) -->
-  <div class="product-list d-none d-md-block">
+  <div class="product-list ">
     <!-- Product Table -->
-<table id="productTable" class="table table-bordered display">
+<table id="productTable" class="table table-bordered">
   <thead class="thead">
     <tr>
       <th class="text-center">Image</th>

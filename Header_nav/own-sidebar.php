@@ -182,7 +182,11 @@ document.getElementById('editProfileBtn').addEventListener('click', function () 
     });
 });
 
+// Update Profile Function
 function updateProfile() {
+    // Show loading alert
+    alert("Loading... Please wait.");
+
     // Get the form element
     const form = document.getElementById('updateProfileForm');
 
@@ -206,11 +210,12 @@ function updateProfile() {
     .then(data => {
         // Handle the server's JSON response
         if (data.status === 'success') {
-            alert(data.message); // Show success message from the server
+            // Update the alert to show success
+            alert("Profile updated successfully!");
             // Optionally refresh the UI or close the modal
             $("#updateProfileModal").modal("hide");
         } else {
-            // Handle server error messages
+            // Show error in alert
             alert('Error updating profile: ' + (data.message || 'Unknown error.'));
         }
     })
@@ -220,9 +225,8 @@ function updateProfile() {
         alert('An error occurred while updating the profile. Please check your network or try again.');
     });
 }
-
-
 </script>
+
 
 
 

@@ -128,7 +128,7 @@ function addAdmin() {
     var formData = $('#adminForm').serialize();  // Serialize form data
 
     $.ajax({
-        url: '/Ocontrols/addAdmin.php',  // Backend script to handle adding
+        url: '/controls/addAdmin.php',  // Backend script to handle adding
         method: 'POST',
         data: formData,
         dataType: 'json',  // Expect a JSON response from the server
@@ -199,7 +199,7 @@ function updateadmin(userId) {
     formData.append('user_id', userId);
 
     // Use the Fetch API to send the form data to the server
-    fetch('/Ocontrols/updateAdmin.php', {
+    fetch('/controls/updateAdmin.php', {
         method: 'POST',
         body: formData
     })
@@ -243,7 +243,7 @@ function adminDelete(userId) {
 
     if (confirm('Are you sure you want to delete this user?')) {  // Confirm deletion
         $.ajax({
-            url: '/Ocontrols/deleteAdmin.php',
+            url: '/controls/deleteAdmin.php',
             method: 'POST',
             data: { user_id: userId, user_password: password },  // Send the target user ID and the logged-in user's password
             dataType: 'json',
@@ -309,7 +309,7 @@ function showOrders() {
 
 function ChangeOrderStatus(orderId, newStatus) {
     $.ajax({
-        url: "/Ocontrols/updateOrderStatus.php",
+        url: "/controls/updateOrderStatus.php",
         method: "POST",
         data: { record: orderId, new_status: newStatus },
         success: function(response) {
@@ -387,7 +387,7 @@ function addItems() {
     fd.append('upload', '1'); // Add a flag to signify the upload process
 
     $.ajax({
-        url: "/Ocontrols/addItemController.php",  // Ensure the correct path
+        url: "/controls/addItemController.php",  // Ensure the correct path
         method: "POST",
         data: fd,
         processData: false,
@@ -469,7 +469,7 @@ function addTable() {
     fd.append('upload', '1'); 
 
     $.ajax({
-        url: "/Ocontrols/addtables.php",  // Ensure the correct path to your PHP file
+        url: "/controls/addtables.php",  // Ensure the correct path to your PHP file
         method: "POST",
         data: fd,
         processData: false,
@@ -559,7 +559,7 @@ function updateItems(event) {
 
     // Send the form data via AJAX
     $.ajax({
-        url: '/Ocontrols/updateItemController.php',  // The URL to your update handler
+        url: '/controls/updateItemController.php',  // The URL to your update handler
         method: 'POST',
         data: formData,
         processData: false,  // Prevent jQuery from processing the data
@@ -625,7 +625,7 @@ function refreshProductList() {
 function itemDelete(id) {
     if (confirm('Are you sure you want to delete this product?')) {
         $.ajax({
-            url: "/Ocontrols/deleteItemController.php",
+            url: "/controls/deleteItemController.php",
             method: "POST",
             data: { record: id },
             success: function(data) {
@@ -658,7 +658,7 @@ function UfilterItems() {
     var endDate = $('#endDate').val();
 
     $.ajax({
-      url: '/Ocontrols/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
+      url: '/controls/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
       method: 'GET',
       data: {
         search: searchTerm,       // Pass search term (empty by default)
@@ -742,7 +742,7 @@ function updateTables(event) {
 
     // Send the AJAX request to update the table
     $.ajax({
-        url: '/Ocontrols/updateTableController.php',
+        url: '/controls/updateTableController.php',
         type: 'POST',
         data: formData,
         processData: false,
@@ -807,7 +807,7 @@ function deleteTable(table_id) {
         button.innerHTML = 'Deleting...';
 
         $.ajax({
-            url: '/Ocontrols/deletetableController.php',  // Adjust the path to match your setup
+            url: '/controls/deletetableController.php',  // Adjust the path to match your setup
             method: 'POST',
             data: { table_id: table_id },
             success: function(response) {
@@ -902,7 +902,7 @@ function addCategory() {
 
     // AJAX request to add category
     $.ajax({
-        url: '/Ocontrols/addCatController.php', // URL to your PHP controller
+        url: '/controls/addCatController.php', // URL to your PHP controller
         type: 'POST',
         dataType: 'json', // Expect JSON response
         data: { category_name: categoryName }, // Send the category name to the server
@@ -948,7 +948,7 @@ function updateCategory(event) {
 
     // Send the AJAX request to update the category
     $.ajax({
-        url: '/Ocontrols/updatecatController.php',  // URL to your update controller
+        url: '/controls/updatecatController.php',  // URL to your update controller
         type: 'POST',
         data: fd,
         processData: false,  // Prevent jQuery from automatically transforming the data into a query string
@@ -989,7 +989,7 @@ function categoryDelete(categoryId) {
     if (confirm('Are you sure you want to delete this category?')) {
         // AJAX request to delete category
         $.ajax({
-            url: '/Ocontrols/deletecatController.php',  // The URL to your delete category script
+            url: '/controls/deletecatController.php',  // The URL to your delete category script
             type: 'POST',
             dataType: 'json',  // Expect a JSON response from the server
             data: { category_id: categoryId },

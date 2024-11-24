@@ -45,15 +45,13 @@ include_once "assets/config.php";
     <hr class="bg-light">
     <a href="#" class="closebtn text-white d-md-none" onclick="toggleNav()">×</a>
     <ul class="nav nav-pills flex-column">
-        <li class="nav-item"><a href="Admin-panel.php" class="nav-link text-white"><i class="fa fa-tachometer"></i><span class="ml-2">Dashboard</span></a></li>
-        <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fa fa-cart-arrow-down sideicon"></i><span class="ml-2">Orders</span></a></li>
+        <li class="nav-item"><a href="Admin-panel.php" class="nav-link text-white"><i class="fa fa-cart-arrow-down sideicon"></i><span class="ml-2">Dashboard</span></a></li>
+        <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fas fa-receipt sideicon"></i><span class="ml-2">Orders</span></a></li>
         <li class="nav-item"><a href="#reservation" onclick="showReservation()" class="nav-link text-white"><i class="fa fa-calendar-check-o sideicon"></i><span class="ml-2">Table Reservations</span></a></li>
         <li class="nav-item"><a href="#category" onclick="showCategory()" class="nav-link text-white"><i class="fa fa-line-chart sideicon"></i><span class="ml-2">Category</span></a></li>
-        <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fa fa-product-hunt"></i><span class="ml-2">Products</span></a></li>
-        <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fa fa-th sideicon"></i><span class="ml-2">Tables</span></a></li>
+        <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fas fa-pizza-slice sideicon"></i><span class="ml-2">Products</span></a></li>
+        <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fas fa-table sideicon"></i><span class="ml-2">Tables</span></a></li>
         <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users sideicon"></i><span class="ml-2">Users</span></a></li>
-        <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus sideicon"></i><span class="ml-2">Admin Management</span></a></li>
-        <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fa fa-list-alt sideicon"></i><span class="ml-2">Activity Log</span></a></li>
         <li class="nav-item"><a href="Amessage.php" class="nav-link text-white"><i class="fa fa-envelope sideicon"></i><span class="ml-2">Messages</span></a></li>
     </ul>
 </div>
@@ -182,7 +180,11 @@ document.getElementById('editProfileBtn').addEventListener('click', function () 
     });
 });
 
+// Update Profile Function
 function updateProfile() {
+    // Show loading alert
+    alert("Loading... Please wait.");
+
     // Get the form element
     const form = document.getElementById('updateProfileForm');
 
@@ -206,11 +208,12 @@ function updateProfile() {
     .then(data => {
         // Handle the server's JSON response
         if (data.status === 'success') {
-            alert(data.message); // Show success message from the server
+            // Update the alert to show success
+            alert("Profile updated successfully!");
             // Optionally refresh the UI or close the modal
             $("#updateProfileModal").modal("hide");
         } else {
-            // Handle server error messages
+            // Show error in alert
             alert('Error updating profile: ' + (data.message || 'Unknown error.'));
         }
     })
@@ -220,9 +223,8 @@ function updateProfile() {
         alert('An error occurred while updating the profile. Please check your network or try again.');
     });
 }
-
-
 </script>
+
 
 
 

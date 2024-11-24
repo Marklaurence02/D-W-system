@@ -61,25 +61,38 @@ include_once "assets/config.php"; // Database connection
 
 ?>        
 </div>
-    <div id="main-content" class="container-fluid allContent-section py-4 text-center ">
+<div id="main-content" class="container-fluid allContent-section py-4 text-center " >
         <h1 class="text-center">Dashboard</h1>
         <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
-            <!-- Total Sales -->
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-                <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
-                    <div class="card-body">
-                        <i class="fa fa-dollar"></i>
-                        <p class="text-title">Total Sales</p>
-                        <h5 id="totalSales">
-                            <?php
-                                $sql = "SELECT SUM(orders.total_amount) AS total_sales FROM orders WHERE orders.status IN ('Completed', 'paid in advance')";
-                                $result = $conn->query($sql);
-                                echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sales'] ?? 0, 2) : '0.00');
-                            ?>
-                        </h5>
-                    </div>
-                </div>
-            </div>
+           <!-- Total Sales -->
+<div class="col-lg-3 col-md-6 col-12 mb-4">
+    <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
+        <div class="card-body">
+            <i class="fa fa-dollar"></i>
+            <p class="text-title">Total Sales</p>
+            <h5 id="totalSales">
+                <?php
+                    // Query to get the sum of total_amount for orders with status 'paid in advance' and 'completed'
+                    $sql = "SELECT SUM(orders.total_amount) AS total_sales 
+                            FROM orders 
+                            WHERE orders.status IN ('paid in advance', 'completed')";
+                    $result = $conn->query($sql);
+
+                    // Check if the query was successful and handle NULL values
+                    if ($result && $row = $result->fetch_assoc()) {
+                        // Use 0 if no sales are found or if NULL
+                        $totalSales = $row['total_sales'] ?? 0;
+                        echo '&#x20B1;' . number_format($totalSales, 2);
+                    } else {
+                        // If there is an error or no sales found
+                        echo '&#x20B1;0.00';
+                    }
+                ?>
+            </h5>
+        </div>
+    </div>
+</div>
+
 
             <!-- Total Orders -->
             <div class="col-lg-3 col-md-6 col-12 mb-4">
@@ -157,149 +170,134 @@ include_once "assets/config.php"; // Database connection
                 </div>
             </div>
 
-            <!-- Recent Activity & Popular Products -->
             <div class="col-lg-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body p-3">
-                        <h5 class="card-title">Popular Products</h5>
-                        <ul class="list-group">
-                            <?php
-                                $sql = "
-                                    SELECT product_items.product_name, product_items.product_image, SUM(receipt_items.quantity) AS total_sold 
-                                    FROM receipt_items 
-                                    JOIN product_items ON receipt_items.product_id = product_items.product_id 
-                                    GROUP BY product_items.product_name, product_items.product_image 
-                                    ORDER BY total_sold DESC 
-                                    LIMIT 5
-                                ";
-                                $result = $conn->query($sql);
-                                if ($result) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        $imagePath = $row['product_image'] ? htmlspecialchars($row['product_image']) : '../uploads/default-placeholder.jpg';
-                                        echo "<li class='list-group-item d-flex align-items-center'>
-                                                <img src='$imagePath' alt='Product Image' class='rounded' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
-                                                <div>
-                                                    <strong>" . htmlspecialchars($row['product_name']) . "</strong> - " . $row['total_sold'] . " sold
-                                                </div>
-                                              </li>";
-                                    }
-                                }
-                            ?>
-                        </ul>
-                    </div>
-                </div>
-                
-<!-- Popular Reserved Tables -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body p-3">
-        <h5 class="card-title">All Reserved Tables</h5>
-        <ul class="list-group">
-            <?php
-                // SQL Query to fetch the number of reservations for each table_id and associated image path
-                $sql = "
-                    SELECT 
-                        tables.table_number, 
-                        tables.table_id, 
-                        COUNT(DISTINCT reservations.reservation_id) AS reservation_count,
-                        MIN(table_images.image_path) AS image_path
-                    FROM reservations
-                    JOIN tables ON reservations.table_id = tables.table_id
-                    LEFT JOIN table_images ON tables.table_id = table_images.table_id
-                    WHERE reservations.status IN ('Complete', 'Paid') 
-                    GROUP BY tables.table_id
-                    ORDER BY reservation_count DESC
-                ";
-
-                // Execute the query
-                $result = $conn->query($sql);
-
-                if ($result) {
-                    // Loop through the results and display table reservation counts
-                    while ($row = $result->fetch_assoc()) {
-                        // Check if the image path exists, otherwise use a placeholder image
-                        $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
-                        
-                        // Log for debugging purposes
-                        error_log("Table #" . htmlspecialchars($row['table_number']) . " has " . $row['reservation_count'] . " reservations.");
-
-                        // Display each table reservation data
-                        echo "<li class='list-group-item d-flex align-items-center'>
-                                <img src='$imagePath' alt='Table Image' style='width: 50px; height: 50px; object-fit: cover; margin-right: 10px;'>
-                                <div>
-                                    <strong>Table #" . htmlspecialchars($row['table_number']) . "</strong> - " . $row['reservation_count'] . " Reservation
-                                </div>
-                              </li>";
+    <!-- Popular Products Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <h5 class="card-title">Popular Products</h5>
+            <ul class="list-group">
+                <?php
+                    $sql = "
+                        SELECT product_items.product_name, product_items.product_image, SUM(receipt_items.quantity) AS total_sold 
+                        FROM receipt_items 
+                        JOIN product_items ON receipt_items.product_id = product_items.product_id 
+                        GROUP BY product_items.product_name, product_items.product_image 
+                        ORDER BY total_sold DESC 
+                        LIMIT 5
+                    ";
+                    $result = $conn->query($sql);
+                    if ($result && $result->num_rows > 0) { // Checking if there are results
+                        while ($row = $result->fetch_assoc()) {
+                            $imagePath = $row['product_image'] ? htmlspecialchars($row['product_image']) : '../uploads/default-placeholder.jpg';
+                            echo "<li class='list-group-item d-flex align-items-center py-3'>
+                                    <img src='$imagePath' alt='Product Image' class='rounded-circle' style='width: 50px; height: 50px; object-fit: cover; margin-right: 15px;'>
+                                    <div>
+                                        <strong>" . htmlspecialchars($row['product_name']) . "</strong>
+                                        <small class='d-block text-muted'>" . $row['total_sold'] . " sold</small>
+                                    </div>
+                                  </li>";
+                        }
+                    } else {
+                        echo "<li class='list-group-item'>No popular products available.</li>"; // Fallback message
                     }
-                } else {
-                    // If no reservations found, display a message
-                    echo "<li class='list-group-item'>No reservations found.</li>";
-                }
-            ?>
-        </ul>
+                ?>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Popular Reserved Tables Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <h5 class="card-title">All Reserved Tables</h5>
+            <ul class="list-group">
+                <?php
+                    $sql = "
+                        SELECT 
+                            tables.table_number, 
+                            tables.table_id, 
+                            COUNT(DISTINCT reservations.reservation_id) AS reservation_count,
+                            MIN(table_images.image_path) AS image_path
+                        FROM reservations
+                        JOIN tables ON reservations.table_id = tables.table_id
+                        LEFT JOIN table_images ON tables.table_id = table_images.table_id
+                        WHERE reservations.status IN ('Complete', 'Paid') 
+                        GROUP BY tables.table_id
+                        ORDER BY reservation_count DESC
+                    ";
+
+                    $result = $conn->query($sql);
+                    if ($result && $result->num_rows > 0) { // Checking if there are results
+                        while ($row = $result->fetch_assoc()) {
+                            $imagePath = $row['image_path'] ? htmlspecialchars($row['image_path']) : '../uploads/default-placeholder.jpg';
+                            echo "<li class='list-group-item d-flex align-items-center py-3'>
+                                    <img src='$imagePath' alt='Table Image' class='rounded-circle' style='width: 50px; height: 50px; object-fit: cover; margin-right: 15px;'>
+                                    <div>
+                                        <strong>Table #" . htmlspecialchars($row['table_number']) . "</strong>
+                                        <small class='d-block text-muted'>" . $row['reservation_count'] . " Reservation(s)</small>
+                                    </div>
+                                  </li>";
+                        }
+                    } else {
+                        echo "<li class='list-group-item'>No reserved tables available.</li>"; // Fallback message
+                    }
+                ?>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Feedback Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <h5 class="card-title">Recent Feedback</h5>
+            <ul class="list-group">
+                <?php
+                    $sql = "
+                        SELECT 
+                            feedbacks.feedback_text,
+                            feedbacks.rating,
+                            feedbacks.created_at,
+                            users.first_name,
+                            users.last_name,
+                            users.username
+                        FROM feedbacks
+                        JOIN users ON feedbacks.user_id = users.user_id
+                        ORDER BY feedbacks.created_at DESC
+                        LIMIT 3
+                    ";
+
+                    $result = $conn->query($sql);
+                    if ($result && $result->num_rows > 0) { // Checking if there are results
+                        while ($row = $result->fetch_assoc()) {
+                            $userFullName = htmlspecialchars($row['first_name'] . " " . $row['last_name']);
+                            $username = htmlspecialchars($row['username']);
+                            $feedbackText = htmlspecialchars($row['feedback_text']);
+                            $rating = intval($row['rating']);
+                            $createdAt = date("F j, Y, g:i a", strtotime($row['created_at']));
+
+                            echo "
+                                <li class='list-group-item py-3'>
+                                    <div class='d-flex justify-content-between align-items-center'>
+                                        <div>
+                                            <strong>$userFullName (@$username)</strong>
+                                            <small class='text-muted d-block'>$createdAt</small>
+                                            <p class='mb-1'>$feedbackText</p>
+                                        </div>
+                                        <div>
+                                            <span class='badge bg-primary rounded-pill'>$rating ★</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            ";
+                        }
+                    } else {
+                        echo "<li class='list-group-item'>No feedback available.</li>"; // Fallback message
+                    }
+                ?>
+            </ul>
+        </div>
     </div>
 </div>
 
-<!-- Feedback Section -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body p-3">
-        <h5 class="card-title">Recent Feedback</h5>
-        <ul class="list-group">
-            <?php
-                // SQL Query to fetch the 5 most recent feedback entries
-                $sql = "
-                    SELECT 
-                        feedbacks.feedback_text,
-                        feedbacks.rating,
-                        feedbacks.created_at,
-                        users.first_name,
-                        users.last_name,
-                        users.username
-                    FROM feedbacks
-                    JOIN users ON feedbacks.user_id = users.user_id
-                    ORDER BY feedbacks.created_at DESC
-                    LIMIT 3
-                ";
-
-                // Execute the query
-                $result = $conn->query($sql);
-
-                if ($result && $result->num_rows > 0) {
-                    // Loop through the feedbacks
-                    while ($row = $result->fetch_assoc()) {
-                        // Escape data for security
-                        $userFullName = htmlspecialchars($row['first_name'] . " " . $row['last_name']);
-                        $username = htmlspecialchars($row['username']);
-                        $feedbackText = htmlspecialchars($row['feedback_text']);
-                        $rating = intval($row['rating']);
-                        $createdAt = date("F j, Y, g:i a", strtotime($row['created_at']));
-
-                        // Display feedback
-                        echo "
-                            <li class='list-group-item'>
-                                <div class='d-flex justify-content-between align-items-center'>
-                                    <div>
-                                        <strong>$userFullName (@$username)</strong>
-                                        <small class='text-muted d-block'>$createdAt</small>
-                                        <p class='mb-1'>$feedbackText</p>
-                                    </div>
-                                    <div>
-                                        <span class='badge bg-primary rounded-pill'>$rating ★</span>
-                                    </div>
-                                </div>
-                            </li>
-                        ";
-                    }
-                } else {
-                    // Display a message if no feedback is found
-                    echo "<li class='list-group-item'>No feedback available.</li>";
-                }
-            ?>
-        </ul>
-    </div>
-</div>
-
-
-</div>
             </div>
 
             
@@ -327,6 +325,7 @@ include_once "assets/config.php"; // Database connection
 
 <!-- generate report -->
  <!-- Include jQuery -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 
 
@@ -473,4 +472,5 @@ fetch('../assets/fetch_data.php')
 
 
 </script>
+
 

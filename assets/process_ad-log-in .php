@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Basic validation
     if (!empty($email) && !empty($password)) {
-        // Prepare the SQL statement
+        // Prepare the SQL statement to fetch user data
         $sql = "SELECT password_hash, role, username, user_id FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
 
@@ -55,6 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bind_param('iss', $user_id, $session_token, $expires_at);
                 $stmt->execute();
                 $_SESSION['session_token'] = $session_token;
+
+                // Log the login action in activity_logs table
+                $action_type = 'Login';
+                $action_details = "User {$username} Login ";
+                $sql = "INSERT INTO activity_logs (action_by, action_type, action_details) VALUES (?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('iss', $user_id, $action_type, $action_details);
+                $stmt->execute();
 
                 // Redirect based on role
                 switch ($role) {

@@ -1,6 +1,7 @@
 <?php
 // Start the session with a custom session name if it's not already started
-session_start();
+
+    session_start();
 
 
 include_once "./assets/config.php"; // Include the DB connection file
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'], $_POST['pa
             initialize_session($user_id, $db_username, $role);
 
             // Redirect user based on role (adjust URLs as needed)
-            if ($role == 'Owner' || $role == 'Admin' || $role == 'Staff') {
+            if ($role == 'Owner' || $role == 'Admin') {
                 header("Location: ../admin_dashboard.php");
             } else {
                 header("Location: ../user_dashboard.php");

@@ -21,6 +21,9 @@ function setActiveLink(linkElement) {
 
   // Store the active link in localStorage
   localStorage.setItem("activeLink", linkElement.getAttribute("href"));
+
+  // Scroll to top of the page
+  window.scrollTo(0, 0);
 }
 
 // Load the active link from localStorage on page load

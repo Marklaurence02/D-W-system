@@ -139,7 +139,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <div class="form-group col-12 col-md-6">
               <label for="price">Unit Price:</label>
-              <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+              <input type="number" class="form-control" id="price" name="price" step="1" required>
             </div>
             <div class="form-group col-12">
               <label for="special_instructions">Special Instructions:</label>

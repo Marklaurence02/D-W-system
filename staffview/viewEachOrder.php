@@ -1,5 +1,5 @@
 <?php
-session_name("owner_session");
+session_name("staff_session");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,12 +18,7 @@ $order_sql = "
            u.contact_number, 
            o.order_time, 
            o.total_amount AS order_total,
-           o.status AS order_status,
-           o.payment_method,
-           o.order_details,
-           o.feedback,
-           o.created_at,
-           o.updated_at
+           o.payment_method
     FROM orders o
     LEFT JOIN users u ON o.user_id = u.user_id
     WHERE o.order_id = ?
@@ -35,133 +30,108 @@ $order_stmt->execute();
 $order_result = $order_stmt->get_result();
 $order_data = $order_result->fetch_assoc();
 $order_stmt->close();
+
+if (!$order_data) {
+    echo "<p>Order not found.</p>";
+    exit;
+}
 ?>
 
 <div class="container">
     <h3>Order Receipt Details</h3>
     <p><strong>Order #<?= htmlspecialchars($order_data['order_id']) ?></strong></p>
+    
+    <!-- Table layout for larger screens -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Receipt ID</th>
+                    <th>Receipt Date</th>
+                    <th>Total Amount</th>
+                    <th>Payment Method</th>
+                    <th>Item Name</th>
+                    <th>Item Type</th>
+                    <th>Quantity</th>
+                    <th>Item Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Fetch receipts and their items for the specific order
+                $receipts_sql = "
+                    SELECT r.receipt_id, r.receipt_date, r.total_amount, r.payment_method, 
+                           ri.quantity, ri.item_total_price, pi.product_name, pc.category_name AS item_type
+                    FROM receipts r
+                    LEFT JOIN receipt_items ri ON r.receipt_id = ri.receipt_id
+                    LEFT JOIN product_items pi ON ri.product_id = pi.product_id
+                    LEFT JOIN product_categories pc ON pi.category_id = pc.category_id
+                    WHERE r.order_id = ?
+                    ORDER BY r.receipt_date ASC
+                ";
 
-    <!-- Order Summary Table (Now with DataTable headers) -->
-    <table id="orderDetailsTable" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Field</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Customer:</strong></td>
-                <td><?= htmlspecialchars($order_data['customer_name']) ?></td>
-            </tr>
-            <tr>
-                <td><strong>Contact:</strong></td>
-                <td><?= htmlspecialchars($order_data['contact_number']) ?></td>
-            </tr>
-            <tr>
-                <td><strong>Order Date:</strong></td>
-                <td><?= date("F j, Y, g:i a", strtotime($order_data['order_time'])) ?></td>
-            </tr>
+                $receipts_stmt = $conn->prepare($receipts_sql);
+                $receipts_stmt->bind_param("i", $orderID);
+                $receipts_stmt->execute();
+                $receipts_result = $receipts_stmt->get_result();
+                $cumulative_total = 0;
 
-            <tr>
-                <td><strong>Payment Method:</strong></td>
-                <td><?= htmlspecialchars($order_data['payment_method']) ?></td>
-            </tr>
-          
-            <tr>
-                <td><strong>Order Details:</strong></td>
-                <td><?= nl2br(htmlspecialchars($order_data['order_details'])) ?></td>
-            </tr>
-            <tr>
-                <td><strong>Order Status:</strong></td>
-                <td>
-                    <!-- Display order status as a button in the UI -->
-                    <div class="dropdown">
-                        <button class="btn <?= htmlspecialchars($order_data['order_status']) ?> dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?= htmlspecialchars($order_data['order_status']) ?>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Pending')">Pending</a>
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'In-Progress')">In-Progress</a>
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Paid in advance')">Paid in advance</a>
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Completed')">Completed</a>
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="ChangeOrderStatus(<?= $orderID ?>, 'Canceled')">Canceled</a>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        
-            <tr>
-                <td><strong>Total Amount:</strong></td>
-                <td>&#8369;<?= number_format($order_data['order_total'], 2) ?></td>
-            </tr>
-
-        </tbody>
-    </table>
-
-</div>
-<script>
-$(document).ready(function () {
-    var today = new Date();
-    var formattedDate = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
-
-    // Initialize DataTable with Export and Print buttons
-    $('#orderDetailsTable').DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'print',
-                title:  'Order Receipt - ' + formattedDate, // Centered title for print
-                text: 'Print Receipt',
-                exportOptions: {
-                    columns: [0, 1] // Print only the first two columns: Field and Details
-                },
-                customize: function(win) {
-                    // Add logo at the top of the printed page
-                    $(win.document.body).prepend('<img src="/Images/logo.png" style="width: 100px; height: auto; margin-bottom: 20px;"/>');
-
-                    // Replace the order status button with text during print/export
-                    $(win.document.body).find('.dropdown-toggle').each(function() {
-                        var text = $(this).text();
-                        $(this).replaceWith('<span>' + text + '</span>');
-                    });
-
-                    // Title and custom styles for printed page
-                    $(win.document.body).prepend('<h2 style="text-align: center; color: #FF6A13; font-family: Arial, sans-serif; font-weight: bold; font-size: 20px; margin-top: 0;">Order Receipt - ' + formattedDate + '</h2>');
-
-                    // Style the header row
-                    $(win.document.body).find('th').css({
-                        'background-color': '#FF6A13',
-                        'color': 'white',
-                        'font-weight': 'bold',
-                        'font-size': '14px',
-                        'text-align': 'center'
-                    });
-
-                    // Alternate row colors for readability
-                    $(win.document.body).find('tr:nth-child(even)').css('background-color', '#FFEBE0');
-                    $(win.document.body).find('tr:nth-child(odd)').css('background-color', '#FFE0CC');
-
-                    // Customize the page layout for printing
-                    $(win.document.body).css({
-                        'font-family': 'Arial, sans-serif',
-                        'font-size': '12px'
-                    });
-
-                    // Adjust the width of the first column (Field) to make it more readable
-                    $(win.document.body).find('table').css('width', '100%');
-                    $(win.document.body).find('td').css('padding', '8px');
+                while ($row = $receipts_result->fetch_assoc()) {
+                    $cumulative_total += $row['total_amount'];
+                    echo "<tr>
+                            <td>" . htmlspecialchars($row['receipt_id']) . "</td>
+                            <td>" . date("F j, Y, g:i a", strtotime($row['receipt_date'])) . "</td>
+                            <td>&#8369;" . number_format($row['total_amount'], 2) . "</td>
+                            <td>" . htmlspecialchars($row['payment_method']) . "</td>
+                            <td>" . htmlspecialchars($row['product_name']) . "</td>
+                            <td>" . htmlspecialchars($row['item_type']) . "</td>
+                            <td>" . htmlspecialchars($row['quantity']) . "</td>
+                            <td>&#8369;" . number_format($row['item_total_price'], 2) . "</td>
+                        </tr>";
                 }
-            }
-        ],
-        responsive: true,
-        lengthChange: false, // Hide the length change dropdown
-        paging: false, // Disable pagination
-        searching: false, // Disable search bar
-        ordering: false, // Disable ordering of columns
-        info: false // Disable the "Showing X to Y of Z entries" text
-    });
-});
-</script>
+                $receipts_stmt->close();
+                ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7" style="text-align: right;"><strong>Cumulative Total:</strong></td>
+                    <td><strong>&#8369;<?= number_format($cumulative_total, 2) ?></strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <!-- Card layout for smaller screens -->
+    <div class="d-block d-lg-none">
+        <?php
+        $receipts_stmt = $conn->prepare($receipts_sql);
+        $receipts_stmt->bind_param("i", $orderID);
+        $receipts_stmt->execute();
+        $receipts_result = $receipts_stmt->get_result();
+        
+        while ($row = $receipts_result->fetch_assoc()) {
+            echo "
+            <div class='card mb-3'>
+                <div class='card-body'>
+                    <h5 class='card-title'>Receipt ID: " . htmlspecialchars($row['receipt_id']) . "</h5>
+                    <p><strong>Date:</strong> " . date("F j, Y, g:i a", strtotime($row['receipt_date'])) . "</p>
+                    <p><strong>Total Amount:</strong> &#8369;" . number_format($row['total_amount'], 2) . "</p>
+                    <p><strong>Payment Method:</strong> " . htmlspecialchars($row['payment_method']) . "</p>
+                    <p><strong>Item:</strong> " . htmlspecialchars($row['product_name']) . "</p>
+                    <p><strong>Type:</strong> " . htmlspecialchars($row['item_type']) . "</p>
+                    <p><strong>Quantity:</strong> " . htmlspecialchars($row['quantity']) . "</p>
+                    <p><strong>Item Total Price:</strong> &#8369;" . number_format($row['item_total_price'], 2) . "</p>
+                </div>
+            </div>";
+        }
+        $receipts_stmt->close();
+        ?>
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Cumulative Total:</strong> &#8369;<?= number_format($cumulative_total, 2) ?></p>
+            </div>
+        </div>
+    </div>
+</div>
 
-
+<?php $conn->close(); ?>

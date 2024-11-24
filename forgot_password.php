@@ -190,6 +190,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
         .small-text a:hover {
             text-decoration: underline;
         }
+        .footer {
+            background-color: #ff6700;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -215,6 +222,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
                             <label for="email">Email:</label>
                         </div>
                         <button type="submit" name="send_otp" class="btn-next">Send OTP</button>
+                        <p class="text-center">Already have an account? <a href="sign-in.php">Sign-in here</a></p>
+
                     </form>
                 </div>
             </div>

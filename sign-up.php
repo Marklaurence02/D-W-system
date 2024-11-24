@@ -214,12 +214,12 @@ input[type="password"] {
                     <form action="" method="POST">
                         <!-- Account Information -->
                         <div class="form-group" id="emailField">
-                            <input type="email" class="form-control" name="email" placeholder="Email" required value="<?= htmlspecialchars($email ?? ''); ?>">
+                            <input type="email" class="form-control" name="email" placeholder="" required value="<?= htmlspecialchars($email ?? ''); ?>">
                             <label for="email">Email</label>
                         </div>
 
                         <div class="form-group password-container" id="passwordField">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="" required>
                             <label for="password">Password</label>
                             <span id="togglePassword" class="eye-icon">
                                 <box-icon id="hideIcon" name="hide" type="solid"></box-icon>
@@ -228,7 +228,7 @@ input[type="password"] {
                         </div>
 
                         <div class="form-group password-container" id="confirmPasswordField">
-                            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" required>
+                            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder=" " required>
                             <label for="confirmPassword">Confirm Password</label>
                             <span id="toggleConfirmPassword" class="eye-icon">
                                 <box-icon id="hideIconConfirm" name="hide" type="solid"></box-icon>
@@ -243,32 +243,32 @@ input[type="password"] {
                         <!-- Personal Information (Initially hidden) -->
                         <div class="personal-info mt-4">
                             <div class="form-group" id="firstNameField">
-                                <input type="text" class="form-control" name="firstName" placeholder="First Name" required value="<?= htmlspecialchars($firstName ?? ''); ?>">
+                                <input type="text" class="form-control" name="firstName" placeholder=" " required value="<?= htmlspecialchars($firstName ?? ''); ?>">
                                 <label for="firstName">First Name</label>
                             </div>
 
                             <div class="input-group">
-                                <input type="text" class="form-control" name="middleInitial" placeholder="Middle Initial" value="<?= htmlspecialchars($middleInitial ?? ''); ?>">
+                                <input type="text" class="form-control" name="middleInitial" placeholder=" " value="<?= htmlspecialchars($middleInitial ?? ''); ?>">
                                 <input type="text" class="form-control" name="suffix" placeholder="Suffix (Optional)" value="<?= htmlspecialchars($suffix ?? ''); ?>">
                             </div>
 
                             <div class="form-group" id="lastNameField">
-                                <input type="text" class="form-control" name="lastName" placeholder="Last Name" required value="<?= htmlspecialchars($lastName ?? ''); ?>">
+                                <input type="text" class="form-control" name="lastName" placeholder=" " required value="<?= htmlspecialchars($lastName ?? ''); ?>">
                                 <label for="lastName">Last Name</label>
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="address" placeholder="Address" required value="<?= htmlspecialchars($address ?? ''); ?>">
+                                <input type="text" class="form-control" name="address" placeholder="" required value="<?= htmlspecialchars($address ?? ''); ?>">
                                 <label for="address">Address</label>
                             </div>
 
                             <div class="form-group">
-                                <input type="tel" class="form-control" name="phone" placeholder="Phone Number" required value="<?= htmlspecialchars($phone ?? ''); ?>" pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
+                                <input type="tel" class="form-control" name="phone" placeholder=" " required value="<?= htmlspecialchars($phone ?? ''); ?>" pattern="09[0-9]{9}" title="Contact number must start with 09 and have exactly 11 digits.">
                                 <label for="phone">Phone Number</label>
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="zipCode" placeholder="Zip Code" required value="<?= htmlspecialchars($zipCode ?? ''); ?>">
+                                <input type="text" class="form-control" name="zipCode" placeholder=" " required value="<?= htmlspecialchars($zipCode ?? ''); ?>">
                                 <label for="zipCode">Zip Code</label>
                             </div>
 

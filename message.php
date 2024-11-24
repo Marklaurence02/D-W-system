@@ -12,12 +12,6 @@
 <body>
     <?php include "Header_nav/ownerHeader.php"; 
     ?>
-<div id="main">
-    <a href="Owner-panel.php" class="openbtn">
-        <i class='bx bxs-dashboard'></i>
-        <span>Dashboard</span>
-    </a>
-</div>
     <?php
     include 'assets/config.php';
     header('Content-Type: text/html; charset=UTF-8');
@@ -73,15 +67,7 @@
         <div class="card mx-auto user-list" id="user-list">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Messages</h5>
-        <div class="input-group-append">
-            <!-- Search Button -->
-            <button class="btn btn-outline-secondary" onclick="toggleSearchInput()">
-                <i class='bx bx-search-alt-2'></i>
-            </button>
 
-            <!-- Missing Search Input Field -->
-            <input type="text" id="search-input" class="form-control ml-2 d-none" 
-                   placeholder="Search by name or role..." onkeyup="searchUsers()">
 
             <!-- Dashboard Link -->
             <a href="Owner-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">

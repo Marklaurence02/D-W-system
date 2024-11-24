@@ -1,7 +1,7 @@
 <?php
 
- session_start();
- include_once "../assets/config.php";  // Include your DB connection file
+session_start();
+include_once "../assets/config.php";  // Include your DB connection file
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
     }
 
     // Check if the target user (the one to be deleted) exists
-    $check_sql = "SELECT user_id FROM users WHERE user_id = ?";
+    $check_sql = "SELECT username FROM users WHERE user_id = ?";
     $check_stmt = $conn->prepare($check_sql);
     if ($check_stmt === false) {
         error_log("MySQL prepare error: " . $conn->error);
@@ -53,9 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
     }
     $check_stmt->bind_param("i", $user_id);  // This is the target user to be deleted
     $check_stmt->execute();
-    $check_stmt->store_result();
+    $check_stmt->bind_result($target_username);
 
-    if ($check_stmt->num_rows === 0) {
+    if (!$check_stmt->fetch()) {
         echo json_encode(['status' => 'error', 'message' => 'User not found.']);
         $check_stmt->close();
         exit;
@@ -63,24 +63,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
     $check_stmt->close();
 
     // Proceed with deleting the target user if the logged-in user's password is verified
-    $delete_sql = "DELETE FROM users WHERE user_id = ?";
-    $delete_stmt = $conn->prepare($delete_sql);
-    if ($delete_stmt === false) {
-        error_log("MySQL prepare error: " . $conn->error);
-        echo json_encode(['status' => 'error', 'message' => 'Database error.']);
-        exit;
-    }
+    $conn->begin_transaction();
 
-    $delete_stmt->bind_param("i", $user_id);  // Delete the target user
-    if ($delete_stmt->execute()) {
-        echo json_encode(['status' => 'success', 'message' => 'User deleted successfully.']);
-    } else {
-        error_log("Execute error: " . $delete_stmt->error);
-        echo json_encode(['status' => 'error', 'message' => 'Error deleting the user.']);
-    }
+    try {
+        $delete_sql = "DELETE FROM users WHERE user_id = ?";
+        $delete_stmt = $conn->prepare($delete_sql);
+        if ($delete_stmt === false) {
+            throw new Exception("Database error: " . $conn->error);
+        }
 
-    $delete_stmt->close();
-    $conn->close();
+        $delete_stmt->bind_param("i", $user_id);  // Delete the target user
+        if (!$delete_stmt->execute()) {
+            throw new Exception("Error deleting the user: " . $delete_stmt->error);
+        }
+
+        $delete_stmt->close();
+
+        // Log the action in the activity_logs table
+        $action_type = 'Delete Admin';
+        $action_details = "Admin '$target_username' (ID: $user_id) was deleted by user '$username' (ID: $logged_in_user_id).";
+        $log_query = "INSERT INTO activity_logs (action_by, action_type, action_details) 
+                      VALUES (?, ?, ?)";
+        $log_stmt = $conn->prepare($log_query);
+
+        if ($log_stmt === false) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+
+        $log_stmt->bind_param("iss", $logged_in_user_id, $action_type, $action_details);
+        if (!$log_stmt->execute()) {
+            throw new Exception("Failed to log activity: " . $log_stmt->error);
+        }
+
+        $log_stmt->close();
+
+        // Commit the transaction
+        $conn->commit();
+        echo json_encode(['status' => 'success', 'message' => 'User deleted and action logged successfully.']);
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    } finally {
+        $conn->close();
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request.']);
 }

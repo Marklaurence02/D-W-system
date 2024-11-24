@@ -55,7 +55,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="price">Unit Price:</label>
-                <input type="number" class="form-control" name="price" id="price" value="<?= $row1['price'] ?>" step="0.01" required>
+                <input type="number" class="form-control" name="price" id="price" value="<?= $row1['price'] ?>" step="1" required>
             </div>
         </div>
     </div>

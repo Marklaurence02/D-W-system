@@ -63,7 +63,7 @@ function closeModal() {
       const formData = new FormData(event.target); // Serialize form data
   
       // Send an AJAX request to the server to update the reservation
-      fetch('/adminview/viewsReservation.php', {
+      fetch('/Ownerview/viewsReservation.php', {
         method: 'POST',
         body: formData,
       })
@@ -83,7 +83,7 @@ function closeModal() {
 // Function to refresh the reservation list dynamically using AJAX
 function showReservation() {
     $.ajax({
-        url: 'adminview/viewsReservation.php',  // The PHP file to call
+        url: 'Ownerview/viewsReservation.php',  // The PHP file to call
         type: 'POST',                          // Send data using POST method
         data: { record: 1 },                   // The data to send (record = 1)
         success: function(data) {
@@ -101,7 +101,7 @@ function showReservation() {
 
   function showActivity_log() {
     $.ajax({
-        url: "adminview/viewActivity_log-.php",
+        url: "Ownerview/viewActivity_log-.php",
         method: "POST",
         data: { record: 1 },                   // The data to send (record = 1)
         success: function(data) {
@@ -117,7 +117,7 @@ function showReservation() {
 // Function to show Admin/Staff management view
 function showadmin() {
     $.ajax({
-        url: "adminview/adminmanagement.php",
+        url: "Ownerview/adminmanagement.php",
         method: "POST",
         success: function(data) {
             $('.allContent-section').html(data);  // Load the admin management page into the section
@@ -166,7 +166,7 @@ function adminEditForm(userId) {
 
     // Proceed to load the edit form if confirmed and password is provided
     $.ajax({
-        url: "adminview/editAdminForm.php", // URL to load the edit form
+        url: "Ownerview/editAdminForm.php", // URL to load the edit form
         method: "POST",
         dataType: "json",
         data: { user_id: userId, user_password: password },
@@ -269,7 +269,7 @@ function adminDelete(userId) {
 
 function refreshAdminList() {
     $.ajax({
-        url: 'adminview/adminmanagement.php',  // PHP script that returns updated rows
+        url: 'Ownerview/adminmanagement.php',  // PHP script that returns updated rows
         method: 'GET',
         success: function(data) {
             $('.admin-table').html(data);  // Update the table body with the new data
@@ -286,7 +286,7 @@ function refreshAdminList() {
 
 function showUser() {
     $.ajax({
-        url: "adminview/viewUser.php",
+        url: "Ownerview/viewUser.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
@@ -297,7 +297,7 @@ function showUser() {
 
 function showOrders() {
     $.ajax({
-        url: "adminview/viewAllOrders.php",
+        url: "Ownerview/viewAllOrders.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
@@ -345,7 +345,7 @@ function ChangeOrderStatus(orderId, newStatus) {
 // Refresh order list dynamically without redirecting
 function refreshOrderList() {
     $.ajax({
-        url: 'adminview/viewAllOrders.php',  // Adjust the URL if needed
+        url: 'Ownerview/viewAllOrders.php',  // Adjust the URL if needed
         method: 'GET',
         success: function(response) {
             $('.allContent-section').html(response);  // Replace the content in the section
@@ -415,13 +415,13 @@ function addItems() {
 
 // Refresh product list dynamically without redirecting
 function refreshProductList() {
-    updateContent('adminview/viewAllProducts.php', {}, '.allContent-section');
+    updateContent('Ownerview/viewAllProducts.php', {}, '.allContent-section');
 }
 
 // Function to show table views dynamically
 function showTableViews() {
     $.ajax({
-        url: "adminview/viewTable.php",  // Adjust this path to your actual view table script
+        url: "Ownerview/viewTable.php",  // Adjust this path to your actual view table script
         method: "POST",
         data: { record: 1 },  // Send any required data for server-side filtering (if needed)
         success: function(data) {
@@ -501,7 +501,7 @@ function addTable() {
 
 // Refresh table list dynamically without redirecting
 function refreshTableList() {
-    updateContent('adminview/viewTable.php', {}, '.allContent-section');
+    updateContent('Ownerview/viewTable.php', {}, '.allContent-section');
 
 }
 
@@ -510,7 +510,7 @@ function refreshTableList() {
 
 function showProductItems() {
     $.ajax({
-        url: "adminview/viewAllProducts.php",
+        url: "Ownerview/viewAllProducts.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
@@ -527,7 +527,7 @@ function showProductItems() {
 // Load the edit form for a product inside the modal
 function itemEditForm(id) {
     $.ajax({
-        url: "adminview/editItemForm.php",  // URL to load the edit form
+        url: "Ownerview/editItemForm.php",  // URL to load the edit form
         method: "POST",
         data: { record: id },  // Send the product ID
         success: function(data) {
@@ -607,7 +607,7 @@ function updateItems(event) {
 // Function to refresh the product list without redirecting
 function refreshProductList() {
     $.ajax({
-        url: 'adminview/viewAllProducts.php',  // URL to load the product list
+        url: 'Ownerview/viewAllProducts.php',  // URL to load the product list
         method: 'GET',
         success: function(data) {
             $('.allContent-section').html(data);  // Update the content with the product list
@@ -625,7 +625,7 @@ function refreshProductList() {
 function itemDelete(id) {
     if (confirm('Are you sure you want to delete this product?')) {
         $.ajax({
-            url: "/controls/deleteItemController.php",
+            url: "/controlscontrols/deleteItemController.php",
             method: "POST",
             data: { record: id },
             success: function(data) {
@@ -701,7 +701,7 @@ function clearFilters() {
 // Load the edit form for a table
 function tableEditForm(id) {
     $.ajax({
-        url: "adminview/editables-forms.php",  // URL to load the edit form for tables
+        url: "Ownerview/editables-forms.php",  // URL to load the edit form for tables
         method: "POST",
         data: { record: id },  // Send the table ID
         success: function(data) {
@@ -787,7 +787,7 @@ function updateTables(event) {
 // Function to refresh the table list
 function refreshUpdateTableList() {
     $.ajax({
-        url: 'adminview/viewTable.php',  // URL to load the table list
+        url: 'Ownerview/viewTable.php',  // URL to load the table list
         method: 'GET',
         success: function(data) {
             $('.allContent-section').html(data);  // Update the content with the table list
@@ -857,7 +857,7 @@ function updateVariations() {
 // show category
 function showCategory() {
     $.ajax({
-        url: "adminview/viewAllCategory.php",
+        url: "Ownerview/viewAllCategory.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
@@ -876,7 +876,7 @@ function showCategory() {
 // Load the edit form for a category
 function categoryEditForm(id) {
     $.ajax({
-        url: "adminview/editcategory-form.php",  // URL to load the edit form for categories
+        url: "Ownerview/editcategory-form.php",  // URL to load the edit form for categories
         method: "POST",
         data: { record: id },  // Send the category ID
         success: function(data) {
@@ -984,26 +984,23 @@ function updateCategory(event) {
 
 
 
-// Delete Category function
 function categoryDelete(categoryId) {
     if (confirm('Are you sure you want to delete this category?')) {
-        // AJAX request to delete category
         $.ajax({
-            url: '/controls/deletecatController.php',  // The URL to your delete category script
+            url: '/controls/deletecatController.php',
             type: 'POST',
-            dataType: 'json',  // Expect a JSON response from the server
+            dataType: 'json',
             data: { category_id: categoryId },
             success: function(response) {
                 if (response.success) {
-                    console.log(response);  // Log the response for debugging
-                    alert(response.message);  // Show the success message returned by the server
-                    refreshCategoryList()  // Refresh the product list after deletion
+                    alert(response.message);
+                    refreshCategoryList();
                 } else {
-                    alert(response.message);  // Display error message returned by the server
+                    alert(response.message);
                 }
             },
             error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);  // Handle server errors
+                alert('An error occurred: ' + error);
             }
         });
     }
@@ -1015,16 +1012,17 @@ function categoryDelete(categoryId) {
 
 
 
+
   
 // Function to refresh the entire category list section dynamically
 function refreshCategoryList() {
-    updateContent("adminview/viewAllCategory.php", {}, '.allContent-section');
+    updateContent("Ownerview/viewAllCategory.php", {}, '.allContent-section');
 }
 
 
 function showmessage() {
     $.ajax({
-        url: "adminview/message.php",
+        url: "Ownerview/message.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {

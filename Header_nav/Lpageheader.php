@@ -7,3 +7,4 @@
         <a href="index.php" class="btn btn-primary btn-lg">Register Now</a>
     </div>
 </header>
+

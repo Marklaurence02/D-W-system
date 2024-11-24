@@ -12,11 +12,17 @@
 
     <!-- Custom CSS -->
     <style>
-        body {
-            background-color: #f8f9fa; /* Light gray background */
+             body {
+            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-
+        .logo-container {
+            max-width: 350px;
+            margin: 0 auto;
+        }
         .header {
             background-color: #ff6700; /* Orange header */
             color: white;
@@ -119,6 +125,11 @@
         .small-text a:hover {
             text-decoration: underline;
         }
+        .logo-img {
+    height: 50px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
 
     </style>
 </head>
@@ -126,8 +137,8 @@
 
     <!-- Header -->
     <header class="header d-flex align-items-center">
-        <h1>DINE&WATCH</h1>
-    </header>
+ <div class="logo">
+        </div>HAAS        </div>    </header>
 
     <!-- Main Content -->
     <div class="container my-5">
@@ -170,7 +181,7 @@
                                 <a href="forgot_password.php" class="text-primary">Forgot your password?</a>
                             </div>
                             <div class="col-auto text-end">
-                                <a href="signup.php" class="text-primary">Don't have an account?</a>
+                                <a href="sign-up.php" class="text-primary">Don't have an account?</a>
                             </div>
                         </div>
                     </div>

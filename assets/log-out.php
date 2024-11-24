@@ -2,7 +2,7 @@
 session_start(); // Start the session
 
 // Include the database connection configuration
-include '../assets/config.php';
+include 'assets/config.php';
 
 // Check if the user is logged in
 if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
@@ -36,11 +36,14 @@ if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
     }
 
     // Clear session variables securely
-    $_SESSION = [];
-    session_unset(); // Clear session data from the global $_SESSION variable
+    $_SESSION = []; // Unset all session variables
+    session_unset(); // Remove all session variables
+    session_destroy(); // Destroy the session
 
-    // Destroy the session
-    session_destroy();
+    // Delete the session cookie (for added security)
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 3600, '/'); // Set the cookie expiration time to past
+    }
 
     // Redirect to the home page
     header("Location: ../index.php");

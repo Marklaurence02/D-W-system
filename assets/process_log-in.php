@@ -4,13 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set session timeout (e.g., 30 minutes)
-$timeout_duration = 1800; // 30 minutes
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout_duration) {
-    session_unset(); // Unset session variables
-    session_destroy(); // Destroy session
-}
-$_SESSION['last_activity'] = time(); // Update last activity time
 
 include 'config.php';
 $message = '';
@@ -21,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim(htmlspecialchars($_POST['password']));
 
     // CAPTCHA validation
-    $recaptcha_secret = '6LcL4IcqAAAAAIrgTS5nOBBsUwrzDbNKj4GjqQFD'; // Your secret key
+    $recaptcha_secret = getenv('RECAPTCHA_SECRET'); // Using environment variable for secret key
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
     // Verify CAPTCHA
@@ -36,8 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = "Invalid email format.";
             } else {
-                $sql = "SELECT user_id, first_name, last_name, username, password_hash, role 
-                        FROM users WHERE email = ? AND role = 'General User'";
+                $sql = "SELECT user_id, first_name, last_name, username, password_hash, role FROM users WHERE email = ? AND role = 'General User'";
                 $stmt = $conn->prepare($sql);
 
                 if ($stmt) {
@@ -55,11 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $_SESSION['user_id'] = $user['user_id'];
 
                             // Update the user's status to 'online'
-                            $updateStatusSQL = "UPDATE users SET status = 'online' WHERE user_id = ?";
-                            $updateStmt = $conn->prepare($updateStatusSQL);
-                            $updateStmt->bind_param('i', $user['user_id']);
-                            $updateStmt->execute();
-                            $updateStmt->close();
+                            updateUserStatus($user['user_id'], $conn);
 
                             // Assign a staff member to the user if not already assigned
                             if (!checkExistingAssignment($user['user_id'], $conn)) {
@@ -89,7 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $conn->close();
 
 if (!empty($error)) {
-    echo "<p style='color: red;'>$error</p>";
+    $_SESSION['login_error'] = $error;  // Store error message in session
+    header("Location: ad-sign-in.php"); // Redirect to login page
+    exit();
+}
+
+// Function to update the user's status to 'online'
+function updateUserStatus($userId, $conn) {
+    $updateStatusSQL = "UPDATE users SET status = 'online' WHERE user_id = ?";
+    $updateStmt = $conn->prepare($updateStatusSQL);
+    $updateStmt->bind_param('i', $userId);
+    $updateStmt->execute();
+    $updateStmt->close();
 }
 
 // Function to check if the user already has an assigned staff member
@@ -108,7 +107,6 @@ function checkExistingAssignment($userId, $conn) {
 
 // Function to assign a staff member to a new general user
 function assignStaffToUser($userId, $conn) {
-    // Get the list of all staff members and their assignment counts
     $staffSQL = "
         SELECT u.user_id, COUNT(usa.user_id) AS assigned_count 
         FROM users u
@@ -117,11 +115,11 @@ function assignStaffToUser($userId, $conn) {
         GROUP BY u.user_id
         ORDER BY assigned_count ASC, u.user_id ASC
         LIMIT 1";
-    
+
     $staffStmt = $conn->prepare($staffSQL);
     $staffStmt->execute();
     $staffResult = $staffStmt->get_result();
-    
+
     if ($staffResult && $staffResult->num_rows > 0) {
         $staff = $staffResult->fetch_assoc();
         $assignedStaffId = $staff['user_id'];

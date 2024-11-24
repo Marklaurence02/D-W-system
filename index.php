@@ -38,6 +38,7 @@
         }
         .logo-container {
             max-width: 350px;
+            margin: 0 auto;
         }
         .page {
             text-align: center;

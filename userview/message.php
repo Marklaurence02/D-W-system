@@ -75,11 +75,9 @@ function loadMessages() {
     });
 }
 
-
 $(document).ready(function() {
     let messages = [];
 
-    // Function to render messages in the chat box
     function renderMessages() {
         $('#chat-box').find('.user-message, .assistant-message').remove();
         messages.forEach(function(message) {
@@ -91,52 +89,47 @@ $(document).ready(function() {
         $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight); // Scroll to the bottom
     }
 
-    // Send button click event
     $('#send-btn').click(function() {
         const message = $('#message-input').val();
         if (message.trim() !== '') {
-            $('#send-btn').prop('disabled', true); // Disable send button while waiting for response
-            
-            // Add the user's message immediately to the chat history
-            messages.push({ sender: 'user', text: message });
-            renderMessages(); // Update the chat box with the user's message
+            $('#send-btn').prop('disabled', true);
+            $('#message-input').prop('disabled', true); // Disable input field
 
-            // Send the message via AJAX to the server
+            messages.push({ sender: 'user', text: message });
+            renderMessages();
+
             $.ajax({
                 url: '/usermessagecontrol/chat.php',
                 type: 'POST',
                 data: { message: message },
                 success: function(response) {
                     const jsonResponse = JSON.parse(response);
-                    // Add the assistant's response to the history after receiving it
                     messages.push({ sender: 'assistant', text: jsonResponse.response });
-                    renderMessages(); // Re-render messages with the assistant's response
-                    $('#message-input').val(''); // Clear the input field
-                    $('#send-btn').prop('disabled', false); // Enable send button after response
+                    renderMessages();
+                    $('#message-input').val('');
+                    $('#send-btn').prop('disabled', false);
+                    $('#message-input').prop('disabled', false);
                 },
                 error: function() {
                     alert('Error sending message. Please try again.');
-                    $('#send-btn').prop('disabled', false); // Enable send button on error
+                    $('#send-btn').prop('disabled', false);
+                    $('#message-input').prop('disabled', false);
                 }
             });
         }
     });
 
-    // Option button click event (for predefined responses)
     $('.option').click(function() {
         const question = $(this).data('question');
-        // Add the user's option (question) to the history
         messages.push({ sender: 'user', text: question });
         $('#message-input').val(question);
-        
-        // Simulate assistant response
+
         const botResponse = getBotResponse(question);
         messages.push({ sender: 'assistant', text: botResponse });
-        renderMessages(); // Re-render the chat box with both user and assistant messages
-        $('#message-input').val(''); // Clear the input field
+        renderMessages();
+        $('#message-input').val('');
     });
 
-    // Helper function to generate bot responses
     function getBotResponse(question) {
         switch (question) {
             case "No Refund Policy?":
@@ -150,9 +143,9 @@ $(document).ready(function() {
         }
     }
 
-    // Initial message loading
-    loadMessages();
+    loadMessages(); // Initial message loading
 });
+
 </script>
 
 

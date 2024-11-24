@@ -45,6 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['role'] = $role;
                 $_SESSION['email'] = $email;
 
+                // Update user's status to 'online' after successful login
+                $update_status_sql = "UPDATE users SET status = 'online' WHERE user_id = ?";
+                $update_stmt = $conn->prepare($update_status_sql);
+                $update_stmt->bind_param('i', $user_id);
+                $update_stmt->execute();
+
                 // Generate a session token
                 $session_token = bin2hex(random_bytes(32)); // Generate a secure session token
 

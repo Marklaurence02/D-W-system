@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 // updatemanagement.php
 
 include_once "assets/config.php";  // Include your DB connection file
@@ -49,4 +49,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </select>
   </div>
   <button type="submit" class="btn btn-primary">Update User</button>
-</form>
+</form> -->

@@ -984,30 +984,28 @@ function updateCategory(event) {
 
 
 
-// Delete Category function
 function categoryDelete(categoryId) {
     if (confirm('Are you sure you want to delete this category?')) {
-        // AJAX request to delete category
         $.ajax({
-            url: '/Ocontrols/deletecatController.php',  // The URL to your delete category script
+            url: '/Ocontrols/deletecatController.php',
             type: 'POST',
-            dataType: 'json',  // Expect a JSON response from the server
+            dataType: 'json',
             data: { category_id: categoryId },
             success: function(response) {
                 if (response.success) {
-                    console.log(response);  // Log the response for debugging
-                    alert(response.message);  // Show the success message returned by the server
-                    refreshCategoryList()  // Refresh the product list after deletion
+                    alert(response.message);
+                    refreshCategoryList();
                 } else {
-                    alert(response.message);  // Display error message returned by the server
+                    alert(response.message);
                 }
             },
             error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);  // Handle server errors
+                alert('An error occurred: ' + error);
             }
         });
     }
 }
+
 
 
 

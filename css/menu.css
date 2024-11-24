@@ -1,0 +1,226 @@
+/* General Body Styling */
+html, body {
+    background-image: url('./../Images/brickwall.jpg');
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styling */
+.custom-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 90px;
+    background: linear-gradient(90deg, #FD6610, #FF4500);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.custom-header .logo-img {
+    height: 50px;
+    transition: transform 0.2s ease;
+}
+
+.custom-header .logo-img:hover {
+    transform: scale(1.1);
+}
+
+.custom-header .nav-menu a {
+    font-size: 18px;
+    color: #fff;
+    font-weight: 500;
+    padding: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s;
+}
+
+.custom-header .nav-menu a:hover {
+    color: #FFD700;
+    transform: scale(1.1);
+}
+
+/* Menu Section Styling */
+.menu-section {
+    flex: 1;
+    color: white;
+    padding: 100px 0 90px;
+    margin-top: 90px;
+}
+
+.menu-section h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 40px;
+}
+
+.menu-section h2 {
+    font-size: 2rem;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Category Title Styling */
+h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+.row {
+    border-top: 2px solid #ffffff;
+}
+
+/* Card Styling */
+.custom-card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #ffe4d8;
+}
+
+.custom-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px 0 0 8px;
+    display: block; 
+}
+
+.image-container {
+    height: 100%; 
+    overflow: hidden;
+    display: flex;
+}
+
+/* Card Body */
+.card-body {
+    padding: 10px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* Responsive Grid */
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.row .col-md-4 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Footer Styling */
+.footer {
+    background: linear-gradient(90deg, #FD6610, #FF4500);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: auto; /* Push the footer to the bottom */
+}
+
+.footer p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-primary {
+    color: #FD6610 !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.text-dark {
+    color: #333 !important;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mt-5 {
+    margin-top: 3rem;
+}
+
+.mb-5 {
+    margin-bottom: 3rem;
+}
+
+.pt-3 {
+    padding-top: 1rem;
+}
+
+.pb-3 {
+    padding-bottom: 1rem;
+}
+
+.pt-5 {
+    padding-top: 3rem;
+}
+
+.pb-5 {
+    padding-bottom: 3rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .custom-header {
+        padding: 0 20px;
+    }
+
+    .card-img-top {
+        height: 150px;
+    }
+
+    .menu-section h1 {
+        font-size: 2rem;
+    }
+
+    .menu-section h2 {
+        font-size: 1.5rem;
+    }
+}

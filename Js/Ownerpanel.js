@@ -460,6 +460,8 @@ function showTableViews() {
 }
 
 // Add table data with optional images (front, back, left, right)
+// ... existing code ...
+
 function addTable() {
     var table_number = $('#table_number').val();
     var seating_capacity = $('#seating_capacity').val();
@@ -471,9 +473,24 @@ function addTable() {
 
     // Check if all required fields are filled
     if (!table_number || !seating_capacity || !area) {
-        alert("Please fill in all required fields.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Fields',
+            text: 'Please fill in all required fields.'
+        });
         return;
     }
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Table...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     var fd = new FormData();
     fd.append('table_number', table_number);
@@ -495,7 +512,7 @@ function addTable() {
     fd.append('upload', '1'); 
 
     $.ajax({
-        url: "/Ocontrols/addtables.php",  // Ensure the correct path to your PHP file
+        url: "/Ocontrols/addtables.php",
         method: "POST",
         data: fd,
         processData: false,
@@ -504,26 +521,51 @@ function addTable() {
             try {
                 var data = JSON.parse(response);
                 if (data.status === 'success') {
-                    alert("Table added successfully.");
-                    $('#addTableModal').modal('hide');  
-                    $('#tableForm').trigger('reset');  
-                    setTimeout(function() {
-                        refreshTableList(); 
-                    }, 500); 
+                    // Hide the modal
+                    $('#addTableModal').modal('hide');
+                    $('#tableForm').trigger('reset');
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Table added successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshTableList();
+                    });
                 } else {
-                    alert("Error: " + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to add table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
                 console.error("Error parsing response:", e);
-                alert("An error occurred while processing your request.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText); 
-            alert("Error: Unable to add the table. Please try again.");
+            console.error("Error: " + xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add the table.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
+
+// ... rest of the code ...
 
 // Refresh table list dynamically without redirecting
 function refreshTableList() {
@@ -812,17 +854,11 @@ function tableEditForm(id) {
     });
 }
 
-// Update table data with image handling
 function updateTables(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the form element
-    const form = document.getElementById('update-Table'); // Ensure this matches the form's ID
-
-    // Create a FormData object from the form
+    const form = document.getElementById('update-Table');
     const formData = new FormData(form);
-
-    // Get the product_id from the form and append it to the FormData object
     const product_id = document.getElementById('table_id').value;
     formData.append('table_id', product_id);
 
@@ -838,7 +874,17 @@ function updateTables(event) {
     if (right_view) formData.append('new_image_right_view', right_view);
     if (front_view) formData.append('new_image_front_view', front_view);
 
-    // Send the AJAX request to update the table
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Table...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
         url: '/Ocontrols/updateTableController.php',
         type: 'POST',
@@ -847,39 +893,56 @@ function updateTables(event) {
         contentType: false,
         success: function (data) {
             try {
-                // Parse the response
                 var response = JSON.parse(data);
 
-                // Handle success case
                 if (response.status === 'success') {
-                    alert('Table updated successfully.');
-
-                    // Hide the modal after success
-                    $('#editTableModal').modal('hide');  // Bootstrap hides the modal
-
-                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    // Hide the modal
+                    $('#editTableModal').modal('hide');
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
 
-                    // Optionally refresh the table list or UI here
-                    refreshUpdateTableList(); 
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Table updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshUpdateTableList();
+                    });
                 } else {
-                    // Handle error cases
-                    alert('Error: ' + response.message);
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
-                // Handle cases where the server response is not JSON
-                alert("Error: Invalid response from the server.");
-                console.error("Response:", data); // Log the response for debugging
+                console.error("Response:", data);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
             }
         },
         error: function (xhr, status, error) {
-            console.error("AJAX Error: ", status, error);
-            alert('There was an error updating the table.');
+            console.error("AJAX Error:", status, error);
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to update the table.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
-
 
 
 // Function to refresh the table list
@@ -897,30 +960,70 @@ function refreshUpdateTableList() {
 }
 
 // delete table
+// delete table
 function deleteTable(table_id) {
-    if (confirm('Are you sure you want to delete this table?')) {
-        // Disable the delete button and show a loading spinner (optional, for better UX)
-        const button = document.querySelector(`button[onclick="deleteTable('${table_id}')"]`);
-        button.disabled = true;
-        button.innerHTML = 'Deleting...';
+    // Show confirmation dialog using SweetAlert2
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Disable the delete button and show loading state
+            const button = document.querySelector(`button[onclick="deleteTable('${table_id}')"]`);
+            button.disabled = true;
+            button.innerHTML = 'Deleting...';
 
-        $.ajax({
-            url: '/Ocontrols/deletetableController.php',  // Adjust the path to match your setup
-            method: 'POST',
-            data: { table_id: table_id },
-            success: function(response) {
-                alert(response);  // Show the response from the server
-                refreshTableList();  // Reload the page to refresh the table list
-            },
-            error: function(xhr, status, error) {
-                console.error('Error: ' + xhr.responseText);  // Log any errors from the server
-                alert('Error: Unable to delete the table.');
-                // Re-enable the button if there is an error
-                button.disabled = false;
-                button.innerHTML = 'Delete';
-            }
-        });
-    }
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the table.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: '/Ocontrols/deletetableController.php',
+                method: 'POST',
+                data: { table_id: table_id },
+                success: function(response) {
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: response,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshTableList();  // Refresh the table list after deletion
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error: ' + xhr.responseText);
+                    
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Unable to delete the table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+
+                    // Re-enable the button if there is an error
+                    button.disabled = false;
+                    button.innerHTML = 'Delete';
+                }
+            });
+        }
+    });
 }
 
 

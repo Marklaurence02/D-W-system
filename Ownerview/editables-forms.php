@@ -83,59 +83,139 @@ if (isset($_POST['record'])) {
 
     <!-- Image Upload Section -->
     <div class="form-group">
-    <label>Table Images:</label>
-    <div class="row">
-        <!-- First Row: Back View and Left View -->
-        <div class="col-md-6 text-center">
-            <label for="back_view">Back View:</label>
-            <?php if (isset($tableImages['back view']) && $tableImages['back view']): ?>
-                <img src="<?= $tableImages['back view'] ?>" alt="Back View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php else: ?>
-                <img src="/Images/noimage.jpeg" alt="Back View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php endif; ?>
-            <input type="file" name="back_view" id="back_view" class="form-control-file mt-2">
+        <label>Table Images:</label>
+        <div class="row">
+            <!-- First Row: Back View and Left View -->
+            <div class="col-md-6 text-center">
+                <label for="back_view">Back View:</label>
+                <div class="image-preview-container">
+                    <?php if (isset($tableImages['back view']) && $tableImages['back view']): ?>
+                        <img src="<?= $tableImages['back view'] ?>" alt="Back View" class="img-thumbnail mb-2" style="max-width: 150px;" id="back_view_preview">
+                    <?php else: ?>
+                        <img src="/Images/noimage.jpeg" alt="Back View" class="img-thumbnail mb-2" style="max-width: 150px;" id="back_view_preview">
+                    <?php endif; ?>
+                </div>
+                <input type="file" name="back_view" id="back_view" class="form-control-file mt-2" onchange="previewImage(this, 'back_view_preview')">
+            </div>
+
+            <div class="col-md-6 text-center">
+                <label for="left_view">Left View:</label>
+                <div class="image-preview-container">
+                    <?php if (isset($tableImages['left view']) && $tableImages['left view']): ?>
+                        <img src="<?= $tableImages['left view'] ?>" alt="Left View" class="img-thumbnail mb-2" style="max-width: 150px;" id="left_view_preview">
+                    <?php else: ?>
+                        <img src="/Images/noimage.jpeg" alt="Left View" class="img-thumbnail mb-2" style="max-width: 150px;" id="left_view_preview">
+                    <?php endif; ?>
+                </div>
+                <input type="file" name="left_view" id="left_view" class="form-control-file mt-2" onchange="previewImage(this, 'left_view_preview')">
+            </div>
         </div>
 
-        <div class="col-md-6 text-center">
-            <label for="left_view">Left View:</label>
-            <?php if (isset($tableImages['left view']) && $tableImages['left view']): ?>
-                <img src="<?= $tableImages['left view'] ?>" alt="Left View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php else: ?>
-                <img src="/Images/noimage.jpeg" alt="Left View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php endif; ?>
-            <input type="file" name="left_view" id="left_view" class="form-control-file mt-2">
+        <div class="row">
+            <!-- Second Row: Right View and Front View -->
+            <div class="col-md-6 text-center">
+                <label for="right_view">Right View:</label>
+                <div class="image-preview-container">
+                    <?php if (isset($tableImages['right view']) && $tableImages['right view']): ?>
+                        <img src="<?= $tableImages['right view'] ?>" alt="Right View" class="img-thumbnail mb-2" style="max-width: 150px;" id="right_view_preview">
+                    <?php else: ?>
+                        <img src="/Images/noimage.jpeg" alt="Right View" class="img-thumbnail mb-2" style="max-width: 150px;" id="right_view_preview">
+                    <?php endif; ?>
+                </div>
+                <input type="file" name="right_view" id="right_view" class="form-control-file mt-2" onchange="previewImage(this, 'right_view_preview')">
+            </div>
+
+            <div class="col-md-6 text-center">
+                <label for="front_view">Front View:</label>
+                <div class="image-preview-container">
+                    <?php if (isset($tableImages['front view']) && $tableImages['front view']): ?>
+                        <img src="<?= $tableImages['front view'] ?>" alt="Front View" class="img-thumbnail mb-2" style="max-width: 150px;" id="front_view_preview">
+                    <?php else: ?>
+                        <img src="/Images/noimage.jpeg" alt="Front View" class="img-thumbnail mb-2" style="max-width: 150px;" id="front_view_preview">
+                    <?php endif; ?>
+                </div>
+                <input type="file" name="front_view" id="front_view" class="form-control-file mt-2" onchange="previewImage(this, 'front_view_preview')">
+            </div>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Second Row: Right View and Front View -->
-        <div class="col-md-6 text-center">
-            <label for="right_view">Right View:</label>
-            <?php if (isset($tableImages['right view']) && $tableImages['right view']): ?>
-                <img src="<?= $tableImages['right view'] ?>" alt="Right View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php else: ?>
-                <img src="/Images/noimage.jpeg" alt="Right View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php endif; ?>
-            <input type="file" name="right_view" id="right_view" class="form-control-file mt-2">
-        </div>
+    <!-- Add this style section -->
+    <style>
+    .image-preview-container {
+        position: relative;
+        display: inline-block;
+    }
 
-        <div class="col-md-6 text-center">
-            <label for="front_view">Front View:</label>
-            <?php if (isset($tableImages['front view']) && $tableImages['front view']): ?>
-                <img src="<?= $tableImages['front view'] ?>" alt="Front View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php else: ?>
-                <img src="/Images/noimage.jpeg" alt="Front View" class="img-thumbnail mb-2" style="max-width: 150px;">
-            <?php endif; ?>
-            <input type="file" name="front_view" id="front_view" class="form-control-file mt-2">
-        </div>
-    </div>
-</div>
+    .btn-remove-image {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #ff4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        cursor: pointer;
+        padding: 0;
+        font-size: 14px;
+    }
+
+    .btn-remove-image:hover {
+        background: #cc0000;
+    }
+    </style>
 
     <!-- Submit Button -->
     <div class="form-group text-center">
         <button type="submit" class="btn btn-primary">Update Table</button>
     </div>
 </form>
+
+<!-- Update the script section -->
+<script>
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const container = preview.parentElement;
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            // Remove any existing remove button
+            const existingBtn = container.querySelector('.btn-remove-image');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            // Add new remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'btn-remove-image';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.onclick = function() {
+                removeImage(previewId, input.id);
+            };
+            container.appendChild(removeBtn);
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function removeImage(previewId, inputId) {
+    const preview = document.getElementById(previewId);
+    const input = document.getElementById(inputId);
+    const removeBtn = preview.parentElement.querySelector('.btn-remove-image');
+    
+    preview.src = '/Images/noimage.jpeg';
+    input.value = ''; // Clear the file input
+    if (removeBtn) {
+        removeBtn.remove(); // Remove the remove button
+    }
+}
+</script>
 
 
 

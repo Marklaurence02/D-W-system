@@ -44,6 +44,9 @@
             text-align: center;
             padding: 50px 0;
             flex-grow: 1; /* Ensures the content takes the remaining space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn {
             margin-top: 30px;
@@ -65,13 +68,18 @@
             font-size: 0.9rem;
             margin-top: 20px;
         }
+        .row {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
-    <header class="header d-flex align-items-center">
-        <h1>DINE&WATCH</h1>
+       <header class="header d-flex align-items-center">
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
   <!-- Main Content -->

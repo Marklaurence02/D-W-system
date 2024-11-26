@@ -67,13 +67,11 @@
         <div class="card mx-auto user-list" id="user-list">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Messages</h5>
-
-
-            <!-- Dashboard Link -->
-            <a href="Owner-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
-                <i class='bx bxs-dashboard mr-1'></i> Dashboard
-            </a>
-        </div>
+                
+                <!-- Only keep the Dashboard Link -->
+                <a href="Owner-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
+                    <i class='bx bxs-dashboard mr-1'></i> Dashboard
+                </a>
             </div>
             <div class="list-group list-group-flush" id="user-list-content">
                 <?php if (!empty($users)): ?>
@@ -275,6 +273,55 @@
         .search-input {
             display: none;
         }
+
+        /* Add these new styles while keeping existing ones */
+        .custom-select {
+            background-color: #fff;
+            border: 2px solid #3B3131;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .custom-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(59, 49, 49, 0.25);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+        }
+
+        .btn-primary {
+            background: #3B3131;
+            border: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #4a3f3f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Enhanced user list items */
+        .list-group-item {
+            transition: all 0.3s ease;
+            border-left: 5px solid #3B3131;
+        }
+
+        .list-group-item:hover {
+            transform: translateX(5px);
+            background-color: #f8f9fa;
+        }
+
+        .user-initial {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 
     <!-- Script Loading Order and Dependencies -->
@@ -287,22 +334,13 @@
     <script src="Js/Oviewmessage.js"></script>
 
     <script>
-        // Toggle the visibility of the search input field
-        function toggleSearchInput() {
-            const searchInput = document.getElementById('search-input');
-            searchInput.classList.toggle('d-none');
-        }
-
-        // Search function that filters messages based on name, date, or content
-        function searchMessage() {
-            const query = document.getElementById('search-input').value.toLowerCase();
+        function filterByRole() {
+            const selectedRole = document.getElementById('role-filter').value.toLowerCase();
             const users = document.querySelectorAll('.user-item');
+            
             users.forEach(user => {
-                const username = user.querySelector('.username').textContent.toLowerCase();
-                const message = user.querySelector('.recent-message').textContent.toLowerCase();
-                const date = user.querySelector('.message-date').textContent.toLowerCase();
-                
-                if (username.includes(query) || message.includes(query) || date.includes(query)) {
+                const role = user.querySelector('.role').textContent.toLowerCase();
+                if (!selectedRole || role.includes(selectedRole)) {
                     user.style.display = '';
                 } else {
                     user.style.display = 'none';

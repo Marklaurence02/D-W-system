@@ -17,7 +17,7 @@ function loadUserRecentMessages() {
         const usernameElement = userItem.querySelector('.username'); // Element for the username
 
         // Fetch the most recent message and unread count for each user
-        fetch(`/SmessageC/get_recent_message.php?user_id=${userId}`)
+        fetch(`/OmessageC/get_recent_message.php?user_id=${userId}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
                 return response.json();
@@ -81,7 +81,7 @@ function formatMessageDate(messageDate) {
 }
 
 function openConversation(userId, username) {
-    selectedUserId = userId;  // Corrected variable name
+    selectedUserId = userId;
     latestMessageTimestamp = null;
     document.getElementById('conversation-username').textContent = username;
 
@@ -92,23 +92,34 @@ function openConversation(userId, username) {
     // Clear unread indicator
     const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
     const blueDotElement = userItem.querySelector('.blue-dot');
-    blueDotElement.classList.add('d-none');  // Hide blue dot
-    userItem.classList.remove('border-blue');  // Remove blue border
+    blueDotElement.classList.add('d-none');
+    userItem.classList.remove('border-blue');
 
-    // Clear the message box before loading new messages
-    MessageBox.innerHTML = ''; // Clear previous messages
+    // Initialize message box with the no-messages div
+    MessageBox.innerHTML = `
+        <div id="no-messages" class="text-center text-muted py-4">
+            <i class='bx bx-message-square-detail' style="font-size: 2rem;"></i>
+            <p class="mt-2">No messages yet. Start a conversation!</p>
+        </div>
+    `;
 
     loadMessages();
 }
 
 function loadMessages() {
-    if (!selectedUserId) {  // Corrected variable name
+    if (!selectedUserId) {
         console.error("No user selected.");
         return;
     }
 
-    const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
-    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
+    const messageBox = document.getElementById('message-box');
+    if (!messageBox) {
+        console.error("Message box element not found");
+        return;
+    }
+
+    const isAtBottom = messageBox.scrollTop >= (messageBox.scrollHeight - messageBox.clientHeight - 20);
+    const url = `/OmessageC/get_messages.php?receiver=${selectedUserId}` +
                 (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
     let lastMessageMinute = null;
@@ -121,7 +132,10 @@ function loadMessages() {
             return response.json();
         })
         .then(messages => {
-            if (!messages.length) return;
+            // Always update the no messages indicator
+            updateNoMessagesIndicator(messages);
+
+            if (!messages || !messages.length) return;
 
             messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp);
@@ -152,9 +166,12 @@ function loadMessages() {
                 latestMessageTimestamp = messages[messages.length - 1].timestamp;
             }
 
-            if (isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
+            if (isAtBottom) messageBox.scrollTop = messageBox.scrollHeight;
         })
-        .catch(error => console.error("Error loading messages:", error));
+        .catch(error => {
+            console.error("Error loading messages:", error);
+            updateNoMessagesIndicator([]); // Show no messages on error
+        });
 }
 
 let lastSentMessageMinute = null;  // Track the last message minute for sent messages
@@ -169,7 +186,7 @@ function sendMessage(event) {
         return;
     }
 
-    fetch("/SmessageC/post_message.php", {
+    fetch("/OmessageC/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data
@@ -221,4 +238,34 @@ function backToUserList() {
     document.getElementById('user-list').classList.remove('d-none');
     document.getElementById('conversation-view').classList.add('d-none');
     selectedUserId = null;  // Reset selected user
+}
+
+function updateNoMessagesIndicator(messages) {
+    const noMessagesDiv = document.getElementById('no-messages');
+    const messageBox = document.getElementById('message-box');
+    
+    if (!noMessagesDiv || !messageBox) {
+        console.warn('Required message elements not found');
+        return;
+    }
+
+    if (!messages || messages.length === 0) {
+        // Show no messages indicator
+        noMessagesDiv.style.display = 'block';
+        // Hide any existing messages
+        Array.from(messageBox.children).forEach(child => {
+            if (child !== noMessagesDiv) {
+                child.style.display = 'none';
+            }
+        });
+    } else {
+        // Hide no messages indicator
+        noMessagesDiv.style.display = 'none';
+        // Show all messages
+        Array.from(messageBox.children).forEach(child => {
+            if (child !== noMessagesDiv) {
+                child.style.display = 'block';
+            }
+        });
+    }
 }

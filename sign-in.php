@@ -1,3 +1,7 @@
+<?php
+// Move the include to the very top of the file, before any HTML
+include 'assets/process_log-in.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,6 +48,7 @@
             border-radius: 12px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             padding: 40px;
+            max-width: 450px;
         }
 
         .signup-card h2 {
@@ -123,13 +128,47 @@
             font-size: 0.9rem;
             margin-top: auto;
         }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #ff6700;
+            box-shadow: 0 0 0 0.2rem rgba(255, 103, 0, 0.25);
+        }
+
+        label {
+            background-color: white;
+            padding: 0 5px;
+        }
+
+        .small-text a {
+            color: #ff6700 !important;
+        }
+
+        .recaptcha {
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .signup-card {
+                padding: 25px;
+                margin: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header class="header d-flex align-items-center">
-        <h1>DINE&WATCH</h1>
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -144,7 +183,6 @@
         <div class="col-12 col-md-6">
             <div class="signup-card mx-auto">
                 <h2>Sign In</h2>
-                <?php include 'assets/process_log-in.php'; ?>
                 <form method="POST">
                     <!-- Email Input -->
                     <div class="form-group position-relative">
@@ -167,16 +205,14 @@
                     <button type="submit" class="btn-next">Next</button>
 
                     <!-- Links Section -->
-                    <div class="small-text mt-3">
-                        <div class="row justify-content-between">
-                            <div class="col-auto">
-                                <a href="forgot_password.php" class="text-primary">Forgot your password?</a>
-                            </div>
-                            <div class="col-auto text-end">
-                                <a href="sign-up.php" class="text-primary">Don't have an account?</a>
-                            </div>
-                        </div>
-                    </div>
+               
+
+<!-- Links Section -->
+<div class="small-text mt-3 d-flex justify-content-between">
+    <a href="forgot_password.php">Forgot your password?</a>
+    <a href="sign-up.php">Don't have an account?</a>
+</div>
+
                 </form>
             </div>
         </div>

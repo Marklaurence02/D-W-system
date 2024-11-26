@@ -69,15 +69,22 @@ function setActiveLink(linkElement) {
 // Load the active link from localStorage on page load
 document.addEventListener("DOMContentLoaded", () => {
   const savedActiveLink = localStorage.getItem("activeLink");
+  const links = document.querySelectorAll(".nav-link");
+  
   if (savedActiveLink) {
       const activeElement = document.querySelector(`a[href='${savedActiveLink}']`);
       if (activeElement) {
           activeElement.classList.add("active");
+      } else {
+          // If saved link not found, set first link as active
+          links[0]?.classList.add("active");
       }
+  } else {
+      // If no saved link, set first link as active
+      links[0]?.classList.add("active");
   }
 
   // Add click event listeners to all nav links
-  const links = document.querySelectorAll(".nav-link");
   links.forEach(link => {
       link.addEventListener("click", function () {
           setActiveLink(this);

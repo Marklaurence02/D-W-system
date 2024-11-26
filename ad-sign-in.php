@@ -134,7 +134,9 @@
 
     <!-- Header -->
     <header class="header d-flex align-items-center">
-        <h1>DINE&WATCH</h1>
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
     <!-- Main Content -->

@@ -1,51 +1,23 @@
 <?php
-include '../assets/config.php';
-session_name("admin_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+session_start();
+include 'assets/config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    exit(json_encode(['error' => 'Unauthorized']));
 }
-header('Content-Type: application/json');
 
-// Check if the required data is present
-if (isset($_SESSION['user_id'], $_POST['receiver'], $_POST['message'])) {
-    $senderId = $_SESSION['user_id'];
-    $receiverId = intval($_POST['receiver']); // Ensure receiver ID is an integer
-    $message = trim($_POST['message']);
+$data = json_decode(file_get_contents('php://input'), true);
+$senderId = $_SESSION['user_id'];
+$receiverId = $data['receiver_id'];
+$message = $data['message'];
 
-    // Check if the message is not empty and not too long
-    if (!empty($message)) {
-        if (strlen($message) <= 1000) { // Limit message length to prevent abuse
-            // Prepare the SQL statement with placeholders to prevent SQL injection
-            $sql = "INSERT INTO chat_messages (sender_id, receiver_id, message, timestamp) VALUES (?, ?, ?, NOW())";
-            $stmt = $conn->prepare($sql);
+$sql = "INSERT INTO chat_messages (sender_id, receiver_id, message) VALUES (?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iis", $senderId, $receiverId, $message);
 
-            if ($stmt) {
-                $stmt->bind_param('iis', $senderId, $receiverId, $message);
-                
-                if ($stmt->execute()) {
-                    // Return a success response
-                    echo json_encode(['status' => 'success']);
-                } else {
-                    // Log detailed error and return a failure response
-                    error_log('Database error: ' . $stmt->error);
-                    echo json_encode(['status' => 'error', 'message' => 'Error sending message']);
-                }
-
-                $stmt->close();
-            } else {
-                // Log and return an error if the statement preparation fails
-                error_log('Statement preparation failed: ' . $conn->error);
-                echo json_encode(['status' => 'error', 'message' => 'Failed to prepare statement']);
-            }
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Message is too long']);
-        }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Message cannot be empty']);
-    }
+if ($stmt->execute()) {
+    echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'User not authenticated or missing parameters']);
+    echo json_encode(['error' => 'Failed to send message']);
 }
-
-$conn->close();
 

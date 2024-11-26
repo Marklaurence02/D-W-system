@@ -18,29 +18,29 @@
     <!-- Custom CSS -->
     <style>
     body {
-        background-color: #f8f9fa;
-        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        font-family: 'Segoe UI', Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
     .header {
-        background-color: #ff6700;
-        color: white;
-        padding: 20px 40px;
-        text-align: center;
+        background: linear-gradient(90deg, #ff6700 0%, #ff8533 100%);
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .header h1 {
-        margin: 0;
-        font-weight: bold;
-        font-size: 2rem;
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
 
     .footer {
-        background-color: #ff6700;
-        color: white;
-        padding: 15px 20px;
-        text-align: center;
-        font-size: 0.9rem;
+        background: linear-gradient(90deg, #ff6700 0%, #ff8533 100%);
+        margin-top: auto;
+        padding: 20px 0;
     }
 
     .logo-container {
@@ -49,13 +49,17 @@
     }
 
     .signup-card {
-        background-color: white;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 35px;
+        transition: transform 0.3s ease;
         max-width: 500px;
         margin: 0 auto;
+    }
+
+    .signup-card:hover {
+        transform: translateY(-5px);
     }
 
     .signup-card h2 {
@@ -113,25 +117,34 @@ input[type="password"] {
     transition: all 0.3s ease;
 }
     .btn-next, .btn-back {
-        background-color: #333;
+        background: linear-gradient(90deg, #ff6700 0%, #ff8533 100%);
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255,103,0,0.2);
         color: white;
-        padding: 15px;
-        font-size: 1.1rem;
-        border-radius: 8px;
         border: none;
         margin-top: 20px;
-        width: 48%;
+        width: 100%;
     }
 
     .btn-next:hover, .btn-back:hover {
-        background-color: #ff6700;
-        color: white;
+        background: linear-gradient(90deg, #ff8533 0%, #ff6700 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,103,0,0.3);
     }
 
     .btn-group {
         display: flex;
-        justify-content: space-between;
-        gap: 10px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-group button {
+        width: 100%;
+        margin: 0;
     }
 
     .small-text {
@@ -153,22 +166,56 @@ input[type="password"] {
 
     .input-group {
         display: flex;
-        justify-content: space-between;
+        flex-direction: row;
         gap: 10px;
+        margin-bottom: 20px;
     }
 
     .input-group input {
+        position: relative;
+        width: 50%;
+    }
+
+    .input-group input:first-child {
         flex: 1;
+        max-width: 30%;
+    }
+
+    .input-group input:last-child {
+        flex: 2;
+        max-width: 70%;
+    }
+
+    .input-group input + label {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+        top: -10px;
+        font-size: 12px;
+        color: #ff6700;
     }
 
     .form-control {
-        border-radius: 8px;
-        padding: 12px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
     }
 
     .form-control:focus {
-        box-shadow: none;
         border-color: #ff6700;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(255,103,0,0.1);
     }
 
     /* Initially hide the personal info section */
@@ -188,7 +235,9 @@ input[type="password"] {
 
     <!-- Header -->
     <header class="header d-flex align-items-center">
-        <h1>DINE&WATCH</h1>
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -219,7 +268,7 @@ input[type="password"] {
                         </div>
 
                         <div class="form-group password-container" id="passwordField">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="" required>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="" required pattern=".{8,}" title="Password must be at least 8 characters long">
                             <label for="password">Password</label>
                             <span id="togglePassword" class="eye-icon">
                                 <box-icon id="hideIcon" name="hide" type="solid"></box-icon>
@@ -248,8 +297,9 @@ input[type="password"] {
                             </div>
 
                             <div class="input-group">
-                                <input type="text" class="form-control" name="middleInitial" placeholder=" " value="<?= htmlspecialchars($middleInitial ?? ''); ?>">
-                                <input type="text" class="form-control" name="suffix" placeholder="Suffix (Optional)" value="<?= htmlspecialchars($suffix ?? ''); ?>">
+                                <input type="text" class="form-control" name="middleInitial" placeholder="" value="<?= htmlspecialchars($middleInitial ?? ''); ?>" style="flex: 1; max-width: 70%;">
+                                <label for="middleInitial">Middile Initial</label>
+                                <input type="text" class="form-control" name="suffix" placeholder="Suffix(Optional) " value="<?= htmlspecialchars($suffix ?? ''); ?>" style="flex: 2; max-width: 30%;">
                             </div>
 
                             <div class="form-group" id="lastNameField">
@@ -268,7 +318,7 @@ input[type="password"] {
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="zipCode" placeholder=" " required value="<?= htmlspecialchars($zipCode ?? ''); ?>">
+                                <input type="text" class="form-control" name="zipCode" placeholder=" " required pattern="[0-9]{4}" title="Zip Code must be exactly 4 digits" value="<?= htmlspecialchars($zipCode ?? ''); ?>">
                                 <label for="zipCode">Zip Code</label>
                             </div>
 
@@ -328,17 +378,60 @@ toggleConfirmPassword.addEventListener("click", function () {
     this.style.transition = "all 0.3s ease";
 });
 
-        // Show personal info when "Next" is clicked
-        document.getElementById("nextBtn").addEventListener("click", function () {
-            // Hide account information fields
+        // Add password confirmation validation
+        const password = document.querySelector("#password");
+        const confirmPassword = document.querySelector("#confirmPassword");
+        const errorMessage = document.querySelector("#errorMessage");
+        const nextBtn = document.querySelector("#nextBtn");
+
+        function validatePasswords() {
+            // Check if either field is empty or password is too short
+            if (!password.value || !confirmPassword.value) {
+                errorMessage.style.display = "none";
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                return false;
+            }
+            
+            // Check password length
+            if (password.value.length < 8) {
+                errorMessage.textContent = "Password must be at least 8 characters long";
+                errorMessage.style.display = "block";
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                return false;
+            }
+            
+            // Check if passwords match
+            if (password.value !== confirmPassword.value) {
+                errorMessage.textContent = "Passwords do not match";
+                errorMessage.style.display = "block";
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                return false;
+            }
+            
+            errorMessage.style.display = "none";
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = "1";
+            return true;
+        }
+
+        // Add event listeners for password validation
+        password.addEventListener("input", validatePasswords);
+        confirmPassword.addEventListener("input", validatePasswords);
+
+        // Modify the Next button click handler
+        document.getElementById("nextBtn").addEventListener("click", function() {
+            if (!validatePasswords()) {
+                return; // Don't proceed if validation fails
+            }
+            
+            // Existing code for showing/hiding elements
             document.getElementById("emailField").style.display = "none";
             document.getElementById("passwordField").style.display = "none";
             document.getElementById("confirmPasswordField").style.display = "none";
-
-            // Show personal information section
             document.querySelector(".personal-info").style.display = "block";
-
-            // Hide the "Next" button
             this.style.display = "none";
         });
 

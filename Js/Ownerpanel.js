@@ -570,61 +570,93 @@ function itemEditForm(id) {
 }
 
 // Update items
+// Update items
 function updateItems(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the form element
     const form = document.getElementById('update-Items');
-
-    // Create a FormData object from the form
     const formData = new FormData(form);
-
-    // Get the product_id from the form and append it to the FormData object
     const product_id = document.getElementById('product_id').value;
     formData.append('product_id', product_id);
 
-    // Send the form data via AJAX
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Product...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
-        url: '/Ocontrols/updateItemController.php',  // The URL to your update handler
+        url: '/Ocontrols/updateItemController.php',
         method: 'POST',
         data: formData,
-        processData: false,  // Prevent jQuery from processing the data
-        contentType: false,  // Prevent jQuery from setting contentType (needed for FormData)
+        processData: false,
+        contentType: false,
         success: function(data) {
             try {
-                var response = JSON.parse(data);  // Parse the server response
+                var response = JSON.parse(data);
                 if (response.status === 'success') {
-                    alert('Product updated successfully.');
-                    
-                    // Hide the modal after success
-                    $('#editModal').modal('hide');  // Bootstrap hides the modal
-
-                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    // Hide the modal
+                    $('#editModal').modal('hide');
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
-
-                    refreshProductList();  // Call your function to refresh the product list
-
-                    // Optional: Clear modal content (reset form) if necessary
                     $('#editProductContent').html('');
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Product updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshProductList();
+                    });
+                } else if (response.status === 'no_changes') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes Made',
+                        text: 'No changes were detected in the product details.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Optionally close the modal if you want
+                        $('#editModal').modal('hide');
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                    });
                 } else {
-                    alert('Error: ' + response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update product.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
-                alert("Error: Invalid response from the server.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
                 console.error("Response:", data);
             }
         },
         error: function(xhr, status, error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to update the product.',
+                footer: 'Please check your connection or try again later.'
+            });
             console.error("Error: " + xhr.responseText);
-            alert('Error updating the product item.');
         }
     });
 }
-
-
-
-
 
 
 
@@ -647,24 +679,64 @@ function refreshProductList() {
 
 
 
-// Delete product data 
+// Delete product data with SweetAlert2
 function itemDelete(id) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        $.ajax({
-            url: "/Ocontrols/deleteItemController.php",
-            method: "POST",
-            data: { record: id },
-            success: function(data) {
-                console.log(data);  // Log the response for debugging
-                alert(data);  // Show success or error message
-                showProductItems();  // Refresh the product list after deletion
-            },
-            error: function(xhr, status, error) {
-                console.error("Error: " + xhr.responseText);  // Log any errors from the server
-                alert("Error: Unable to delete the product.");
-            }
-        });
-    }
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the product.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Send delete request
+            $.ajax({
+                url: "/Ocontrols/deleteItemController.php",
+                method: "POST",
+                data: { record: id },
+                success: function(data) {
+                    console.log(data);  // Log the response for debugging
+                    
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'The product has been deleted.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        showProductItems();  // Refresh the product list after deletion
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error: " + xhr.responseText);
+                    
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Unable to delete the product.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+                }
+            });
+        }
+    });
 }
 
 
@@ -1130,3 +1202,4 @@ function showmessage() {
         }
     });
 }
+

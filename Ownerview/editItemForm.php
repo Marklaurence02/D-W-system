@@ -40,7 +40,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="category_id">Item Type:</label>
-                <select id="category_id" name="category_id" class="form-control" required>
+                <select id="category_id" name="category_id" class="form-control p-0" required>
                     <?php
                     if ($category_result->num_rows > 0) {
                         while ($category_row = $category_result->fetch_assoc()) {
@@ -82,10 +82,9 @@
 
             <!-- New Image Preview -->
             <div class="image-preview-container mb-2" style="display: none;">
-            <h6>New Image:</h6>
-
-                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; height: auto;">
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeNewImage()">Remove</button>
+                <h6>New Image Preview:</h6>
+                <img id="imagePreview" src="#" alt="New Image Preview" style="max-width: 200px; height: auto;">
+                <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeNewImage(event)">Remove New Image</button>
             </div>
             
             <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
@@ -100,7 +99,38 @@
 </form>
 
 <script>
+function previewImage(input) {
+    const previewContainer = input.closest('.image-upload-container').querySelector('.image-preview-container');
+    const preview = previewContainer.querySelector('#imagePreview');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
+function removeNewImage(event) {
+    event.preventDefault(); // Prevent any default button behavior
+    
+    const button = event.target;
+    const container = button.closest('.image-upload-container');
+    const input = container.querySelector('#item_image');
+    const previewContainer = container.querySelector('.image-preview-container');
+    const preview = previewContainer.querySelector('#imagePreview');
+    
+    // Clear the file input
+    input.value = '';
+    // Reset the preview image
+    preview.src = '#';
+    // Hide the preview container
+    previewContainer.style.display = 'none';
+}
 </script>
 
 <style>

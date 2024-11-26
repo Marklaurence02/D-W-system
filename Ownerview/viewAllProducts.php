@@ -1,14 +1,14 @@
 <?php
     session_start();
 ?>
-<div class="container-fluid p-3">
+<div class="container-fluid p-2">
     <div class="col-12">
-        <div class="text-center mb-3">
+        <div class="text-center mb-2">
             <h2>Product Items</h2>
         </div>
 
         <!-- Filter and Add Item Button -->
-        <div class="d-flex flex-wrap justify-content-end align-items-center mb-3">
+        <div class="d-flex justify-content-end mb-2">
             <?php
             include_once "../assets/config.php";
 
@@ -101,51 +101,78 @@
             </div>
             <div class="modal-body">
                 <form id="productForm" enctype="multipart/form-data" onsubmit="addItems(); return false;">
+                    <!-- First Row for Product Name and Quantity -->
                     <div class="row">
-                        <div class="form-group col-12 col-md-6">
-                            <label for="item_name">Item Name:</label>
-                            <input type="text" class="form-control" id="item_name" name="item_name" required>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="item_type">Item Type:</label>
-                            <select id="item_type" name="item_type" class="form-control form-control-sm no-padding" required>
-                                <?php
-                                // Dynamically generate options for item types
-                                mysqli_data_seek($category_result, 0);
-                                if ($category_result->num_rows > 0) {
-                                    while ($category_row = $category_result->fetch_assoc()) {
-                                        echo '<option value="' . htmlspecialchars($category_row['category_name']) . '">' . htmlspecialchars($category_row['category_name']) . '</option>';
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="stock">Stock:</label>
-                            <input type="number" class="form-control" id="stock" name="stock" required>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="price">Unit Price:</label>
-                            <input type="number" class="form-control" id="price" name="price" step="1" required>
-                        </div>
-                        <div class="form-group col-12">
-                            <label for="special_instructions">Special Instructions:</label>
-                            <textarea class="form-control" id="special_instructions" name="special_instructions"></textarea>
-                        </div>
-                        <div class="form-group col-12">
-                            <label for="item_image">Item Image:</label>
-                            <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" required onchange="previewImage(this)">
-                            <div class="mt-2">
-                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; max-height: 200px; display: none;">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="item_name">Product Name:</label>
+                                <input type="text" class="form-control" id="item_name" name="item_name" required>
                             </div>
                         </div>
-                        <div class="form-group col-12">
-                            <button type="submit" class="btn btn-secondary">Add Item</button>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stock">Quantity:</label>
+                                <input type="number" class="form-control" id="stock" name="stock" required>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Second Row for Category and Price -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="item_type">Item Type:</label>
+                                <select id="item_type" name="item_type" class="form-control form-control-sm no-padding" required>
+                                    <?php
+                                    mysqli_data_seek($category_result, 0);
+                                    if ($category_result->num_rows > 0) {
+                                        while ($category_row = $category_result->fetch_assoc()) {
+                                            echo '<option value="' . htmlspecialchars($category_row['category_name']) . '">' . htmlspecialchars($category_row['category_name']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="price">Unit Price:</label>
+                                <input type="number" class="form-control" id="price" name="price" step="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Instructions Section -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="special_instructions">Special Instructions:</label>
+                                <textarea class="form-control" id="special_instructions" name="special_instructions"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload Section -->
+                    <div class="form-group">
+                        <label for="item_image">Item Image:</label>
+                        <div class="image-upload-container">
+                            <!-- Image Preview -->
+                            <div class="image-preview-container mb-2" style="display: none;">
+                                <h6>New Image:</h6>
+                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; height: auto;">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removeNewImage()">Remove</button>
+                            </div>
+                            
+                            <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
+                            <small class="form-text text-muted">Supported formats: JPG, JPEG, PNG, GIF</small>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
             </div>
         </div>
     </div>
@@ -231,20 +258,32 @@ $(document).ready(function() {
 });
 
 function previewImage(input) {
+    const previewContainer = document.querySelector('.image-preview-container');
     const preview = document.getElementById('imagePreview');
+    
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         
         reader.onload = function(e) {
             preview.src = e.target.result;
-            preview.style.display = 'block';
+            previewContainer.style.display = 'block';
         }
         
         reader.readAsDataURL(input.files[0]);
     } else {
         preview.src = '#';
-        preview.style.display = 'none';
+        previewContainer.style.display = 'none';
     }
+}
+
+function removeNewImage() {
+    const input = document.getElementById('item_image');
+    const previewContainer = document.querySelector('.image-preview-container');
+    const preview = document.getElementById('imagePreview');
+    
+    input.value = ''; // Clear the file input
+    preview.src = '#';
+    previewContainer.style.display = 'none';
 }
 </script>
 
@@ -901,5 +940,32 @@ function previewImage(input) {
 select.no-padding {
     padding: 0 !important;
     height: 30px !important;
+}
+
+.image-upload-container {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.image-preview-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+.image-preview-container img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.form-control-file {
+    display: block;
+    margin: 0 auto;
 }
 </style>

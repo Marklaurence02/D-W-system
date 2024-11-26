@@ -40,7 +40,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <table id="tableData" class="table table-striped table-hover table-bordered display nowrap" style="width:100%">
                     <thead class="thead">
                         <tr>
-                            <th class="text-center">S.N.</th>
+                            <th class="text-center">No.</th>
                             <th class="text-center">Table Number</th>
                             <th class="text-center">Seating Capacity</th>
                             <th class="text-center">Area</th>

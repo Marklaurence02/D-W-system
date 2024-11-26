@@ -123,8 +123,20 @@ function showadmin() {
         }
     });
 }
+
 function addAdmin() {
     var formData = $('#adminForm').serialize();  // Serialize form data
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Admin...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     $.ajax({
         url: '/Ocontrols/addAdmin.php',  // Backend script to handle adding
@@ -133,59 +145,141 @@ function addAdmin() {
         dataType: 'json',  // Expect a JSON response from the server
         success: function(response) {
             if (response.status === 'success') {
-                $('#adminModal').modal('hide');  // Close the modal after successful addition
-                alert(response.message);  // Show success message
-                showadmin();  // Load the admin management page after adding a new user
+                // Hide the modal
+                $('#adminModal').modal('hide');
+                $('#adminForm').trigger('reset');
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    showadmin();  // Load the admin management page after adding a new user
+                });
             } else {
-                alert(response.message);  // Show error message if email or username already exists
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'Failed to add admin.',
+                    footer: 'Please check the form and try again.'
+                });
             }
         },
         error: function(xhr, status, error) {
             console.log("AJAX error: " + xhr.responseText);  // Log error to the console for debugging
-            alert('Error adding Admin/Staff');
+            
+            // Show error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add Admin/Staff.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
 
 
 // Function to show the edit form for Admin/Staff
+// ... existing code ...
+
 function adminEditForm(userId) {
-    // Confirmation prompt before loading the edit form
-    if (!confirm("Are you sure you want to edit this user's details?")) {
-        alert("Edit canceled.");
-        return; // Exit the function if the user cancels
-    }
+    // First confirmation using SweetAlert2
+    Swal.fire({
+        title: 'Confirm Edit',
+        text: "Are you sure you want to edit this user's details?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, edit it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Password prompt using SweetAlert2
+            Swal.fire({
+                title: 'Password Required',
+                input: 'password',
+                inputLabel: 'Please enter your password to confirm editing',
+                inputPlaceholder: 'Enter your password',
+                showCancelButton: true,
+                confirmButtonText: 'Proceed',
+                cancelButtonText: 'Cancel',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password is required');
+                        return false;
+                    }
+                    return password;
+                }
+            }).then((passwordResult) => {
+                if (passwordResult.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Loading...',
+                        text: 'Please wait while we load the edit form.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
-    // Password prompt for security confirmation
-    const password = prompt("Please enter your password to confirm editing:");
-    if (!password) {
-        alert("Edit canceled. Password is required.");
-        return; // Exit the function if no password is entered
-    }
+                    // Proceed with AJAX call if password was provided
+                    $.ajax({
+                        url: "Ownerview/editAdminForm.php",
+                        method: "POST",
+                        dataType: "json",
+                        data: { 
+                            user_id: userId, 
+                            user_password: passwordResult.value 
+                        },
+                        success: function(response) {
+                            Swal.close(); // Close the loading dialog
 
-    // Proceed to load the edit form if confirmed and password is provided
-    $.ajax({
-        url: "Ownerview/editAdminForm.php", // URL to load the edit form
-        method: "POST",
-        dataType: "json",
-        data: { user_id: userId, user_password: password },
-        success: function(response) {
-            if (response.status === "success") {
-                // Load the form HTML into the modal container
-                $("#editAdminFormContainer").html(response.form_html);
-                // Show the modal
-                $("#editAdminModal").modal("show");
-            } else {
-                // Display the error message from the server response
-                alert(response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error loading the form:", status, error); // Log the error
-            alert("Error loading the form. Please try again."); // Show an alert for the error
+                            if (response.status === "success") {
+                                // Load the form HTML into the modal container
+                                $("#editAdminFormContainer").html(response.form_html);
+                                // Show the modal
+                                $("#editAdminModal").modal("show");
+                            } else {
+                                // Show error message using SweetAlert2
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to load edit form.',
+                                    footer: 'Please check your password and try again.'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error loading the form:", status, error);
+                            
+                            // Show error message using SweetAlert2
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Unable to load the edit form.',
+                                footer: 'Please try again or contact support if the problem persists.'
+                            });
+                        }
+                    });
+                }
+            });
         }
     });
 }
+
+// ... rest of the code ...
 
 function updateadmin(userId) {
     // Get the form element
@@ -196,6 +290,17 @@ function updateadmin(userId) {
 
     // Add the user ID to the FormData object
     formData.append('user_id', userId);
+
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Admin...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Use the Fetch API to send the form data to the server
     fetch('/Ocontrols/updateAdmin.php', {
@@ -214,55 +319,128 @@ function updateadmin(userId) {
     .then(data => {
         // Handle the server's JSON response
         if (data.status === 'success') {
-            alert(data.message); // Show success message from the server
-            // Optionally refresh the UI
+            // Hide the modal
             $("#editAdminModal").modal("hide");
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                showadmin(); // Refresh the admin list
+            });
         } else {
             // Handle server error messages
-            alert('Error updating user: ' + (data.message || 'Unknown error.'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to update admin.',
+                footer: 'Please try again or contact support if the problem persists.'
+            });
         }
     })
     .catch(error => {
         // Log and display any errors that occurred
         console.error('Error during update operation:', error);
-        alert('An error occurred while updating the user. Please check your network or try again.');
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to update the admin.',
+            footer: 'Please check your connection or try again later.'
+        });
     });
 }
 
 
 
-function adminDelete(userId) {
-    // Prompt the logged-in user for their password before proceeding with deletion
-    const password = prompt("Please enter your password to confirm deletion:");
-    if (!password) {
-        // User canceled the prompt or left it blank
-        alert("Deletion canceled. Password is required.");
-        return;
-    }
+// ... existing code ...
 
-    if (confirm('Are you sure you want to delete this user?')) {  // Confirm deletion
-        $.ajax({
-            url: '/Ocontrols/deleteAdmin.php',
-            method: 'POST',
-            data: { user_id: userId, user_password: password },  // Send the target user ID and the logged-in user's password
-            dataType: 'json',
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);
-                    refreshAdminList();  // Refresh the list without a page reload
-                } else {
-                    // Handle error cases (incorrect password, etc.)
-                    alert(response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", status, error);
-                alert('An error occurred while trying to delete the user.');
+function adminDelete(userId) {
+    // First prompt for password using SweetAlert2
+    Swal.fire({
+        title: 'Password Required',
+        input: 'password',
+        inputPlaceholder: 'Enter your password',
+        inputAttributes: {
+            autocapitalize: 'off',
+            autocorrect: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Proceed',
+        cancelButtonText: 'Cancel',
+        showLoaderOnConfirm: true,
+        preConfirm: (password) => {
+            if (!password) {
+                Swal.showValidationMessage('Password is required');
+                return false;
             }
-        });
-    }
+            return password;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Second confirmation for deletion
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((deleteConfirm) => {
+                if (deleteConfirm.isConfirmed) {
+                    // Send delete request immediately without showing loading state
+                    $.ajax({
+                        url: '/Ocontrols/deleteAdmin.php',
+                        method: 'POST',
+                        data: { 
+                            user_id: userId, 
+                            user_password: result.value 
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                refreshAdminList(); // Refresh immediately after successful deletion
+                                // Show success message after refresh
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to delete user.',
+                                    footer: 'Please check your password and try again.'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", status, error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while trying to delete the user.',
+                                footer: 'Please try again or contact support if the problem persists.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
 }
 
+// ... rest of the code ...
 
 
 
@@ -460,7 +638,7 @@ function showTableViews() {
 }
 
 // Add table data with optional images (front, back, left, right)
-// ... existing code ...
+
 
 function addTable() {
     var table_number = $('#table_number').val();

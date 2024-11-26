@@ -1,67 +1,75 @@
-<div class="admin-table">
-  <h2>Admin and Staff Management</h2>
+<div class="container-fluid p-3">
+    <div class="col-12">
+        <div class="text-center mb-3">
+            <h2>Admin and Staff Management</h2>
+        </div>
 
-  <!-- Add Admin/Staff Button at the Top -->
-  <div class="d-flex justify-content-between mb-3">
-    <!-- Add Admin/Staff Button -->
-    <button type="button" class="btn btn-secondary" style="height:40px" data-toggle="modal" data-target="#adminModal">
-      Add Admin/Staff
-    </button>
-  </div>
+        <!-- Filter and Add Admin Button -->
+        <div class="filter-container mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="status-filters">
+                    <button class="filter-btn active" data-role="all">All Users</button>
+                    <button class="filter-btn" data-role="Admin">Admin</button>
+                    <button class="filter-btn" data-role="Staff">Staff</button>
+                </div>
+                <button type="button" class="btn-view-details" data-toggle="modal" data-target="#adminModal">
+                    <i class="fas fa-plus"></i> Add Admin/Staff
+                </button>
+            </div>
+        </div>
 
-  <!-- Admin/Staff List -->
-  <div class="user-list">
-  <table id="userTable" class="table table-striped">
-    <thead class="thead">
-        <tr>
-            <th class="text-center">S.N.</th>
-            <th class="text-center">Full Name</th>
-            <th class="text-center">Username</th>
-            <th class="text-center">Role</th>
-            <th class="text-center">Contact Number</th>
-            <th class="text-center">Email</th>
-            <th class="text-center" colspan="2">Action</th>
-        </tr>
-    </thead>
-    <tbody id="user_table_body">
-        <?php
-        include_once "../assets/config.php"; // Ensure this path is correct
+        <!-- Admin/Staff List -->
+        <div class="table-responsive">
+            <table id="userTable" class="table table-striped table-hover table-bordered display nowrap">
+                <thead>
+                    <tr>
+                        <th class="text-center">No.</th>
+                        <th class="text-center">Full Name</th>
+                        <th class="text-center">Username</th>
+                        <th class="text-center">Role</th>
+                        <th class="text-center">Contact Number</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center" colspan="2">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="user_table_body">
+                    <?php
+                    include_once "../assets/config.php"; // Ensure this path is correct
 
-        // Fetch all Admin/Staff members
-        $sql = "SELECT * FROM users WHERE role IN ('Admin', 'Staff')";
-        $result = $conn->query($sql);
-        $count = 1;
+                    // Fetch all Admin/Staff members
+                    $sql = "SELECT * FROM users WHERE role IN ('Admin', 'Staff')";
+                    $result = $conn->query($sql);
+                    $count = 1;
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-        ?>
-        <tr class="user-row">
-            <td class="text-center"><?= $count ?></td>
-            <td class="text-center"><?= htmlspecialchars($row["first_name"] . " " . $row["last_name"]) ?></td>
-            <td class="text-center"><?= htmlspecialchars($row["username"]) ?></td>
-            <td class="text-center"><?= htmlspecialchars($row["role"]) ?></td>
-            <td class="text-center"><?= htmlspecialchars($row["contact_number"]) ?></td>
-            <td class="text-center"><?= htmlspecialchars($row["email"]) ?></td>
-            <td class="text-center">
-                <button class="btn btn-primary" style="height:40px" onclick="adminEditForm('<?= $row['user_id'] ?>')">Edit</button>
-            </td>
-            <td class="text-center">
-                <button class="btn btn-danger" style="height:40px" onclick="adminDelete('<?= $row['user_id'] ?>')">Delete</button>
-            </td>
-        </tr>
-        <?php
-            $count++;
-            }
-        } else {
-            echo "<tr><td colspan='8' class='text-center'>No Admin or Staff found</td></tr>";
-        }
-        ?>
-    </tbody>
-</table>
-
-
-
-  </div>
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                    ?>
+                    <tr class="user-row">
+                        <td class="text-center"><?= $count ?></td>
+                        <td class="text-center"><?= htmlspecialchars($row["first_name"] . " " . $row["last_name"]) ?></td>
+                        <td class="text-center"><?= htmlspecialchars($row["username"]) ?></td>
+                        <td class="text-center"><?= htmlspecialchars($row["role"]) ?></td>
+                        <td class="text-center"><?= htmlspecialchars($row["contact_number"]) ?></td>
+                        <td class="text-center"><?= htmlspecialchars($row["email"]) ?></td>
+                        <td class="text-center">
+                            <button class="btn btn-primary" style="height:40px" onclick="adminEditForm('<?= $row['user_id'] ?>')">Edit</button>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-danger" style="height:40px" onclick="adminDelete('<?= $row['user_id'] ?>')">Delete</button>
+                        </td>
+                    </tr>
+                    <?php
+                        $count++;
+                        }
+                    } else {
+                        echo "<tr><td colspan='8' class='text-center'>No Admin or Staff found</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <!-- Modal for Adding Admin/Staff -->
 <div class="modal fade" id="adminModal" role="dialog" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
@@ -139,39 +147,87 @@
         </div>
     </div>
 </div>
-</div>
 
-
-</div>
 <script>
 $(document).ready(function() {
-    // Initialize DataTable with additional options for better functionality
-    $('#userTable').DataTable({
-        paging: true,                  // Enable pagination
-        searching: true,               // Enable searching
-        ordering: true,                // Enable sorting
-        responsive: true,              // Make the table responsive
-        autoWidth: false,              // Disable automatic column width adjustments for better layout
-        columnDefs: [
-            { orderable: false, targets: [6, 7] } // Disable ordering for Action columns
-        ],
-        pageLength: 10,                // Set the default number of rows per page
-        lengthMenu: [5, 10, 25, 50],   // Options for rows per page dropdown
+    // Initialize DataTable
+    var table = $('#userTable').DataTable({
+        responsive: true,
+        autoWidth: false,
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
         language: {
-            search: "_INPUT_",         // Customize the search input placeholder
-            searchPlaceholder: "Search admins or staff...",
-            lengthMenu: "Show _MENU_ entries",
-            info: "Showing _START_ to _END_ of _TOTAL_ entries",
-            infoEmpty: "No entries available",
-            infoFiltered: "(filtered from _MAX_ total entries)",
-            paginate: {
-                first: "<<",
-                last: ">>",
-                next: ">",
-                previous: "<"
+            search: "_INPUT_",
+            searchPlaceholder: "Search admins or staff..."
+        },
+        columnDefs: [
+            { targets: [6, 7], orderable: false }
+        ],
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success',
+                titleAttr: 'Export to Excel',
+                title: 'Admin Staff Report',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                text: '<i class="fas fa-file-csv"></i> CSV',
+                className: 'btn btn-info',
+                titleAttr: 'Export to CSV',
+                title: 'Admin Staff Report',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger',
+                titleAttr: 'Export to PDF',
+                title: 'Admin Staff Report',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-primary',
+                titleAttr: 'Print Table',
+                title: 'Admin Staff Report',
+                autoPrint: true,
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
             }
+        ]
+    });
+
+    // Add filter functionality
+    $('.filter-btn').on('click', function() {
+        var role = $(this).data('role');
+        
+        // Remove active class from all buttons
+        $('.filter-btn').removeClass('active');
+        // Add active class to clicked button
+        $(this).addClass('active');
+        
+        // Apply filter
+        if(role === 'all') {
+            table.column(3).search('').draw();
+        } else {
+            table.column(3).search(role).draw();
         }
     });
+
+    // Trigger initial filter
+    $('.filter-btn.active').trigger('click');
 });
 </script>
 

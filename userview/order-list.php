@@ -114,51 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
     </div>
 </div>
 
-<!-- Alert Modal -->
-<div class="modal fade" id="table-alert-modal" tabindex="-1" role="dialog" aria-labelledby="tableAlertModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tableAlertModalLabel">Notification</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body d-flex align-items-center justify-content-center" id="tableAlertlistMessage">
-                <!-- Success or error message will be displayed here with icon -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this item?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDeleteItem()">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 <script>
 function changeQuantity(orderItemId, unitPrice, change) {
     const quantityElem = document.getElementById(`quantity-${orderItemId}`);
@@ -214,26 +169,26 @@ function updateTotalPayment(amountChange) {
 
 // Store the order_item_id in the modal's data attribute and show the modal
 function openDeleteConfirmation(orderItemId) {
-    const confirmModal = document.getElementById('confirmDeleteModal');
-    confirmModal.setAttribute('data-order-item-id', orderItemId); // Set order_item_id in modal data attribute
-    $('#confirmDeleteModal').modal('show'); // Show the confirmation modal
+    Swal.fire({
+        title: 'Confirm Deletion',
+        text: "Are you sure you want to delete this item?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            popup: 'confirm-delete-modal', // Optional: Add a custom class for styling
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            confirmDeleteItem(orderItemId);
+        }
+    });
 }
 
-function openDeleteConfirmation(orderItemId) {
-    const confirmModal = document.getElementById('confirmDeleteModal');
-    confirmModal.setAttribute('data-order-item-id', orderItemId);
-    $('#confirmDeleteModal').modal('show');
-}
-
-function confirmDeleteItem() {
-    const confirmModal = document.getElementById('confirmDeleteModal');
-    const orderItemId = confirmModal.getAttribute('data-order-item-id');
-
-    if (!orderItemId) {
-        showAlertlist("No item selected for deletion.", "error");
-        return;
-    }
-
+function confirmDeleteItem(orderItemId) {
     fetch('/Usercontrol/DeleteOrder.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -245,7 +200,6 @@ function confirmDeleteItem() {
             showAlertlist(data.message, 'success');
             document.getElementById(`order-item-${orderItemId}`).remove();
             updateTotalPayment(-parseFloat(data.deletedAmount)); // Update payment by removed item's amount
-            $('#confirmDeleteModal').modal('hide');
         } else {
             showAlertlist("Error: " + data.message, 'error');
         }
@@ -254,17 +208,18 @@ function confirmDeleteItem() {
         showAlertlist("An error occurred: " + error.message, "error");
     });
 }
+
 function showAlertlist(message, type) {
-    const alertMessage = document.getElementById('tableAlertlistMessage');
-    alertMessage.innerHTML = `
-        <i class="fa ${type === 'success' ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger'} fa-3x mr-2" aria-hidden="true"></i>
-        <span style="font-size: 15px;">${message}</span>`;
-
-    // Add background color based on type to modal body only
-    const modalBody = document.querySelector('#table-alert-modal .modal-body');
-    modalBody.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-
-    $('#table-alert-modal').modal('show');
+    // Use SweetAlert for notifications
+    Swal.fire({
+        icon: type === 'success' ? 'success' : 'error',
+        title: type === 'success' ? 'Success' : 'Error',
+        text: message,
+        confirmButtonText: 'OK',
+        customClass: {
+            popup: 'table-alert-modal', // Keep the existing class for styling
+        }
+    });
 }
 
 

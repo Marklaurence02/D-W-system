@@ -33,10 +33,18 @@ $stmt->close();
 
 $has_reservations = $reservation_count > 0;
 
+// Fixed percentages for progress bar
+$order_percentage = 30;
+$reservation_percentage = 30;
+$other_percentage = 40; // Assuming this is for some other category
+
 // Return JSON response
 echo json_encode([
     'status' => 'success',
     'has_orders' => $has_orders,
-    'has_reservations' => $has_reservations
+    'has_reservations' => $has_reservations,
+    'order_percentage' => $order_percentage,
+    'reservation_percentage' => $reservation_percentage,
+    'other_percentage' => $other_percentage
 ]);
 ?>

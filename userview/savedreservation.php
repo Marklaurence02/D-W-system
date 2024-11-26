@@ -61,7 +61,12 @@ if ($result->num_rows > 0) {
         echo '</div>';
     }
 } else {
-    echo '<p class="col-12 text-center mt-4">No reservations found.</p>';
+    echo '<div class="col-12 text-center mt-4" style="padding: 20px; background-color: #f8f9fa; border-radius: 10px;">';
+    echo '<i class="fas fa-calendar-times" style="font-size: 3em; color: #ccc; margin-bottom: 10px;"></i>';
+    echo '<p style="font-size: 1.2em; color: #555;">No reservations found.</p>';
+    echo '<p style="color: #777;">You can make a reservation by clicking the button below.</p>';
+    echo '<button class="btn btn-primary" onclick="reservetable()">Make a Reservation</button>';
+    echo '</div>';
 }
 
 echo '</div>'; // End row
@@ -160,42 +165,48 @@ $conn->close();
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 
 function openDeleteConfirmation(reservationId) {
-    document.getElementById('confirmDeleteModal').dataset.reservationId = reservationId;
-    $('#confirmDeleteModal').modal('show');
+    Swal.fire({
+        title: 'Confirm Deletion',
+        text: "Are you sure you want to delete this reservation?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            confirmDeleteReservation(reservationId);
+        }
+    });
 }
 
-function confirmDeleteReservation() {
-    const reservationId = document.getElementById('confirmDeleteModal').dataset.reservationId;
-
+function confirmDeleteReservation(reservationId) {
     if (!reservationId) {
-        console.error('Error: Reservation ID is missing or invalid'); // Debugging log
+        console.error('Error: Reservation ID is missing or invalid');
         showNotificationModal('Reservation ID is missing or invalid.', 'error');
         return;
     }
 
-    console.log('Attempting to delete reservation with ID:', reservationId); // Debugging log
-
-    $('#confirmDeleteModal').modal('hide'); // Hide the delete confirmation modal
+    console.log('Attempting to delete reservation with ID:', reservationId);
 
     fetch('/Usercontrol/deleteReservation.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reservation_id: reservationId }) // Ensure reservation_id is sent correctly
+        body: JSON.stringify({ reservation_id: reservationId })
     })
-    .then(response => {
-        console.log('HTTP status:', response.status); // Log HTTP status for debugging
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Server response:', data); // Log the entire server response
+        console.log('Server response:', data);
 
         if (data.status === 'success') {
             showNotificationModal(data.message, 'success');
 
-            // Remove the reservation card without reloading
             const reservationCard = document.querySelector(`.reservation-card[data-reservation-id="${reservationId}"]`);
             if (reservationCard) {
                 reservationCard.remove();
@@ -207,6 +218,17 @@ function confirmDeleteReservation() {
     .catch(error => {
         console.error('Fetch error:', error);
         showNotificationModal('An unexpected error occurred while attempting to delete the reservation.', 'error');
+    });
+}
+
+function showNotificationModal(message, type) {
+    let iconType = type === 'success' ? 'success' : 'error';
+    Swal.fire({
+        icon: iconType,
+        title: type.charAt(0).toUpperCase() + type.slice(1),
+        text: message,
+        timer: 3000,
+        showConfirmButton: false
     });
 }
 
@@ -363,37 +385,6 @@ function loadAvailableTimesForEdit(currentTime) {
     }
 }
 
-
-
-// Function to show the notification modal
-function showNotificationModal(message, type) {
-    const notificationMessage = document.getElementById('notificationMessage');
-    const modalBody = document.querySelector('#notificationModal .modal-body');
-
-    // Clear any existing content and classes
-    notificationMessage.innerHTML = '';
-    modalBody.classList.remove('bg-success', 'bg-danger');
-
-    // Set icon and background based on message type
-    let iconHtml = '';
-    if (type === 'success' || type === 'info') {
-        modalBody.classList.add('bg-success');
-        iconHtml = '<i class="fa fa-check-circle-o" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
-    } else if (type === 'error') {
-        modalBody.classList.add('bg-danger');
-        iconHtml = '<i class="fas fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;"></i>';
-    }
-
-    // Inject icon and message
-    notificationMessage.innerHTML = `${iconHtml}<span>${message}</span>`;
-
-    // Show the modal
-    $('#notificationModal').modal('show');
-
-    // Auto-hide the modal after 3 seconds
-    setTimeout(() => $('#notificationModal').modal('hide'), 3000);
-}
-
 $(document).ready(function() {
     // AJAX call to disabletable.php to check if orders and reservations exist
     $.ajax({
@@ -496,3 +487,5 @@ if (!response.has_reservations) {
 }
 
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

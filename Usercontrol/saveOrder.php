@@ -34,7 +34,7 @@ if (isset($_POST['product_id'], $_POST['quantity'], $_POST['price'], $_POST['use
         $updateStmt->bind_param("idi", $newQuantity, $newTotalPrice, $existingOrder['order_item_id']);
 
         if ($updateStmt->execute()) {
-            echo json_encode(["status" => "update", "message" => "Order updated successfully!"]);
+            echo json_encode(["status" => "success", "message" => "Order updated successfully!"]);
         } else {
             echo json_encode(["status" => "error", "message" => "Error: Could not update the order."]);
         }

@@ -393,7 +393,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <div id="customLoader" class="loader-overlay">
     <div class="loader" id="loader"></div>
     <div class="checkmark hidden" id="checkmark">
-        ✔
+        ��
     </div>
 </div>
 
@@ -433,7 +433,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <input type="text" class="form-control form-control-sm" id="cardName" placeholder="Name on card" value="<?= htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']) ?>" readonly>
                     </div>
                     <div class="form-group mb-2">
-                        <label for="cardNumber">Card Number</label>
+                        <label for="cardNumber">Card Number <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your 16-digit card number."></i></label>
                         <input type="text" class="form-control form-control-sm" id="cardNumber" placeholder="Card number" required>
                         <small class="form-text text-danger" id="cardNumberError"></small>
                     </div>
@@ -481,32 +481,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 </div>
 
-<script>
-    function showAlert(message, type = 'info') {
-        const alertModalLabel = document.getElementById('alertModalLabel');
-        const alertModalHeader = document.querySelector('#alertModal .modal-header');
-        const alertMessage = document.getElementById('alertMessage');
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        // Customize the modal header based on alert type
+<script>
+    // Autofill expiry date with the current month and year
+    document.addEventListener('DOMContentLoaded', () => {
+        const expiryDateInput = document.getElementById('expiryDate');
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = String(now.getFullYear()).slice(-2); // Get last two digits of the year
+        expiryDateInput.value = `${month}/${year}`;
+    });
+
+    // Use SweetAlert for notifications
+    function showAlert(message, type = 'info') {
+        let icon;
         switch (type) {
             case 'success':
-                alertModalHeader.className = 'modal-header bg-success text-white';
-                alertModalLabel.textContent = 'Success';
+                icon = 'success';
                 break;
             case 'error':
-                alertModalHeader.className = 'modal-header bg-danger text-white';
-                alertModalLabel.textContent = 'Error';
+                icon = 'error';
                 break;
             default:
-                alertModalHeader.className = 'modal-header bg-info text-white';
-                alertModalLabel.textContent = 'Notification';
+                icon = 'info';
         }
 
-        // Set the alert message
-        alertMessage.textContent = message;
-
-        // Show the modal
-        $('#alertModal').modal('show');
+        Swal.fire({
+            title: type.charAt(0).toUpperCase() + type.slice(1),
+            text: message,
+            icon: icon,
+            confirmButtonText: 'OK'
+        });
     }
 
     function updateCardDetails() {
@@ -592,46 +598,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     function validatePassword() {
-    const passwordInput = document.getElementById('userPassword');
-    const password = passwordInput.value.trim();
+        const passwordInput = document.getElementById('userPassword');
+        const password = passwordInput.value.trim();
 
-    if (password.length === 0) {
-        showAlert("Please enter your password.", 'error');
-        passwordInput.focus();
-        return false;
-    }
-
-    if (password.length < 8) {
-        showAlert("Password must be at least 8 characters long.", 'error');
-        passwordInput.focus();
-        return false;
-    }
-
-    // AJAX request to validate password on the server
-    $.ajax({
-        url: '/Usercontrol/passwordVerification.php',
-        type: 'POST',
-        data: {
-            action: 'verifyPassword',
-            password: password
-        },
-        success: function(response) {
-            const result = JSON.parse(response);
-            if (result.status === 'success') {
-                showAlert("Password verified successfully.", 'success');
-                $('#passwordModal').modal('hide');
-                submitPayment();
-            } else {
-                showAlert(result.message || "Password verification failed.", 'error');
-            }
-        },
-        error: function() {
-            showAlert("An error occurred while verifying the password. Please try again.", 'error');
+        if (password.length === 0) {
+            showAlert("Please enter your password.", 'error');
+            passwordInput.focus();
+            return false;
         }
-    });
 
-    return false; // Prevent form submission until verification is complete
-}
+        if (password.length < 8) {
+            showAlert("Password must be at least 8 characters long.", 'error');
+            passwordInput.focus();
+            return false;
+        }
+
+        // AJAX request to validate password on the server
+        $.ajax({
+            url: '/Usercontrol/passwordVerification.php',
+            type: 'POST',
+            data: {
+                action: 'verifyPassword',
+                password: password
+            },
+            success: function(response) {
+                const result = JSON.parse(response);
+                if (result.status === 'success') {
+                    showAlert("Password verified successfully.", 'success');
+                    $('#passwordModal').modal('hide');
+                    submitPayment();
+                } else {
+                    showAlert(result.message || "Password verification failed.", 'error');
+                }
+            },
+            error: function() {
+                showAlert("An error occurred while verifying the password. Please try again.", 'error');
+            }
+        });
+
+        return false; // Prevent form submission until verification is complete
+    }
 
 
     function submitPayment() {
@@ -815,4 +821,60 @@ function redirectToUserPanel() {
     100% { transform: rotate(360deg); }
 }
 
+/* Add hover effects to buttons */
+.btn:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+/* Improve form validation feedback */
+.is-invalid {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.form-text.text-danger {
+    color: #dc3545;
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.tooltip.bs-tooltip-top .arrow::before {
+    border-top-color: #333;
+}
+
+/* Loading spinner */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
+
 </style>
+
+<script>
+    // Add tooltips for better guidance
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    // Show loading spinner on form submission
+    function showLoadingSpinner() {
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner-border text-primary';
+        spinner.setAttribute('role', 'status');
+        spinner.innerHTML = '<span class="sr-only">Loading...</span>';
+        document.body.appendChild(spinner);
+    }
+
+    // Example usage: call showLoadingSpinner() when a form is submitted
+    document.getElementById('paymentForm').addEventListener('submit', function() {
+        showLoadingSpinner();
+    });
+</script>

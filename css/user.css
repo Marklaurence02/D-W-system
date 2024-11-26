@@ -8,26 +8,23 @@
 }
 
 html, body {
-  height: 100%; /* Full height */
-  margin: 0; /* Remove default margin */
-  display: flex; /* Use flexbox for layout */
-  flex-direction: column; /* Arrange children in a column */
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 #main-content {
-  flex: 1; /* Allow main content to grow */
-  padding: 20px; /* Optional padding */
+  flex: 1;
+  padding: 20px;
 }
 
 header, footer {
-  background-color: #f8f9fa; /* Light background color */
-  padding: 10px 20px; /* Padding for header and footer */
-  text-align: center; /* Center align text */
-  border: 1px solid #dee2e6; /* Optional border */
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  text-align: center;
+  border: 1px solid #dee2e6;
 }
-
-
-
 
 /* Slider Styles */
 .slider-container {
@@ -35,13 +32,10 @@ header, footer {
   align-items: center;
   justify-content: center;
   position: relative;
+  width: 100%;
+  overflow: hidden;
 }
-.title {
-  font-size: 2em; /* Adjust size as needed */
-  font-weight: bold; /* Optional: Make the title bold */
-  margin: 0; /* Remove default margins if necessary */
-  text-align: center; /* Center the text */
-}
+
 .slider {
   width: 80%;
   overflow: hidden;
@@ -53,7 +47,6 @@ header, footer {
 .slide-track {
   display: flex;
   transition: transform 0.5s ease;
-  transform: translateX(-33.33%); /* Start with "Menu" in the center */
 }
 
 .slide-content-box {
@@ -62,12 +55,12 @@ header, footer {
   transition: opacity 0.3s ease, transform 0.3s ease;
   text-align: center;
   position: relative;
-  transform: scale(0.9); /* Smaller adjacent slides */
+  transform: scale(0.9);
 }
 
 .slide-content-box.active-slide {
   opacity: 1;
-  transform: scale(1); /* Larger main slide */
+  transform: scale(1);
 }
 
 .slide-button {
@@ -87,10 +80,8 @@ header, footer {
   width: 250px;
   height: 250px;
   margin: 0 auto;
-  border-radius: 20%; /* Optional: Add rounded corners */
+  border-radius: 20%;
 }
-
-
 
 /* Navigation Buttons */
 .arrow-btn {
@@ -106,10 +97,11 @@ header, footer {
 }
 
 .arrow-btn#prev-btn {
-  left: -30px;
+  left: 10px;
 }
+
 .arrow-btn#next-btn {
-  right: -30px;
+  right: 10px;
 }
 
 /* Navigation Dots */
@@ -120,8 +112,8 @@ header, footer {
 }
 
 .dot {
-  height: 25px;
-  width: 25px;
+  height: 15px;
+  width: 15px;
   margin: 0 5px;
   background-color: #bbb;
   border-radius: 50%;
@@ -132,40 +124,41 @@ header, footer {
 .dot.active {
   background-color: #333;
 }
+
 /* CSS for Empty Slide */
 .empty-slide {
-  flex: 0 0 33.33%; /* Match the width of other slides */
+  flex: 0 0 33.33%;
   opacity: 0;
 }
+
 .select {
-  background-color: grey; /* Set background color to grey */
-  border: none; /* Remove default border */
-  color: white; /* Set text color to white for better contrast */
-  padding: 10px 20px; /* Add padding for a better appearance */
-  cursor: pointer; /* Change cursor to pointer on hover */
-  border-radius: 20%; /* Optional: Add rounded corners */
+  background-color: grey;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20%;
 }
 
 .select:hover {
-  background-color: darkgrey; /* Change color on hover for better feedback */
+  background-color: darkgrey;
 }
 
 /*i symbols*/
-.big{
+.big {
   font-size: 4rem;
 }
 
-.arrow{
+.arrow {
   font-size: 5rem;
 }
 
 /*table nav*/
-
-/* Ensure buttons align horizontally */
 .table_nav {
   display: none;
   justify-content: space-around;
 }
+
 .table-nav {
   padding: 10px 20px;
   border-radius: 20px;
@@ -175,103 +168,74 @@ header, footer {
   justify-content: space-around;
 }
 
-.menu_nav {
-  display: flex;
-  justify-content: space-around;
-}
-.menu-nav {
-  padding: 10px 20px;
-  border-radius: 20px;
-  width: 15rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-around;
-}
-
-/*Medium screens (max-width: 992px) */
+/* Responsive Adjustments */
 @media (max-width: 992px) {
-
-  /* Userpanel */
-    .image-box {
-        width: 200px;
-        height: 200px;
-    }
-    .table_nav, .menu_nav {
-      flex-direction: row; /* Keep buttons aligned horizontally */
-      flex-wrap: wrap; /* Allow wrapping if needed */
-      justify-content: center; /* Center align for balance */
-      gap: 10px; /* Add spacing between buttons */
+  .image-box {
+    width: 200px;
+    height: 200px;
   }
-
+  .table_nav, .menu_nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
   .table-nav, .menu-nav {
-      width: 12rem; /* Adjust button width */
-      font-size: 0.9rem; /* Slightly smaller text */
+    width: 12rem;
+    font-size: 0.9rem;
   }
 }
 
-
-
-/* Small screens (max-width: 768px) */
 @media (max-width: 768px) {
-    /* Userpanel */
-
-    .image-box {
-        width: 150px;
-        height: 150px;
-    }
-    .table_nav, .menu_nav {
-      flex-direction: column; /* Stack buttons vertically */
-      align-items: center; /* Center align in the column layout */
+  .image-box {
+    width: 150px;
+    height: 150px;
   }
-
+  .table_nav, .menu_nav {
+    flex-direction: column;
+    align-items: center;
+  }
   .table-nav, .menu-nav {
-      width: 100%; /* Full width for better readability */
-      max-width: 200px; /* Limit max width for consistency */
-      margin-bottom: 10px; /* Space below each button */
-      font-size: 0.9rem; /* Further reduce font size if needed */
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
   }
-
 }
 
-/* Extra-small screens (max-width: 576px) */
 @media (max-width: 576px) {
-    /* Userpanel */
-
-    .image-box {
-        width: 120px;
-        height: 120px;
-    }
-    .table_nav, .menu_nav {
-      flex-direction: column; /* Continue stacking vertically */
-      align-items: center;
+  .image-box {
+    width: 120px;
+    height: 120px;
   }
-
+  .table_nav, .menu_nav {
+    flex-direction: column;
+    align-items: center;
+  }
   .table-nav, .menu-nav {
-      width: 90%; /* Slight padding on each side */
-      max-width: 180px;
-      font-size: 0.8rem; /* Smaller font for compact view */
-      padding: 8px 15px; /* Reduced padding for compact layout */
+    width: 90%;
+    max-width: 180px;
+    font-size: 0.8rem;
+    padding: 8px 15px;
   }
   .food-selection-container {
-    justify-content: center !important; /* Center items on small screens */
+    justify-content: center !important;
+  }
 }
-
-}
-
 
 /* Foods Selection */
 .food-selection-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-  gap: 20px; /* Spacing between items */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
   padding: 10px;
-  background-color: #D9D9D9;    
+  background-color: #D9D9D9;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 40px;
-  justify-items: center; /* Center items in each grid cell */
+  justify-items: center;
   max-width: 100%;
   min-height: 250px;
-  margin: 0 auto; /* Center container */
+  margin: 0 auto;
 }
 
 .food-box {
@@ -283,13 +247,14 @@ header, footer {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   width: 100%;
-  max-width: 250px; /* Enforce max width */
+  max-width: 250px;
 }
+
 .food-box:hover {
   transform: scale(1.05);
-  border:  solid #007bff; /* Increased border width */
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2); /* Slightly increased shadow */
-  transition: transform 0.3s, box-shadow 0.3s, border 0.3s; /* Smooth transition */
+  border: solid #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
 }
 
 .food-btn {
@@ -299,7 +264,7 @@ header, footer {
 
 .food-btn img {
   width: 100%;
-  height: 250px; /* Fixed height for uniformity */
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -308,29 +273,28 @@ header, footer {
   margin-top: 10px;
 }
 
-
-
 .active {
-  background-color: #007bff; /* Change to your desired active color */
+  background-color: #007bff;
   color: white;
 }
 
 .proceed-container {
-  text-align: right; /* Align the button to the right */
-  margin-top: 20px; /* Add some space above */
+  text-align: right;
+  margin-top: 20px;
 }
 
-.proceed-button{
+.proceed-button {
   border-radius: 8px;
   background-color: #bbb;
   height: 3rem;
   width: 8rem;
 }
 
-/* error and succes */
+/* error and success */
 .modal-content {
-  border-radius: 15px; /* Rounds the modal itself */
+  border-radius: 15px;
 }
+
 .modal-header.bg-dark {
   background-color: #D9D9D9;
   border-top-left-radius: 0.3rem;
@@ -369,8 +333,8 @@ header, footer {
 
 /* Plus button - green background */
 .btn-qtyplus {
-  background-color: #28a745; /* Green background */
-  color: #ffffff; /* White text */
+  background-color: #28a745;
+  color: #ffffff;
   border: none;
   padding: 8px 15px;
   border-radius: 5px;
@@ -378,13 +342,13 @@ header, footer {
 }
 
 .btn-qtyplus:hover {
-  background-color: #218838; /* Darker green on hover */
+  background-color: #218838;
 }
 
 /* Minus button - red background */
 .btn-qtyminus {
-  background-color: #dc3545; /* Red background */
-  color: #ffffff; /* White text */
+  background-color: #dc3545;
+  color: #ffffff;
   border: none;
   padding: 8px 15px;
   border-radius: 5px;
@@ -392,9 +356,8 @@ header, footer {
 }
 
 .btn-qtyminus:hover {
-  background-color: #c82333; /* Darker red on hover */
+  background-color: #c82333;
 }
-
 
 .category-separator {
   border-bottom: 2px solid #ddd;
@@ -403,36 +366,35 @@ header, footer {
   font-size: 1.25rem;
   color: #333;
 }
+
 .card {
   transition: transform 0.3s;
 }
+
 .card:hover {
   transform: scale(1.05);
 }
 
 /* table selection */
-
-/* Consistent size for table buttons */
 .table-btn img {
   width: 100%;
   height: 150px;
   object-fit: cover;
 }
 
-/* Consistent modal and carousel image sizing */
 .modal-sm {
-  max-width: 400px; /* Smaller modal width */
+  max-width: 400px;
 }
 
 .carousel-inner img {
   width: 100%;
-  height: 300px; /* Consistent height within modal */
+  height: 300px;
   object-fit: cover;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  background-color: rgba(0, 0, 0, 0.5); /* Better visibility on controls */
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
   width: 30px;
   height: 30px;

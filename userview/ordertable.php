@@ -15,6 +15,81 @@ $username = $_SESSION['username'];
 include_once "../assets/config.php"; // Ensure correct path to your config file
 ?>
 
+<style>
+    .menu-nav {
+        margin: 5px;
+        padding: 10px 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-nav.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .menu-nav:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    #searchInput {
+        width: 50%;
+        margin: 0 auto;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .food-box {
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .food-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .food-btn {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .food-btn img {
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+        transition: transform 0.3s;
+        object-fit: contain;
+    }
+
+    .food-btn:hover img {
+        transform: scale(1.1);
+    }
+
+    .food-box h6 {
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+
 <div class="container p-5"> 
     <h4 class="text-center">Pick Food</h4>
     <div class="menu_nav text-center mb-3">
@@ -31,6 +106,11 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
             echo "<p>No categories available</p>";
         }
         ?>
+    </div>
+
+    <!-- Add a search input field -->
+    <div class="text-center mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search for food..." onkeyup="searchProducts()">
     </div>
 
     <h1 class="text-center">Delicious Starts Here!</h1>
@@ -128,11 +208,13 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
 <div class="container mt-4">
     <div class="d-flex justify-content-end">
         <form action="User-panel.php" method="post">
-            <button type="submit" class="btn proceed-button">Home</button>
+            <button type="submit" onclick="updateProgress();" class="btn proceed-button">Home</button>
+            
         </form>       
         <button class="btn proceed-button ml-2" onclick="order_list()">Proceed</button> <!-- Add ml-2 for spacing -->
     </div>
 </div>
+
 
 <script>
      let selectedCategory = null;
@@ -144,30 +226,49 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
     document.getElementById(`totalPrice${productId}`).innerText = totalPrice.toFixed(2);
 }
 function confirmOrder(productId) {
-const quantity = document.getElementById(`quantity${productId}`).value;
-const totalPrice = document.getElementById(`totalPrice${productId}`).innerText;
+    const quantity = document.getElementById(`quantity${productId}`).value;
+    const totalPrice = document.getElementById(`totalPrice${productId}`).innerText;
 
-// Send an AJAX request to save the order
-$.ajax({
-    url: "/Usercontrol/saveOrder.php", // Path to the saveOrder.php file
-    method: "POST",
-    data: {
-        product_id: productId,
-        quantity: quantity,
-        price: parseFloat(totalPrice), // Ensure the price is a number
-        user_id: <?php echo json_encode($user_id); ?> // Send the user ID
-    },
-    success: function(response) {
-        const data = JSON.parse(response); // Parse the JSON response
-        alert(data.message); // Show success message
+    // Send an AJAX request to save the order
+    $.ajax({
+        url: "/Usercontrol/saveOrder.php",
+        method: "POST",
+        data: {
+            product_id: productId,
+            quantity: quantity,
+            price: parseFloat(totalPrice),
+            user_id: <?php echo json_encode($user_id); ?>
+        },
+        success: function(response) {
+            const data = JSON.parse(response);
+            if (data.status === 'success' || data.status === 'add') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    showConfirmButton: true
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    showConfirmButton: true
+                });
+            }
 
-        // Close the modal after successful order
-        $('#yourModalId').modal('hide'); // Replace 'yourModalId' with the actual ID of your modal
-    },
-    error: function() {
-        alert("There was an error processing your order.");
-    }
-});
+            // Close the product modal after order is confirmed
+            $(`#productModal${productId}`).modal('hide');
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error processing your order.',
+                showConfirmButton: true
+            });
+        }
+    });
 }
 
 function changedQuantity(productId, amount) {
@@ -215,32 +316,24 @@ function filterProducts(categoryId, button) {
 }
 
 function showAlertModal(message, type = 'success') {
-    const modalMessage = document.getElementById('tableAlertModalMessage');
-    modalMessage.innerHTML = ''; // Clear previous content
-    modalMessage.classList.remove('alert-success', 'alert-danger', 'alert-info'); // Clear previous classes
+    let iconType;
 
-    let icon;
-
-    // Define icon and color based on the type of message
+    // Define icon based on the type of message
     if (type === 'error') {
-        modalMessage.classList.add('alert', 'alert-danger'); // Red background for errors
-        icon = '<i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>';
-    } else if (type === 'add') {
-        modalMessage.classList.add('alert', 'alert-info'); // Blue for add actions
-        icon = '<i class="fa fa-plus-circle mr-2" aria-hidden="true"></i>';
-    } else if (type === 'update') {
-        modalMessage.classList.add('alert', 'alert-info'); // Blue for update actions
-        icon = '<i class="fa fa-refresh mr-2" aria-hidden="true"></i>';
+        iconType = 'error';
+    } else if (type === 'add' || type === 'update') {
+        iconType = 'info';
     } else {
-        modalMessage.classList.add('alert', 'alert-success'); // Green for success
-        icon = '<i class="fa fa-cart-arrow-down mr-2" aria-hidden="true"></i>';
+        iconType = 'success';
     }
 
-    // Set message content with icon
-    modalMessage.innerHTML = `${icon} ${message}`;
-
-    // Show the modal
-    $('#table-alert-modal').modal('show');
+    // Use SweetAlert2 to show the alert
+    Swal.fire({
+        icon: iconType,
+        title: message,
+        showConfirmButton: true,
+        timer: 3000
+    });
 }
 
 
@@ -260,19 +353,66 @@ function confirmOrder(productId) {
             user_id: <?php echo json_encode($user_id); ?>
         },
         success: function(response) {
-            const data = JSON.parse(response); 
-            if (data.status === 'success') {
-                showAlertModal(data.message, true); // Success message
+            const data = JSON.parse(response);
+            if (data.status === 'success' || data.status === 'add') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    showConfirmButton: true
+                });
             } else {
-                showAlertModal(data.message, false); // Error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    showConfirmButton: true
+                });
             }
 
             // Close the product modal after order is confirmed
             $(`#productModal${productId}`).modal('hide');
         },
         error: function() {
-            showAlertModal("There was an error processing your order.", false); // Error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error processing your order.',
+                showConfirmButton: true
+            });
         }
     });
 }
+
+function searchProducts() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const products = document.querySelectorAll('.product-item');
+    let hasVisibleProducts = false;
+
+    products.forEach(product => {
+        const productName = product.querySelector('h6').innerText.toLowerCase();
+        if (productName.includes(filter)) {
+            product.style.display = 'block';
+            hasVisibleProducts = true;
+        } else {
+            product.style.display = 'none';
+        }
+    });
+
+    // Show or hide the "No products available" message
+    const noProductsMessage = document.getElementById('noProductsMessage');
+    if (hasVisibleProducts) {
+        noProductsMessage.style.display = 'none';
+    } else {
+        noProductsMessage.style.display = 'block';
+    }
+}
+
+
+
+
+  
+   
+
 </script>

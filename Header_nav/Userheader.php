@@ -66,36 +66,38 @@ function toggleSidebar() {
     position: fixed;
     top: 0;
     right: 0;
-    background-color: #333;
+    background-color: #8B0000; /* Tomato red */
     overflow-x: hidden;
     transition: 0.3s;
     z-index: 1000;
     padding-top: 60px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.5);
 }
 
 /* Sidebar links */
 .sidebar a {
-    padding: 10px 20px;
+    padding: 15px 25px;
     text-decoration: none;
     font-size: 1.2rem;
-    color: #fff;
+    color: #FFD700; /* Cheese yellow */
     display: block;
     transition: 0.3s;
 }
 
 .sidebar a:hover {
-    background-color: #575757;
+    background-color: #556B2F; /* Basil green */
 }
 
 /* Sidebar header styling */
 .side-header {
-    padding: 10px;
-    color: #fff;
+    padding: 20px;
+    color: #FFD700; /* Cheese yellow */
+    background-color: #8B0000; /* Tomato red */
 }
 
 .welc {
-    font-size: 1rem;
-    color: #ccc;
+    font-size: 1.1rem;
+    color: #FFD700; /* Cheese yellow */
 }
 
 /* Close button */
@@ -104,7 +106,7 @@ function toggleSidebar() {
     top: 10px;
     right: 25px;
     font-size: 2rem;
-    color: #fff;
+    color: #FFD700; /* Cheese yellow */
     background: none;
     border: none;
     cursor: pointer;
@@ -113,7 +115,7 @@ function toggleSidebar() {
 /* Open button styling */
 .openbtn {
     font-size: 1.5rem;
-    color: #333;
+    color: #8B0000; /* Tomato red */
     background: none;
     border: none;
     cursor: pointer;
@@ -123,6 +125,37 @@ function toggleSidebar() {
     position: fixed;
     top: 10px;
     right: 10px;
+}
+
+/* Modal styling */
+.modal-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    background-color: #8B0000; /* Tomato red */
+    color: #FFD700; /* Cheese yellow */
+    border-bottom: 1px solid #556B2F; /* Basil green */
+}
+
+.modal-title {
+    font-size: 1.25rem;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.btn-primary {
+    background-color: #FFD700; /* Cheese yellow */
+    border-color: #FFD700;
+}
+
+.btn-primary:hover {
+    background-color: #556B2F; /* Basil green */
+    border-color: #556B2F;
 }
 </style>
 <!-- Update Profile Modal -->
@@ -175,6 +208,10 @@ function toggleSidebar() {
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="username" name="username">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password">
                             </div>
                         </div>
                     </div>

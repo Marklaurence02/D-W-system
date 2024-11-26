@@ -12,7 +12,6 @@ session_start();
                     <!-- Dynamic chat messages will load here -->
                 </div>
                 <div class="welcome-sent p-3">
-    Welcome to Dine&Watch! I am your Dine&Watch virtual assistant. I'll be happy to answer your questions. For an uninterrupted conversation with us, please ensure that you have a stable internet connection. Please tell me what you would like to know:
 </div>
             </div>
         </div>
@@ -38,6 +37,12 @@ function loadMessages() {
             const messagesData = JSON.parse(response).messages;
             $('#chat-box .history-message').empty(); // Clear previous messages
             
+            // Check if there are no messages and append the welcome message
+            if (messagesData.length === 0) {
+                const welcomeMessageHtml = `<div class="assistant-message right">Welcome to Dine&Watch! I am your Dine&Watch virtual assistant. I'll be happy to answer your questions. For an uninterrupted conversation with us, please ensure that you have a stable internet connection. Please tell me what you would like to know:<div class="timestamp">${new Date().toLocaleString()}</div></div>`;
+                $('#chat-box .history-message').append(welcomeMessageHtml);
+            }
+
             // Loop through the messages and render each one
             messagesData.forEach(function(message) {
                 let senderClass;
@@ -45,11 +50,9 @@ function loadMessages() {
                 
                 // Check if the message is from a user or assistant (staff, bot, etc.)
                 if (message.sender_role === 'assistant') {
-                    // If the sender role is assistant (can be staff or bot)
                     senderClass = 'assistant-message';
                     sideClass = 'right';  // Assistant message should be on the right
                 } else {
-                    // If it's the user (could be staff too, based on your logic)
                     senderClass = 'user-message';
                     sideClass = 'left';  // User message should be on the left
                 }

@@ -173,52 +173,53 @@ include 'assets/process_log-in.php';
 
     <!-- Main Content -->
     <div class="container my-5">
-    <div class="row align-items-center">
-        <!-- Logo Section -->
-        <div class="col-12 col-md-6 text-center">
-            <img src="Images/logo.png" alt="Dine&Watch Logo" class="logo-container img-fluid">
-        </div>
+        <div class="row align-items-center">
+            <!-- Logo Section -->
+            <div class="col-12 col-md-6 text-center">
+                <img src="Images/logo.png" alt="Dine&Watch Logo" class="logo-container img-fluid">
+            </div>
 
-        <!-- Sign-In Form Section -->
-        <div class="col-12 col-md-6">
-            <div class="signup-card mx-auto">
-                <h2>Sign In</h2>
-                <form method="POST">
-                    <!-- Email Input -->
-                    <div class="form-group position-relative">
-                        <input type="email" class="form-control" name="email" id="email" placeholder=" " required>
-                        <label for="email">Email</label>
-                    </div>
+            <!-- Sign-In Form Section -->
+            <div class="col-12 col-md-6">
+                <div class="signup-card mx-auto">
+                    <h2>Sign In</h2>
+                    <?php 
+                        // Display any error messages
+                        if (!empty($_SESSION['error'])): 
+                            echo "<p class='text-danger'>" . $_SESSION['error'] . "</p>";
+                            unset($_SESSION['error']); // Clear the error after displaying
+                        endif;
+                    ?>
+                    <form method="POST">
+                        <!-- Email Input -->
+                        <div class="form-group position-relative">
+                            <input type="email" class="form-control" name="email" id="email" placeholder=" " required>
+                            <label for="email">Email</label>
+                        </div>
 
-                    <!-- Password Input -->
-                    <div class="form-group position-relative">
-                        <input type="password" class="form-control" name="password" id="password" placeholder=" " required>
-                        <label for="password">Password</label>
-                        <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
-                    </div>
+                        <!-- Password Input -->
+                        <div class="form-group position-relative">
+                            <input type="password" class="form-control" name="password" id="password" placeholder=" " required>
+                            <label for="password">Password</label>
+                            <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
+                        </div>
 
-                    <!-- Google reCAPTCHA -->
-                    <div class="recaptcha align-item-center">
-                        <div class="g-recaptcha" data-sitekey="6LcL4IcqAAAAAPB8-0U66IZDAWf0xYVhi8qtQjL9"></div>
-                    </div>
+                        <!-- Google reCAPTCHA -->
+                        <div class="recaptcha align-item-center">
+                            <div class="g-recaptcha" data-sitekey="6LcL4IcqAAAAAPB8-0U66IZDAWf0xYVhi8qtQjL9"></div>
+                        </div>
 
-                    <button type="submit" class="btn-next">Next</button>
+                        <button type="submit" class="btn-next">Next</button>
 
-                    <!-- Links Section -->
-               
-
-<!-- Links Section -->
-<div class="small-text mt-3 d-flex justify-content-between">
-    <a href="forgot_password.php">Forgot your password?</a>
-    <a href="sign-up.php">Don't have an account?</a>
-</div>
-
-                </form>
+                        <!-- Links Section -->
+                        <div class="small-text mt-3 d-flex justify-content-between">
+                            <a href="forgot_password.php">Forgot your password?</a>
+                            <a href="sign-up.php">Don't have an account?</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-
     </div>
 
     <!-- Footer -->

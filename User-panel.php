@@ -3,6 +3,7 @@ include 'assets/config.php';
 include "Header_nav/Userheader.php"; 
 
 
+
 // Set session variables if they are not already set
 if (!isset($_SESSION['first_name'])) {
     $user_id = $_SESSION['user_id'];
@@ -134,6 +135,8 @@ if ($first_reservation && $first_reservation['reservation_time']) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="Js/slider.js"></script>
     <script src="Js/Userpanel.js"></script>
 </body>
@@ -146,7 +149,16 @@ $(document).ready(function() {
         url: '/Usercontrol/disabletable.php',
         method: 'GET',
         dataType: 'json',
+        beforeSend: function() {
+            showProgressBar();
+            updateProgressBar(0);
+        },
         success: function(response) {
+            updateProgressBar(100);
+            setTimeout(function() {
+                hideProgressBar();
+            }, 500);
+
             if (response.status === 'success') {
                 // Disable the Table button if no orders exist
                 if (!response.has_orders) {
@@ -175,10 +187,18 @@ $(document).ready(function() {
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error("AJAX error:", textStatus, errorThrown);
+            hideProgressBar();
         }
     });
 });
 
 
-
+function updateProgress() {
+            const progressBar = document.getElementById("progress-bar");
+            if (progressBar.value < progressBar.max) {
+                progressBar.value += 10; // Increment by 10
+            } else {
+                alert("Progress complete!");
+            }
+        }
 </script>

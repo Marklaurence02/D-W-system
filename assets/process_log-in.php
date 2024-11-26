@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response_keys = json_decode($response, true);
 
     if ($response_keys['success'] !== true) {
-        $error = "Please complete the CAPTCHA.";
+        $_SESSION['error'] = "Please complete the CAPTCHA.";
     } else {
         if (!empty($email) && !empty($password)) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $error = "Invalid email format.";
+                $_SESSION['error'] = "Invalid email format.";
             } else {
                 $sql = "SELECT user_id, first_name, last_name, username, password_hash, role 
                         FROM users WHERE email = ? AND role = 'General User'";
@@ -70,27 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             header('Location: User-panel.php');
                             exit();
                         } else {
-                            $error = "Invalid password. Please try again.";
+                            $_SESSION['error'] = "Invalid password. Please try again.";
                         }
                     } else {
-                        $error = "No user found with this email.";
+                        $_SESSION['error'] = "No user found with this email.";
                     }
                     $stmt->close();
                 } else {
-                    $error = "Database query error: " . $conn->error;
+                    $_SESSION['error'] = "Database query error: " . $conn->error;
                 }
             }
         } else {
-            $error = "Please fill in all the required fields.";
+            $_SESSION['error'] = "Please fill in all the required fields.";
         }
     }
 }
 
 $conn->close();
-
-if (!empty($error)) {
-    echo "<p style='color: red;'>$error</p>";
-}
 
 // Function to check if the user already has an assigned staff member
 function checkExistingAssignment($userId, $conn) {

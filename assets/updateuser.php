@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact_number = trim($_POST['contact_number']);
     $address = trim($_POST['address']);
     $username = trim($_POST['username']);
+    $password = trim($_POST['password']); // Retrieve the password from the form
 
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($username)) {
@@ -71,7 +72,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Prepare SQL statement for updating user details
-    $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW() WHERE user_id = ?";
+    $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW()";
+    $params = [$first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username];
+
+    // Check if a new password is provided
+    if (!empty($password)) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $sql .= ", password_hash = ?";
+        $params[] = $hashed_password;
+    }
+
+    $sql .= " WHERE user_id = ?";
+    $params[] = $user_id;
+
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -79,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Bind parameters
-    $stmt->bind_param("ssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $user_id);
+    // Bind parameters dynamically
+    $stmt->bind_param(str_repeat('s', count($params) - 1) . 'i', ...$params);
 
     // Execute the statement
     if ($stmt->execute()) {

@@ -132,7 +132,12 @@ function getTableImages($conn, $tableId) {
         <input type="hidden" id="tableId" name="table_id">
         <div class="form-group">
             <label for="reservationDate">Date</label>
-            <input type="date" class="form-control" id="reservationDate" name="reservation_date" required onchange="loadAvailableTimes()">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+                <input type="date" class="form-control" id="reservationDate" name="reservation_date" required onchange="loadAvailableTimes()">
+            </div>
         </div>
         <div class="form-group">
             <label for="reservationTime">Time</label>
@@ -148,27 +153,6 @@ function getTableImages($conn, $tableId) {
         <button type="submit" class="btn btn-primary">Confirm Reservation</button>
     </form>
 </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Alert Modal -->
-<div class="modal fade" id="tableAlertModal" tabindex="-1" role="dialog" aria-labelledby="tableAlertModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tableAlertModalLabel">Notification</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body d-flex align-items-center justify-content-center">
-                <p id="tableAlertModalMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
         </div>
     </div>
 </div>
@@ -279,51 +263,52 @@ function openReservationForm(tableId) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                showAlertModal(data.message, 'success');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reservation Confirmed',
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             } else {
-                showAlertModal(data.message, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    showConfirmButton: true
+                });
             }
             $('#reservationFormModal').modal('hide');
         })
         .catch(error => {
             console.error('Error:', error);
-            showAlertModal('There was an error processing your reservation.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error processing your reservation.',
+                showConfirmButton: true
+            });
         });
     });
 
     function showAlertModal(message, type = 'success') {
-    const modalMessage = document.getElementById('tableAlertModalMessage');
-    const modalBody = document.querySelector('#tableAlertModal .modal-body');
+        let iconType = 'success';
+        if (type === 'error') {
+            iconType = 'error';
+        } else if (type === 'info') {
+            iconType = 'info';
+        } else {
+            iconType = 'warning';
+        }
 
-    // Clear any existing content and classes
-    modalMessage.innerHTML = '';
-    modalBody.classList.remove('bg-success', 'bg-danger', 'bg-warning');
-
-    // Set icon and background based on message type
-    let iconHtml = '';
-    if (type === 'success') {
-        modalBody.classList.add('bg-success');
-        iconHtml = '<i class="fa fa-check-circle-o" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
-    } else if (type === 'error') {
-        modalBody.classList.add('bg-danger');
-        iconHtml = '<i class="fas fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
-    } else if (type === 'info') {
-        modalBody.classList.add('bg-warning');
-        iconHtml = '<i class="fa fa-info-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
-    } else {
-        modalBody.classList.add('bg-warning');
-        iconHtml = '<i class="fa fa-exclamation-circle" style="font-size: 24px; margin-right: 8px;" aria-hidden="true"></i>';
+        Swal.fire({
+            icon: iconType,
+            title: 'Notification',
+            text: message,
+            showConfirmButton: false,
+            timer: 3000
+        });
     }
-
-    // Inject icon and message
-    modalMessage.innerHTML = `${iconHtml}<span>${message}</span>`;
-
-    // Show the modal
-    $('#tableAlertModal').modal('show');
-
-    // Auto-hide the modal after 3 seconds
-    setTimeout(() => $('#tableAlertModal').modal('hide'), 3000);
-}
 
 // filter
 if (typeof selectedArea === 'undefined') {
@@ -491,3 +476,5 @@ if (!response.has_reservations) {
 
 
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

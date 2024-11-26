@@ -168,8 +168,9 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt = $conn->prepare("SELECT email FROM users WHERE user_id = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        $stmt->bind_result($email);
-        $stmt->fetch();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $email = $row['email'];
         $stmt->close();
 
         if (sendReceiptEmail($email, $receiptDetails)) {

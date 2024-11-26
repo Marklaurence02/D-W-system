@@ -1,18 +1,22 @@
 <?php
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
 include_once "../assets/config.php"; // Include database connection
 ?>
 
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12">
-            <h2 class="text-center">Category Management</h2>
-            <button type="button" class="btn btn-secondary" style="height:40px" data-toggle="modal" data-target="#categoryModal">
-      Add Category
-    </button>
+            <div class="text-center mb-3">
+                <h2>Category Management</h2>
+            </div>
+
+            <!-- Filter and Add Category Button -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div></div> <!-- Empty div for spacing -->
+                <button type="button" class="btn-view-details" data-toggle="modal" data-target="#categoryModal">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
             <!-- Table for Categories -->
             <div class="table-responsive">
                 <table id="categoriesTable" class="table table-bordered" width="100%">
@@ -100,64 +104,199 @@ include_once "../assets/config.php"; // Include database connection
 
 <script>
     $(document).ready(function () {
+
         // Handle Edit Button Click
         $('.openPopup').on('click', function () {
-            const categoryId = $(this).data('id'); // Get category ID
-            $('#editCategoryContent').html('<span>Loading...</span>'); // Show loading text
+            const categoryId = $(this).data('id');
+            $('#editCategoryContent').html('<span>Loading...</span>');
 
-            // Load the form dynamically from editcategory-form.php
             $.ajax({
                 url: '../Ownerview/editcategory-form.php',
                 type: 'POST',
                 data: { record: categoryId },
                 success: function (data) {
-                    $('#editCategoryContent').html(data); // Load form into modal body
-                    $('#editModal').modal('show'); // Show the modal
-                    // Disable scroll on the body when the modal is open
-                    $('body').css('overflow', 'hidden');
-                    $('html').css('overflow', 'hidden'); // Also disable scroll on html element
+                    $('#editCategoryContent').html(data);
+                    $('#editModal').modal('show');
                 },
                 error: function (xhr, status, error) {
                     console.error("Error loading category form:", error);
-                    $('#editCategoryContent').html('<span>Error loading category data. Please try again.</span>'); // Display error message
-                    alert("An error occurred while loading the category form.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error loading category data. Please try again.',
+                    });
                 }
             });
         });
 
-        // Handle closing the modal and restoring the scroll
-        $('#editModal').on('hidden.bs.modal', function () {
-            $('body').css('overflow', 'auto'); // Restore scroll on body
-            $('html').css('overflow', 'auto'); // Restore scroll on html element
+        // Handle modal events properly
+        $('#editModal')
+            .on('show.bs.modal', function () {
+                $('body').addClass('modal-open');
+            })
+            .on('hidden.bs.modal', function () {
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                // Restore scrolling
+                $('body').css('overflow', 'auto');
+                $('html').css('overflow', 'auto');
+            });
+
+        // Function to refresh the DataTable
+        function refreshCategoryTable() {
+            location.reload(); // Force a full page reload to ensure clean state
+        }
+
+        // Listen for custom event after successful edit
+        $(document).on('categoryEdited', function() {
+            $('#editModal').modal('hide');
+            setTimeout(function() {
+                refreshCategoryTable();
+            }, 300); // Small delay to ensure modal is fully closed
         });
 
-        // DataTable Initialization with some configurations for smooth performance
+        // Additional cleanup on modal show
+        $('#editModal').on('show.bs.modal', function () {
+            // Ensure no duplicate backdrops
+            $('.modal-backdrop').remove();
+        });
+
+        // DataTable Initialization
         if ($('#categoriesTable').length) {
             new DataTable('#categoriesTable', {
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                     '<"row"<"col-sm-12"tr>>' +
+                     '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 paging: true,
                 searching: true,
                 ordering: true,
                 responsive: true,
                 autoWidth: false,
                 pageLength: 10,
-                lengthMenu: [5, 10, 25, 50],
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                 language: {
-                    search: "_INPUT_", // Customize the search input placeholder
+                    search: "_INPUT_",
                     searchPlaceholder: "Search categories...",
-                    lengthMenu: "Show _MENU_ entries",
+                    lengthMenu: "_MENU_ records per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                    infoEmpty: "No entries available",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
                     infoFiltered: "(filtered from _MAX_ total entries)",
+                    zeroRecords: "No matching records found",
                     paginate: {
-                        first: "<<",
-                        last: ">>",
-                        next: ">",
-                        previous: "<"
+                        first: '<i class="fa fa-angle-double-left"></i>',
+                        previous: '<i class="fa fa-angle-left"></i>',
+                        next: '<i class="fa fa-angle-right"></i>',
+                        last: '<i class="fa fa-angle-double-right"></i>'
                     }
+                },
+                drawCallback: function() {
+                    $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+                }
+            });
+        }
+
+        function updateCategory() {
+            const categoryId = $('#edit_category_id').val();
+            const categoryName = $('#edit_category_name').val();
+
+            $.ajax({
+                url: '../ajax/update_category.php',
+                type: 'POST',
+                data: {
+                    category_id: categoryId,
+                    category_name: categoryName
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Category updated successfully!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            $('#editModal').modal('hide');
+                            $('.modal-backdrop').remove();
+                            $('body').removeClass('modal-open').css('overflow', 'auto');
+                            $('html').css('overflow', 'auto');
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error updating category'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error updating category'
+                    });
                 }
             });
         }
     });
+
+    // Update the categoryDelete function
+    function categoryDelete(categoryId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Ocontrols/deletecatController.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { category_id: categoryId },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                refreshCategoryList();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while deleting the category'
+                        });
+                    }
+                });
+            }
+        });
+    }
 </script>
+
+
+
+
+
+
+
+
+
+
 
 

@@ -12,36 +12,25 @@
 
     <!-- Custom CSS -->
     <style>
-             body {
+        body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-        .logo-container {
-            max-width: 350px;
-            margin: 0 auto;
-        }
+
         .header {
-            background-color: #ff6700; /* Orange header */
+            background-color: #ff6700;
             color: white;
             padding: 20px 40px;
-            text-align: center; /* Center the header text */
+            text-align: center;
         }
 
         .header h1 {
             margin: 0;
             font-weight: bold;
             font-size: 2rem;
-        }
-
-        .footer {
-            background-color: #ff6700;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 0.9rem;
         }
 
         .logo-container {
@@ -125,20 +114,23 @@
         .small-text a:hover {
             text-decoration: underline;
         }
-        .logo-img {
-    height: 50px;
-    object-fit: contain;
-    transition: transform 0.2s ease;
-}
 
+        .footer {
+            background-color: #ff6700;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header class="header d-flex align-items-center">
- <div class="logo">
-        </div>HAAS        </div>    </header>
+        <h1>DINE&WATCH</h1>
+    </header>
 
     <!-- Main Content -->
     <div class="container my-5">
@@ -218,3 +210,5 @@
 
 </body>
 </html>
+
+

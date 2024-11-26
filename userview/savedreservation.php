@@ -72,7 +72,7 @@ $conn->close();
 ?>
   <div class="containers mt-4">
         <div class="d-flex justify-content-end">
-        <button id="return" class="btn proceed-button" onclick="reservetable()">Back</button>
+        <button id="" class="btn proceed-button" onclick="reservetable()">Back</button>
             <button id="proceedpayment" class="btn proceed-button ml-2" onclick="paymentlist()" style="width:fit-content;" >Proceed-Payment</button>
         </div>
     </div>

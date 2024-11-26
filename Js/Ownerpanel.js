@@ -1,4 +1,3 @@
-
 // General AJAX function for handling content updates
 function updateContent(url, data, targetSelector) {
     $.ajax({
@@ -369,13 +368,28 @@ function addItems() {
     var stock = $('#stock').val();
     var price = $('#price').val();
     var special_instructions = $('#special_instructions').val();
-    var file = $('#item_image')[0].files[0];  // Ensure this matches the input field
+    var file = $('#item_image')[0].files[0];
 
     // Check if all fields are filled
     if (!item_name || !item_type || !stock || !price || !file) {
-        alert("Please fill in all fields and select a file.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Fields',
+            text: 'Please fill in all fields and select a file.',
+        });
         return;
     }
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Product...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     var fd = new FormData();
     fd.append('item_name', item_name);
@@ -383,33 +397,45 @@ function addItems() {
     fd.append('stock', stock);
     fd.append('price', price);
     fd.append('special_instructions', special_instructions);
-    fd.append('item_image', file);  // Add the file input
-    fd.append('upload', '1'); // Add a flag to signify the upload process
+    fd.append('item_image', file);
+    fd.append('upload', '1');
 
     $.ajax({
-        url: "/Ocontrols/addItemController.php",  // Ensure the correct path
+        url: "/controls/addItemController.php",
         method: "POST",
         data: fd,
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log(data);  // Log the response for debugging
-            $('#myModal').modal('hide');  // Hide the modal after success
-            $('#productForm').trigger('reset');  // Reset the form fields
+            console.log(data);
             
-            // Show alert and refresh after the user clicks "OK"
-            alert("Product added successfully.");
-            setTimeout(function() {
-                refreshProductList();  // Refresh the product list after OK
-            });  // Short delay before refreshing the list
+            // Hide the modal
+            $('#myModal').modal('hide');
+            $('#productForm').trigger('reset');
+
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Product added successfully.',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                refreshProductList();
+            });
         },
         error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText);  // Log the error response
-            alert("Error: Unable to add the product. Please try again.");
+            console.error("Error: " + xhr.responseText);
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add the product. Please try again.',
+                footer: 'Please check your connection or contact support if the problem persists.'
+            });
         }
     });
 }
-
 
 
 
@@ -892,20 +918,24 @@ function categoryEditForm(id) {
 
 // Add Category function
 function addCategory() {
-    var categoryName = document.getElementById('add_category_name').value.trim(); // Get the input value
+    var categoryName = document.getElementById('add_category_name').value.trim();
 
     // Validate the input for the category name
     if (categoryName === '') {
-        alert('Category name is required.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Field',
+            text: 'Category name is required.',
+        });
         return;
     }
 
     // AJAX request to add category
     $.ajax({
-        url: '/Ocontrols/addCatController.php', // URL to your PHP controller
+        url: '/Ocontrols/addCatController.php',
         type: 'POST',
-        dataType: 'json', // Expect JSON response
-        data: { category_name: categoryName }, // Send the category name to the server
+        dataType: 'json',
+        data: { category_name: categoryName },
         success: function(response) {
             if (response.success) {
                 // Clear the input field
@@ -913,107 +943,174 @@ function addCategory() {
 
                 // Hide the modal after successful addition
                 $('#categoryModal').modal('hide');
-                $('.modal-backdrop').remove();  // Remove the backdrop
-                $('#categoryModal').data('bs.modal', null);  // Reset modal state
+                $('.modal-backdrop').remove();
+                $('#categoryModal').data('bs.modal', null);
 
-                // Display a success message
-                alert('Category added successfully.');
-
-                // Refresh the category list dynamically
-                refreshCategoryList();
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Category added successfully.',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    refreshCategoryList();
+                });
             } else {
-                // Display the error message from the server
-                alert(response.message || 'An error occurred while adding the category.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'An error occurred while adding the category.'
+                });
             }
         },
         error: function(xhr, status, error) {
-            alert('An unexpected error occurred: ' + error); // Handle server errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred: ' + error
+            });
         }
     });
 }
 
-
-// Update catesgory data without image handling
+// Update category data
 function updateCategory(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the values from the form fields
     var category_id = document.getElementById('category_id').value;
     var category_name = document.getElementById('category_name').value;
 
-    // Create FormData object to handle form fields
     var fd = new FormData();
     fd.append('category_id', category_id);
     fd.append('category_name', category_name);
 
-    // Send the AJAX request to update the category
+    // Show loading state
+    Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update the category.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
-        url: '/Ocontrols/updatecatController.php',  // URL to your update controller
+        url: '/Ocontrols/updatecatController.php',
         type: 'POST',
         data: fd,
-        processData: false,  // Prevent jQuery from automatically transforming the data into a query string
-        contentType: false,  // Required to send form data
-        success: function (data) {
+        processData: false,
+        contentType: false,
+        success: function(data) {
             try {
-                // Parse the response
                 var response = JSON.parse(data);
-
-                // Handle success case
                 if (response.success) {
-                    alert('Category updated successfully.');
-                    $('#editModal').modal('hide');  // Hide the modal
-                    $('.modal-backdrop').remove();  // Remove the backdrop
-                    $('#editModal').data('bs.modal', null);  // Reset modal state
-                    showCategory();  // Call showCategory() to load the updated category list
+                    // Hide the modal and clean up
+                    $('#editModal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    $('#editModal').data('bs.modal', null);
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: 'Category updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        showCategory();
+                    });
                 } else {
-                    // Handle error cases
-                    alert('Error: ' + response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update category.'
+                    });
                 }
             } catch (e) {
-                // Handle cases where the server response is not JSON
-                alert("Error: Invalid response from the server.");
-                console.error("Response:", data); // Log the response for debugging
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please try again or contact support if the problem persists.'
+                });
+                console.error("Response:", data);
             }
         },
-        error: function (xhr, status, error) {
-            console.error("AJAX Error: ", status, error);
-            alert('There was an error updating the category.');
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error updating the category.',
+                footer: 'Please try again or contact support if the problem persists.'
+            });
         }
     });
 }
 
-
-
+// Delete category function
 function categoryDelete(categoryId) {
-    if (confirm('Are you sure you want to delete this category?')) {
-        $.ajax({
-            url: '/Ocontrols/deletecatController.php',
-            type: 'POST',
-            dataType: 'json',
-            data: { category_id: categoryId },
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    refreshCategoryList();
-                } else {
-                    alert(response.message);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the category.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
                 }
-            },
-            error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);
-            }
-        });
-    }
+            });
+
+            $.ajax({
+                url: '/Ocontrols/deletecatController.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { category_id: categoryId },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            refreshCategoryList();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to delete category.'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while deleting the category: ' + error,
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+                }
+            });
+        }
+    });
 }
 
-
-
-
-
-
-
-
-  
 // Function to refresh the entire category list section dynamically
 function refreshCategoryList() {
     updateContent("Ownerview/viewAllCategory.php", {}, '.allContent-section');

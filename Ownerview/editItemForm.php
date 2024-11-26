@@ -71,17 +71,25 @@
     </div>
 
     <!-- Image Upload Section -->
-    <div class="form-group text-center">
-        <label>Product Image:</label>
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4 text-center">
-                <label for="product_image">Product Image:</label>
-                <?php if (!empty($row1['product_image'])): ?>
-                    <img src="<?= htmlspecialchars($row1['product_image']) ?>" alt="Product Image" class="img-thumbnail mb-2" style="max-width: 150px;">
-                <?php endif; ?>
-                <input type="file" class="form-control-file mt-2" name="item_image" id="item_image" accept="image/*">
-                <small class="form-text text-muted">Leave empty if you don't want to change the image.</small>
+    <div class="form-group">
+        <label for="item_image">Item Image:</label>
+        <div class="image-upload-container">
+            <!-- Current Database Image -->
+            <div class="current-image-container mb-2" style="<?= empty($row1['product_image']) ? 'display: none;' : '' ?>">
+                <h6>Current Image:</h6>
+                <img src="<?= htmlspecialchars($row1['product_image']) ?>" alt="Current Image" style="max-width: 200px; height: auto;">
             </div>
+
+            <!-- New Image Preview -->
+            <div class="image-preview-container mb-2" style="display: none;">
+            <h6>New Image:</h6>
+
+                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; height: auto;">
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeNewImage()">Remove</button>
+            </div>
+            
+            <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
+            <small class="form-text text-muted">Leave empty if you don't want to change the image.</small>
         </div>
     </div>
 
@@ -91,11 +99,42 @@
     </div>
 </form>
 
+<script>
 
+</script>
 
+<style>
+.image-upload-container {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    background: #f8f9fa;
+}
 
+.image-preview-container, .current-image-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
 
+.image-preview-container img, .current-image-container img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
 
+.remove-image {
+    margin-top: 10px;
+}
+
+.form-control-file {
+    display: block;
+    margin: 0 auto;
+}
+</style>
 
     <?php
     } else {

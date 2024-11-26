@@ -116,6 +116,18 @@
             text-decoration: underline;
         }
 
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
     </style>
 </head>
 <body>
@@ -137,7 +149,7 @@
             <div class="col-12 col-md-6">
                 <div class="signup-card mx-auto">
                     <h2>Sign In</h2>
-                    <?php include 'assets/process_ad-log-in .php'; ?>
+                    <?php include 'assets/process_admin-log-in.php'; ?>
                     <form method="POST">
                         <!-- Email Input -->
                         <div class="form-group position-relative">

@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
         <button class="btn proceed-button" onclick="ordertable()">Back</button>
         <form id="reservationForm" method="post" class="ml-2">
     <input type="hidden" name="record" value="1">
-    <button type="button" class="btn proceed-button" id="proceedbutton" onclick="submitReservationForm()">Complete</button> 
+    <button type="button" class="btn proceed-button" id="proceedbutton" onclick="submitReservationForm()">Proceed</button> 
     </form>
 
     </div>

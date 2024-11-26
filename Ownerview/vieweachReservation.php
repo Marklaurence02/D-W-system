@@ -1,10 +1,8 @@
 
 <?php
 // vieweachReservation.php
-session_name("owner_session");
-if (session_status() === PHP_SESSION_NONE) {
     session_start();
-}
+
 
 include_once "../assets/config.php";
 

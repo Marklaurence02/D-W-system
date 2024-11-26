@@ -44,6 +44,34 @@ include_once "assets/config.php"; // Database connection
             margin-bottom: 0.5rem;
             border-radius: 5px;
         }
+        /* Add padding to account for fixed header */
+        body {
+            padding-top: 60px;
+        }
+
+        /* Update main content area */
+        #main-content {
+            margin-left: 250px; /* Match sidebar width */
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+            min-height: calc(100vh - 60px); /* Subtract header height */
+        }
+
+        /* Adjust main content when sidebar is collapsed */
+        #main-content.sidebar-collapsed {
+            margin-left: 70px; /* Match collapsed sidebar width */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0;
+            }
+            
+            #main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -338,7 +366,11 @@ include_once "assets/config.php"; // Database connection
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 </body>
 </html>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
+<!-- Add SweetAlert2 CSS and JS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
 fetch('../assets/fetch_data.php')

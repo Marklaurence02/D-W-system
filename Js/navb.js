@@ -1,14 +1,54 @@
 function toggleNav() {
   const sidebar = document.getElementById("mySidebar");
+  const mainContent = document.getElementById("main-content");
+  const isMobile = window.innerWidth <= 768;
 
-  if (sidebar.classList.contains('collapsed')) {
-      sidebar.classList.remove('collapsed');
-      main.style.marginLeft = "250px";
+  if (isMobile) {
+      // Mobile behavior
+      sidebar.classList.toggle('show');
+      document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
   } else {
-      sidebar.classList.add('collapsed');
-      main.style.marginLeft = "70px";
+      // Desktop behavior
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('sidebar-collapsed');
+      
+      // Store the state
+      localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
   }
 }
+
+// Handle resize
+window.addEventListener('resize', function() {
+  const sidebar = document.getElementById("mySidebar");
+  const mainContent = document.getElementById("main-content");
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+      sidebar.classList.remove('collapsed');
+      mainContent.classList.remove('sidebar-collapsed');
+      sidebar.classList.remove('show');
+      document.body.style.overflow = '';
+  } else {
+      // Restore desktop state
+      const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+      sidebar.classList.toggle('collapsed', isCollapsed);
+      mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+  }
+});
+
+// On page load
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebar = document.getElementById("mySidebar");
+  const mainContent = document.getElementById("main-content");
+  
+  if (window.innerWidth > 768) {
+      // Restore desktop state
+      const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+      sidebar.classList.toggle('collapsed', isCollapsed);
+      mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+  }
+});
+
 // Function to highlight the selected link
 function setActiveLink(linkElement) {
   const links = document.querySelectorAll(".nav-link");

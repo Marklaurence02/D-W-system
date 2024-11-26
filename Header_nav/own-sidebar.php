@@ -1,49 +1,48 @@
 <?php
-include_once "assets/config.php";
+include_once "./assets/config.php"; // Include the DB connection file
 ?>
 
 
 <!-- Sidebar -->
-<div class="md-3 d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: rgba(253, 102, 16, 0.8);" id="mySidebar">
-<div class="text-center mb-4" id="welcomeMessage">
-    <!-- Logo displayed when the sidebar is collapsed -->
-    <img src="./images/admin.png" class="logo d-md-none" width="50" height="50" alt="Logo" title="Dine&Watch">
+<div class="md-3 d-flex flex-column flex-shrink-0 p-3 text-white sidebar" id="mySidebar">
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <!-- Mobile/Collapsed View -->
+        <div class="mobile-profile">
+            <img src="./images/admin.png" class="mobile-logo" alt="Logo" title="<?php echo isset($user['first_name']) ? htmlspecialchars($user['first_name']) : 'User'; ?>">
+        </div>
 
-    <!-- Profile picture and welcome message displayed when expanded -->
-    <div class="position-relative">
-        <img src="./images/admin.png" class="rounded-circle profile-pic" width="80" height="80" alt="Dine&Watch">
-        <!-- Pen Icon for Editing Profile -->
-        <span id="editProfileBtn" class="position-absolute bottom-0 end-0 p-1" style="cursor: pointer;">
-            <i class="fa fa-pencil text-white"></i>
-        </span>
+        <!-- Desktop View -->
+        <div class="desktop-profile">
+            <div class="profile-container">
+                <div class="profile-image-container">
+                    <img src="./images/admin.png" class="profile-image" id="editProfileBtn" alt="Profile">
+                </div>
+                <div class="profile-info">
+                    <?php
+                    if (isset($_SESSION['user_id'])) {
+                        $user_id = $_SESSION['user_id'];
+                        $sql = "SELECT first_name, role FROM users WHERE user_id = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param('i', $user_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $user = $result->fetch_assoc();
+
+                        if ($user) {
+                            echo '<div class="user-name">' . htmlspecialchars($user['first_name']) . '</div>';
+                            echo '<div class="user-role">' . htmlspecialchars($user['role']) . '</div>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h5 class="mt-3 d-none d-md-block" id="welcomeText">
-        <?php
-        if (isset($_SESSION['user_id'])) {
-            $user_id = $_SESSION['user_id'];
-            $sql = "SELECT first_name FROM users WHERE user_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $user_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $user = $result->fetch_assoc();
-
-            if ($user) {
-                echo '<div>Welcome, <b>' . htmlspecialchars($user['first_name']) . '</b> (' . htmlspecialchars($_SESSION['role']) . ')</div>';
-            } else {
-                echo "<div>Welcome, User</div>";
-            }
-        } else {
-            echo "<div>Welcome, Guest</div>";
-        }
-        ?>
-    </h5>
-</div>
-
-
-    <hr class="bg-light">
-    <a href="#" class="closebtn text-white d-md-none" onclick="toggleNav()">×</a>
+    <hr class="sidebar-divider">
+    
+    <!-- Navigation Items -->
     <ul class="nav nav-pills flex-column">
         <li class="nav-item"><a href="Owner-panel.php" class="nav-link text-white"><i class="fa fa-cart-arrow-down sideicon"></i><span class="ml-2">Dashboard</span></a></li>
         <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fas fa-receipt sideicon"></i><span class="ml-2">Orders</span></a></li>
@@ -60,59 +59,64 @@ include_once "assets/config.php";
 
 <!-- Update Profile Modal -->
 <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="updateProfileModalLabel">
+                    <i class="fa fa-user-edit me-2"></i>Update Profile
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="updateProfileForm" onsubmit="event.preventDefault(); updateProfile();">
-                    <div class="row">
+                    <div class="row g-3">
                         <!-- Left Column -->
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name</label>
+                            <div class="input-group">
+                                <label for="first_name" class="form-label w-100">First Name</label>
                                 <input type="text" class="form-control" id="first_name" name="first_name" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name</label>
+                            <div class="input-group">
+                                <label for="last_name" class="form-label w-100">Last Name</label>
                                 <input type="text" class="form-control" id="last_name" name="last_name" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <label for="email" class="form-label w-100">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="zip_code" class="form-label">Zip Code</label>
+                            <div class="input-group">
+                                <label for="zip_code" class="form-label w-100">Zip Code</label>
                                 <input type="text" class="form-control" id="zip_code" name="zip_code">
                             </div>
                         </div>
 
                         <!-- Right Column -->
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="middle_initial" class="form-label">Middle Initial</label>
+                            <div class="input-group">
+                                <label for="middle_initial" class="form-label w-100">Middle Initial</label>
                                 <input type="text" class="form-control" id="middle_initial" name="middle_initial">
                             </div>
-                            <div class="mb-3">
-                                <label for="contact_number" class="form-label">Contact Number</label>
+                            <div class="input-group">
+                                <label for="contact_number" class="form-label w-100">Contact Number</label>
                                 <input type="text" class="form-control" id="contact_number" name="contact_number">
                             </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
+                            <div class="input-group">
+                                <label for="address" class="form-label w-100">Address</label>
                                 <input type="text" class="form-control" id="address" name="address">
                             </div>
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <label for="username" class="form-label w-100">Username</label>
                                 <input type="text" class="form-control" id="username" name="username">
                             </div>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -132,99 +136,52 @@ include_once "assets/config.php";
 
 
 <script>
-// Show modal and pre-fill form fields
-document.getElementById('editProfileBtn').addEventListener('click', function () {
-    // Fetch current user data from the server
-    const userId = <?php echo $_SESSION['user_id']; ?>; // Assuming session has user_id
+document.getElementById('editProfileBtn').addEventListener('click', function() {
+    const userId = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;
+    
+    if (!userId) {
+        alert('Please log in to update your profile');
+        return;
+    }
 
-    // AJAX request to get the current profile information
-    $.ajax({
-        url: 'assets/getprofiledata.php', // PHP file to fetch user data
-        method: 'GET',
-        data: { user_id: userId },
-        success: function (response) {
-            console.log('Profile Data:', response); // Debugging log to check the response
+    // Show loading state
+    this.disabled = true;
+    this.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
 
-            // Parse the JSON response and check if data exists
-            try {
-                const user = JSON.parse(response);
-                if (user && !user.error) {  // Ensure there is no error in the response
-                    // Populate the form fields with the fetched data
-                    document.getElementById('first_name').value = user.first_name;
-                    document.getElementById('middle_initial').value = user.middle_initial;
-                    document.getElementById('last_name').value = user.last_name;
-                    document.getElementById('contact_number').value = user.contact_number;
-                    document.getElementById('email').value = user.email;
-                    document.getElementById('address').value = user.address;
-                    document.getElementById('zip_code').value = user.zip_code;
+    // Fetch profile data
+    fetch('assets/getprofiledata.php?user_id=' + userId)
+        .then(response => response.json())
+        .then(user => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="fa fa-pencil"></i>';
 
-                    // Ensure username field is correctly populated (no hardcoded "root" value)
-                    if (user.username) {
-                        document.getElementById('username').value = user.username;
-                    } else {
-                        // In case username is not found in response, you can show an error or handle it
-                        alert("Error: Username not found in response.");
-                    }
+            if (user && !user.error) {
+                // Populate modal fields
+                document.getElementById('first_name').value = user.first_name || '';
+                document.getElementById('middle_initial').value = user.middle_initial || '';
+                document.getElementById('last_name').value = user.last_name || '';
+                document.getElementById('contact_number').value = user.contact_number || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('address').value = user.address || '';
+                document.getElementById('zip_code').value = user.zip_code || '';
+                document.getElementById('username').value = user.username || '';
 
-                    // Show the modal
-                    $('#updateProfileModal').modal('show');
-                } else {
-                    alert('Error: No user data found or ' + user.error);
-                }
-            } catch (e) {
-                console.error('Error parsing JSON response:', e);
-                alert('Error fetching profile data');
+                // Show modal
+                new bootstrap.Modal(document.getElementById('updateProfileModal')).show();
+            } else {
+                alert('Error: ' + (user.error || 'Failed to fetch profile data'));
             }
-        },
-        error: function () {
-            alert('Error fetching profile data');
-        }
-    });
+        })
+        .catch(error => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="fa fa-pencil"></i>';
+            
+            console.error('Error:', error);
+            alert('Failed to fetch profile data');
+        });
 });
-
-// Update Profile Function
-function updateProfile() {
-    // Show loading alert
-    alert("Loading... Please wait.");
-
-    // Get the form element
-    const form = document.getElementById('updateProfileForm');
-
-    // Create a FormData object from the form
-    const formData = new FormData(form);
-
-    // Use the Fetch API to send the form data to the server
-    fetch('assets/updateprofile.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        // Ensure the server responds with a valid status
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Network error: ${response.status} - ${text}`);
-            });
-        }
-        return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-        // Handle the server's JSON response
-        if (data.status === 'success') {
-            // Update the alert to show success
-            alert("Profile updated successfully!");
-            // Optionally refresh the UI or close the modal
-            $("#updateProfileModal").modal("hide");
-        } else {
-            // Show error in alert
-            alert('Error updating profile: ' + (data.message || 'Unknown error.'));
-        }
-    })
-    .catch(error => {
-        // Log and display any errors that occurred
-        console.error('Error during update operation:', error);
-        alert('An error occurred while updating the profile. Please check your network or try again.');
-    });
-}
 </script>
 
 
@@ -233,56 +190,595 @@ function updateProfile() {
 
 
 <style>
-/* Sidebar Styling */
-#mySidebar {
-    width:200px;
-    transition: all 0.4s ease;
-    height: 100%;
+.sidebar {
+    background: linear-gradient(135deg, #FD6610 0%, #FF8142 100%);
+    width: 250px;
+    height: calc(100vh - 60px);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    transition: all 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    z-index: 1020;
+    
+    /* Hide scrollbar */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-#mySidebar.collapsed {
-    width: fit-content;
-    height: 100%;
+/* Collapsed state */
+.sidebar.collapsed {
+    width: 70px;
+    
+    .profile-section {
+        padding: 0.8rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .desktop-profile {
+        display: none !important;
+    }
+    
+    .mobile-profile {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        
+        .mobile-logo {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            display: block;
+        }
+    }
+    
+    .profile-info, 
+    .edit-profile-btn {
+        display: none;
+    }
 }
 
-#mySidebar.collapsed .nav-link span {
-    display: none;
+/* Navigation styles */
+.nav-pills .nav-link {
+    color: white;
+    border-radius: 8px;
+    margin: 0.2rem 0.5rem;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-#main {
-    transition: margin-left 0.4s ease;
+/* Hover effect */
+.nav-pills .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
 }
 
-.nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-left: 5px solid #FD6610;
-    color: #fff;
-    font-weight: bold;
+/* Active state */
+.nav-pills .nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    border-left: 4px solid white;
+}
+
+/* Icon styles */
+.nav-pills .nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    .nav-pills .nav-link {
+        margin: 0.2rem;
+        padding: 0.8rem;
+    }
+}
+
+.sidebar-header {
+    padding: 1rem;
+}
+
+.sidebar-divider {
+    border-color: rgba(255,255,255,0.2);
+    margin: 1rem 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.nav-link i {
+    width: 20px;
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.nav-link span {
+    font-size: 0.9rem;
 }
 
 .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transition: background-color 0.3s ease;
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
 }
 
-#mySidebar.collapsed .profile-pic {
-    display: none !important;
-}
-
-#mySidebar.collapsed #welcomeText {
-    display: none !important;
-}
-
-#mySidebar .logo {
-    display: none;
-}
-
-#mySidebar.collapsed .logo {
-    display: block !important;
-    margin: auto;
+.nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    border-left: 4px solid white;
 }
 
 .profile-pic {
-    transition: all 0.3s ease-in-out;
+    width: 80px;
+    height: 80px;
+    border: 3px solid rgba(255,255,255,0.3);
+    padding: 2px;
+    transition: all 0.3s ease;
 }
+
+.profile-pic:hover {
+    transform: scale(1.05);
+}
+
+
+
+#editProfileBtn:hover {
+    background-color: rgba(255,255,255,0.3);
+    transform: rotate(15deg);
+}
+
+/* Collapsed state styles */
+.sidebar.collapsed .nav-link span,
+.sidebar.collapsed #welcomeText {
+    display: none;
+}
+
+.sidebar.collapsed .profile-pic {
+    width: 50px;
+    height: 50px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px;
+        z-index: 1000;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+}
+
+/* Enhanced Modal Styles */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #FD6610 0%, #FF8142 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+    border: none;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #FD6610;
+    box-shadow: 0 0 0 0.2rem rgba(253, 102, 16, 0.15);
+}
+
+.btn-close {
+    color: white;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    opacity: 0.75;
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+    padding: 1.5rem;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #FD6610 0%, #FF8142 100%);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Input group styling */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive adjustments for the modal */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+/* Profile Section Styles */
+.profile-section {
+    padding: 1.5rem 1rem;
+    text-align: center;
+}
+
+/* Mobile Profile */
+.mobile-profile {
+    padding: 0.5rem;
+}
+
+.mobile-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* Desktop Profile */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    padding: 3px;
+    background-color: white;
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+.edit-profile-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-profile-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(15deg);
+}
+
+.profile-info {
+    text-align: center;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.user-role {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+}
+
+.sidebar-divider {
+    margin: 1rem 0;
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 1rem 0.5rem;
+    }
+
+    .sidebar.collapsed .profile-section {
+        padding: 0.5rem;
+    }
+
+    .sidebar.collapsed .desktop-profile {
+        display: none !important;
+    }
+}
+
+/* Sidebar Navigation Styles */
+.nav-pills .nav-link {
+    color: white;
+    border-radius: 8px;
+    margin: 0.2rem 0;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.nav-pills .nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    border-left: 4px solid white;
+}
+
+.nav-pills .nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Collapsed State */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar.collapsed .nav-link span {
+    display: none;
+}
+
+.sidebar.collapsed .nav-link i {
+    margin-right: 0;
+    font-size: 1.2rem;
+}
+
+.sidebar.collapsed .nav-link {
+    padding: 0.8rem;
+    justify-content: center;
+}
+
+/* Profile Section Base Styles */
+.profile-section {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Profile */
+.mobile-profile {
+    display: none; /* Hidden by default */
+}
+
+.mobile-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+}
+
+/* Desktop Profile */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.profile-image-container {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    padding: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+/* Collapsed State Styles */
+.sidebar.collapsed {
+    width: 70px;
+    
+    .profile-section {
+        padding: 0.8rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .desktop-profile {
+        display: none !important;
+    }
+    
+    .mobile-profile {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        
+        .mobile-logo {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            display: block;
+        }
+    }
+    
+    .profile-info, 
+    .edit-profile-btn {
+        display: none;
+    }
+}
+
+/* Mobile State Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        .profile-section {
+            padding: 1rem;
+        }
+        
+        .mobile-profile {
+            display: block;
+        }
+        
+        .desktop-profile {
+            display: none;
+        }
+    }
+}
+
+/* Hover Effects */
+.profile-image:hover {
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.mobile-logo:hover {
+    transform: scale(1.1);
+    border-color: rgba(255,255,255,0.4);
+}
+
+.edit-profile-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.profile-image-container:hover .edit-profile-btn {
+    opacity: 1;
+}
+
+.edit-profile-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(15deg);
+}
+
+/* Profile Info Styles */
+.profile-info {
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.user-role {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* Divider */
+.sidebar-divider {
+    margin: 0.5rem 0;
+    border-color: rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+}
+
+/* Update the HTML structure */
 </style>

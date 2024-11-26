@@ -1,7 +1,7 @@
 <?php
 // Start the session with a custom session name if it's not already started
 
-    session_start();
+session_start();
 
 
 include_once "./assets/config.php"; // Include the DB connection file
@@ -80,14 +80,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-orange w-100">
-    <div class="container-fluid d-flex justify-content-between">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
         <!-- Sidebar Toggle Button -->
         <button class="btn openbtn" onclick="toggleNav()">
             <i class="fa fa-bars"></i>
         </button>
 
         <!-- Logout Button -->
-        <a href="assets/ad-logout.php" class="text-white">
+        <a href="assets/ad-logout.php" class="logout-btn">
             <i class="fa fa-sign-out"></i> Log-out
         </a>
     </div>
@@ -96,26 +96,44 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 <style>
 /* Navbar Styling */
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 80px;
+    padding: 0.5rem 1rem;
+    height: 60px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1030;
 }
 
 .bg-orange {
-    background-color: rgba(253, 102, 16, 0.8);
+    background-color: #FD6610;
 }
 
 .openbtn {
-    margin-right: 15px;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
-a.text-white {
+.openbtn:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.logout-btn {
     color: white;
     text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-a.text-white:hover {
-    color: #ffcc99;
+.logout-btn:hover {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+    text-decoration: none;
 }
 </style>

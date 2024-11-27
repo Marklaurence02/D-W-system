@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include_once "../assets/config.php"; // Include database connection
 ?>
@@ -65,8 +66,9 @@ include_once "../assets/config.php"; // Include database connection
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">New Category</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>            </div>
             <div class="modal-body">
                 <form id="categoryForm" onsubmit="addCategory(); return false;">
                     <div class="form-group">
@@ -164,7 +166,7 @@ include_once "../assets/config.php"; // Include database connection
         // DataTable Initialization
         if ($('#categoriesTable').length) {
             new DataTable('#categoriesTable', {
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                dom: '<"row"<"col-sm-12 col-md-6"><"col-sm-12 col-md-6"f>>' +
                      '<"row"<"col-sm-12"tr>>' +
                      '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 paging: true,
@@ -173,11 +175,9 @@ include_once "../assets/config.php"; // Include database connection
                 responsive: true,
                 autoWidth: false,
                 pageLength: 10,
-                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search categories...",
-                    lengthMenu: "_MENU_ records per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ entries",
                     infoEmpty: "Showing 0 to 0 of 0 entries",
                     infoFiltered: "(filtered from _MAX_ total entries)",

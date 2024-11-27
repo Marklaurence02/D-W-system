@@ -322,6 +322,11 @@
             color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        /* Hide the toggle button on the message.php page */
+        .openbtn {
+            display: none;
+        }
     </style>
 
     <!-- Script Loading Order and Dependencies -->

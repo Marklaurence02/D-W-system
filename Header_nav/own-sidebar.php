@@ -53,7 +53,7 @@ include_once "./assets/config.php"; // Include the DB connection file
         <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users sideicon"></i><span class="ml-2">Users</span></a></li>
         <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus sideicon"></i><span class="ml-2">Admin Management</span></a></li>
         <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fas fa-history sideicon"></i><span class="ml-2">Activity Log</span></a></li>
-        <li class="nav-item"><a href="message.php" class="nav-link text-white"><i class="fa fa-envelope sideicon"></i><span class="ml-2">Messages</span></a></li>
+        <li class="nav-item"><a href="message.php"class="nav-link text-white"><i class="fa fa-envelope sideicon"></i><span class="ml-2">Messages</span></a></li>
     </ul>
 </div>
 
@@ -112,7 +112,6 @@ include_once "./assets/config.php"; // Include the DB connection file
                     </div>
                     
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-save me-2"></i>Save Changes
                         </button>
@@ -140,7 +139,7 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
     const userId = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;
     
     if (!userId) {
-        alert('Please log in to update your profile');
+        Swal.fire('Please log in to update your profile');
         return;
     }
 
@@ -170,7 +169,7 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
                 // Show modal
                 new bootstrap.Modal(document.getElementById('updateProfileModal')).show();
             } else {
-                alert('Error: ' + (user.error || 'Failed to fetch profile data'));
+                Swal.fire('Error', user.error || 'Failed to fetch profile data', 'error');
             }
         })
         .catch(error => {
@@ -179,9 +178,62 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
             this.innerHTML = '<i class="fa fa-pencil"></i>';
             
             console.error('Error:', error);
-            alert('Failed to fetch profile data');
+            Swal.fire('Failed to fetch profile data', '', 'error');
         });
 });
+
+function updateProfile() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to save the changes?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Collect form data
+            const formData = new FormData(document.getElementById('updateProfileForm'));
+
+            // Send data to the server
+            fetch('assets/updateprofile.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Success', data.message, 'success').then(() => {
+                        // Close the modal after the alert is acknowledged
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('updateProfileModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Failed to update profile', '', 'error');
+            });
+        }
+    });
+}
+
+
+
 </script>
 
 

@@ -1,113 +1,3 @@
-<?php
-include '../assets/config.php';
-header('Content-Type: text/html; charset=UTF-8');
-session_start();
-$users = [];
-if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
-    error_log("User not authenticated or missing role");
-    exit("<div class='alert alert-danger text-center'>User not authenticated.</div>");
-}
-
-$currentRole = $_SESSION['role'];
-$currentUserId = $_SESSION['user_id'];
-$rolesToFetch = [];
-
-switch ($currentRole) {
-    case 'Admin':
-        $rolesToFetch = ['Owner', 'Staff'];
-        break;
-    case 'Owner':
-        $rolesToFetch = ['Admin'];
-        break;
-    case 'Staff':
-        $rolesToFetch = ['Admin', 'General User'];
-        break;
-    default:
-        error_log("Undefined role: $currentRole");
-        exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
-}
-
-// Construct SQL to get assigned users if the user is a Staff member
-if ($currentRole === 'Staff') {
-    $sql = "SELECT DISTINCT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS username, u.role
-            FROM users u
-            LEFT JOIN user_staff_assignments usa ON u.user_id = usa.user_id
-            WHERE (u.role = 'Admin' OR (u.role = 'General User' AND usa.assigned_staff_id = ?))";
-    $params = [$currentUserId];
-    $paramTypes = 'i';
-} else {
-    // If the user is not Staff, use a simple role-based query
-    if (!empty($rolesToFetch)) {
-        $rolePlaceholders = implode(',', array_fill(0, count($rolesToFetch), '?'));
-        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role
-                FROM users
-                WHERE role IN ($rolePlaceholders)";
-        $params = $rolesToFetch;
-        $paramTypes = str_repeat('s', count($rolesToFetch));
-    }
-}
-
-try {
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) throw new Exception($conn->error);
-    
-    // Bind parameters based on the current user's role
-    $stmt->bind_param($paramTypes, ...$params);
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    $users = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-} catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
-    exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
-}
-
-$conn->close();
-?>
-
-
-    <div class="container mt-4">
-        <!-- User List -->
-        <div class="card mx-auto user-list" id="user-list">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Messages</h5>
-                <div class="input-group">
-                    <input type="text" id="search-input" class="form-control search-input d-none" placeholder="Search..." oninput="searchMessage()">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" onclick="toggleSearchInput()"><i class='bx bx-search-alt-2'></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="list-group list-group-flush" id="user-list-content">
-                <?php if (!empty($users)): ?>
-                    <?php foreach ($users as $user): ?>
-                        <div class="list-group-item d-flex justify-content-between align-items-center user-item" 
-                             data-user-id="<?php echo $user['user_id']; ?>" 
-                             onclick="openConversation(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')">
-                            <div class="d-flex align-items-center">
-                                <div class="user-initial">
-                                    <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
-                                </div>
-                                <div class="user-details">
-                                    <div class="username">
-                                        <?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>
-                                        <span class="role">(<?php echo htmlspecialchars($user['role'], ENT_QUOTES); ?>)</span>
-                                    </div>
-                                    <small class="text-muted recent-message">Loading...</small>
-                                    <div class="message-date text-muted"></div>
-                                </div>
-                            </div>
-                            <span class="blue-dot d-none"></span>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="list-group-item text-center">No users available.</div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-
     <!-- Conversation View -->
     <div class="card mx-auto conversation-view d-none" id="conversation-view">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -125,6 +15,9 @@ $conn->close();
         </div>
     </div>
 </div>
+
+
+<script src="Js/Oviewmessage.js"></script>
     <style>
         /* Container and Card */
         .container {
@@ -278,5 +171,54 @@ $conn->close();
         /* Hide the search input by default */
         .search-input {
             display: none;
+        }
+
+        /* Add these new styles while keeping existing ones */
+        .custom-select {
+            background-color: #fff;
+            border: 2px solid #3B3131;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .custom-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(59, 49, 49, 0.25);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+        }
+
+        .btn-primary {
+            background: #3B3131;
+            border: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #4a3f3f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Enhanced user list items */
+        .list-group-item {
+            transition: all 0.3s ease;
+            border-left: 5px solid #3B3131;
+        }
+
+        .list-group-item:hover {
+            transform: translateX(5px);
+            background-color: #f8f9fa;
+        }
+
+        .user-initial {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>

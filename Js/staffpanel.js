@@ -1,4 +1,3 @@
-
 // General AJAX function for handling content updates
 function updateContent(url, data, targetSelector) {
     $.ajax({
@@ -124,8 +123,20 @@ function showadmin() {
         }
     });
 }
+
 function addAdmin() {
     var formData = $('#adminForm').serialize();  // Serialize form data
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Admin...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     $.ajax({
         url: '/Scontrols/addAdmin.php',  // Backend script to handle adding
@@ -134,59 +145,141 @@ function addAdmin() {
         dataType: 'json',  // Expect a JSON response from the server
         success: function(response) {
             if (response.status === 'success') {
-                $('#adminModal').modal('hide');  // Close the modal after successful addition
-                alert(response.message);  // Show success message
-                showadmin();  // Load the admin management page after adding a new user
+                // Hide the modal
+                $('#adminModal').modal('hide');
+                $('#adminForm').trigger('reset');
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    showadmin();  // Load the admin management page after adding a new user
+                });
             } else {
-                alert(response.message);  // Show error message if email or username already exists
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'Failed to add admin.',
+                    footer: 'Please check the form and try again.'
+                });
             }
         },
         error: function(xhr, status, error) {
             console.log("AJAX error: " + xhr.responseText);  // Log error to the console for debugging
-            alert('Error adding Admin/Staff');
+            
+            // Show error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add Admin/Staff.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
 
 
 // Function to show the edit form for Admin/Staff
+// ... existing code ...
+
 function adminEditForm(userId) {
-    // Confirmation prompt before loading the edit form
-    if (!confirm("Are you sure you want to edit this user's details?")) {
-        alert("Edit canceled.");
-        return; // Exit the function if the user cancels
-    }
+    // First confirmation using SweetAlert2
+    Swal.fire({
+        title: 'Confirm Edit',
+        text: "Are you sure you want to edit this user's details?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, edit it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Password prompt using SweetAlert2
+            Swal.fire({
+                title: 'Password Required',
+                input: 'password',
+                inputLabel: 'Please enter your password to confirm editing',
+                inputPlaceholder: 'Enter your password',
+                showCancelButton: true,
+                confirmButtonText: 'Proceed',
+                cancelButtonText: 'Cancel',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password is required');
+                        return false;
+                    }
+                    return password;
+                }
+            }).then((passwordResult) => {
+                if (passwordResult.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Loading...',
+                        text: 'Please wait while we load the edit form.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
-    // Password prompt for security confirmation
-    const password = prompt("Please enter your password to confirm editing:");
-    if (!password) {
-        alert("Edit canceled. Password is required.");
-        return; // Exit the function if no password is entered
-    }
+                    // Proceed with AJAX call if password was provided
+                    $.ajax({
+                        url: "staffview/editAdminForm.php",
+                        method: "POST",
+                        dataType: "json",
+                        data: { 
+                            user_id: userId, 
+                            user_password: passwordResult.value 
+                        },
+                        success: function(response) {
+                            Swal.close(); // Close the loading dialog
 
-    // Proceed to load the edit form if confirmed and password is provided
-    $.ajax({
-        url: "staffview/editAdminForm.php", // URL to load the edit form
-        method: "POST",
-        dataType: "json",
-        data: { user_id: userId, user_password: password },
-        success: function(response) {
-            if (response.status === "success") {
-                // Load the form HTML into the modal container
-                $("#editAdminFormContainer").html(response.form_html);
-                // Show the modal
-                $("#editAdminModal").modal("show");
-            } else {
-                // Display the error message from the server response
-                alert(response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error loading the form:", status, error); // Log the error
-            alert("Error loading the form. Please try again."); // Show an alert for the error
+                            if (response.status === "success") {
+                                // Load the form HTML into the modal container
+                                $("#editAdminFormContainer").html(response.form_html);
+                                // Show the modal
+                                $("#editAdminModal").modal("show");
+                            } else {
+                                // Show error message using SweetAlert2
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to load edit form.',
+                                    footer: 'Please check your password and try again.'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error loading the form:", status, error);
+                            
+                            // Show error message using SweetAlert2
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Unable to load the edit form.',
+                                footer: 'Please try again or contact support if the problem persists.'
+                            });
+                        }
+                    });
+                }
+            });
         }
     });
 }
+
+// ... rest of the code ...
 
 function updateadmin(userId) {
     // Get the form element
@@ -197,6 +290,17 @@ function updateadmin(userId) {
 
     // Add the user ID to the FormData object
     formData.append('user_id', userId);
+
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Admin...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Use the Fetch API to send the form data to the server
     fetch('/Scontrols/updateAdmin.php', {
@@ -215,55 +319,128 @@ function updateadmin(userId) {
     .then(data => {
         // Handle the server's JSON response
         if (data.status === 'success') {
-            alert(data.message); // Show success message from the server
-            // Optionally refresh the UI
+            // Hide the modal
             $("#editAdminModal").modal("hide");
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                showadmin(); // Refresh the admin list
+            });
         } else {
             // Handle server error messages
-            alert('Error updating user: ' + (data.message || 'Unknown error.'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to update admin.',
+                footer: 'Please try again or contact support if the problem persists.'
+            });
         }
     })
     .catch(error => {
         // Log and display any errors that occurred
         console.error('Error during update operation:', error);
-        alert('An error occurred while updating the user. Please check your network or try again.');
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to update the admin.',
+            footer: 'Please check your connection or try again later.'
+        });
     });
 }
 
 
 
-function adminDelete(userId) {
-    // Prompt the logged-in user for their password before proceeding with deletion
-    const password = prompt("Please enter your password to confirm deletion:");
-    if (!password) {
-        // User canceled the prompt or left it blank
-        alert("Deletion canceled. Password is required.");
-        return;
-    }
+// ... existing code ...
 
-    if (confirm('Are you sure you want to delete this user?')) {  // Confirm deletion
-        $.ajax({
-            url: '/Scontrols/deleteAdmin.php',
-            method: 'POST',
-            data: { user_id: userId, user_password: password },  // Send the target user ID and the logged-in user's password
-            dataType: 'json',
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);
-                    refreshAdminList();  // Refresh the list without a page reload
-                } else {
-                    // Handle error cases (incorrect password, etc.)
-                    alert(response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", status, error);
-                alert('An error occurred while trying to delete the user.');
+function adminDelete(userId) {
+    // First prompt for password using SweetAlert2
+    Swal.fire({
+        title: 'Password Required',
+        input: 'password',
+        inputPlaceholder: 'Enter your password',
+        inputAttributes: {
+            autocapitalize: 'off',
+            autocorrect: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Proceed',
+        cancelButtonText: 'Cancel',
+        showLoaderOnConfirm: true,
+        preConfirm: (password) => {
+            if (!password) {
+                Swal.showValidationMessage('Password is required');
+                return false;
             }
-        });
-    }
+            return password;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Second confirmation for deletion
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((deleteConfirm) => {
+                if (deleteConfirm.isConfirmed) {
+                    // Send delete request immediately without showing loading state
+                    $.ajax({
+                        url: '/Scontrols/deleteAdmin.php',
+                        method: 'POST',
+                        data: { 
+                            user_id: userId, 
+                            user_password: result.value 
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                refreshAdminList(); // Refresh immediately after successful deletion
+                                // Show success message after refresh
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to delete user.',
+                                    footer: 'Please check your password and try again.'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", status, error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while trying to delete the user.',
+                                footer: 'Please try again or contact support if the problem persists.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
 }
 
+// ... rest of the code ...
 
 
 
@@ -307,6 +484,9 @@ function showOrders() {
 }
 
 
+
+
+
 function ChangeOrderStatus(orderId, newStatus) {
     $.ajax({
         url: "/Scontrols/updateOrderStatus.php",
@@ -315,8 +495,15 @@ function ChangeOrderStatus(orderId, newStatus) {
         success: function(response) {
             response = response.trim();
             if (response === "success") {
-                alert('Order Status updated successfully');
-                
+                // Show success message using SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Order Status updated successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
                 // Update the button text immediately
                 const dropdownButton = document.querySelector(`#order-status-button-${orderId}`);
                 if (dropdownButton) {
@@ -333,11 +520,21 @@ function ChangeOrderStatus(orderId, newStatus) {
                 // Dynamically refresh the orders list
                 refreshOrderList();
             } else {
-                alert('Failed to update the order status');
+                // Show error message using SweetAlert2
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update the order status'
+                });
             }
         },
         error: function() {
-            alert('Error during the request');
+            // Show error message using SweetAlert2
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error during the request'
+            });
         }
     });
 }
@@ -369,13 +566,28 @@ function addItems() {
     var stock = $('#stock').val();
     var price = $('#price').val();
     var special_instructions = $('#special_instructions').val();
-    var file = $('#item_image')[0].files[0];  // Ensure this matches the input field
+    var file = $('#item_image')[0].files[0];
 
     // Check if all fields are filled
     if (!item_name || !item_type || !stock || !price || !file) {
-        alert("Please fill in all fields and select a file.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Fields',
+            text: 'Please fill in all fields and select a file.',
+        });
         return;
     }
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Product...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     var fd = new FormData();
     fd.append('item_name', item_name);
@@ -383,33 +595,45 @@ function addItems() {
     fd.append('stock', stock);
     fd.append('price', price);
     fd.append('special_instructions', special_instructions);
-    fd.append('item_image', file);  // Add the file input
-    fd.append('upload', '1'); // Add a flag to signify the upload process
+    fd.append('item_image', file);
+    fd.append('upload', '1');
 
     $.ajax({
-        url: "/Scontrols/addItemController.php",  // Ensure the correct path
+        url: "/controls/addItemController.php",
         method: "POST",
         data: fd,
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log(data);  // Log the response for debugging
-            $('#myModal').modal('hide');  // Hide the modal after success
-            $('#productForm').trigger('reset');  // Reset the form fields
+            console.log(data);
             
-            // Show alert and refresh after the user clicks "OK"
-            alert("Product added successfully.");
-            setTimeout(function() {
-                refreshProductList();  // Refresh the product list after OK
-            });  // Short delay before refreshing the list
+            // Hide the modal
+            $('#myModal').modal('hide');
+            $('#productForm').trigger('reset');
+
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Product added successfully.',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                refreshProductList();
+            });
         },
         error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText);  // Log the error response
-            alert("Error: Unable to add the product. Please try again.");
+            console.error("Error: " + xhr.responseText);
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add the product. Please try again.',
+                footer: 'Please check your connection or contact support if the problem persists.'
+            });
         }
     });
 }
-
 
 
 
@@ -434,6 +658,8 @@ function showTableViews() {
 }
 
 // Add table data with optional images (front, back, left, right)
+
+
 function addTable() {
     var table_number = $('#table_number').val();
     var seating_capacity = $('#seating_capacity').val();
@@ -445,9 +671,24 @@ function addTable() {
 
     // Check if all required fields are filled
     if (!table_number || !seating_capacity || !area) {
-        alert("Please fill in all required fields.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Fields',
+            text: 'Please fill in all required fields.'
+        });
         return;
     }
+
+    // Show loading state
+    Swal.fire({
+        title: 'Adding Table...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     var fd = new FormData();
     fd.append('table_number', table_number);
@@ -469,7 +710,7 @@ function addTable() {
     fd.append('upload', '1'); 
 
     $.ajax({
-        url: "/Scontrols/addtables.php",  // Ensure the correct path to your PHP file
+        url: "/Scontrols/addtables.php",
         method: "POST",
         data: fd,
         processData: false,
@@ -478,30 +719,55 @@ function addTable() {
             try {
                 var data = JSON.parse(response);
                 if (data.status === 'success') {
-                    alert("Table added successfully.");
-                    $('#addTableModal').modal('hide');  
-                    $('#tableForm').trigger('reset');  
-                    setTimeout(function() {
-                        refreshTableList(); 
-                    }, 500); 
+                    // Hide the modal
+                    $('#addTableModal').modal('hide');
+                    $('#tableForm').trigger('reset');
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Table added successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshTableList();
+                    });
                 } else {
-                    alert("Error: " + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to add table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
                 console.error("Error parsing response:", e);
-                alert("An error occurred while processing your request.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText); 
-            alert("Error: Unable to add the table. Please try again.");
+            console.error("Error: " + xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to add the table.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
 
+// ... rest of the code ...
+
 // Refresh table list dynamically without redirecting
 function refreshTableList() {
-    updateContent('staffview/viewTable.php', {}, '.allContent-section');
+    updateContent('staffviewstaffview/viewTable.php', {}, '.allContent-section');
 
 }
 
@@ -544,54 +810,90 @@ function itemEditForm(id) {
 }
 
 // Update items
+// Update items
 function updateItems(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the form element
     const form = document.getElementById('update-Items');
-
-    // Create a FormData object from the form
     const formData = new FormData(form);
-
-    // Get the product_id from the form and append it to the FormData object
     const product_id = document.getElementById('product_id').value;
     formData.append('product_id', product_id);
 
-    // Send the form data via AJAX
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Product...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
-        url: '/Scontrols/updateItemController.php',  // The URL to your update handler
+        url: '/Scontrols/updateItemController.php',
         method: 'POST',
         data: formData,
-        processData: false,  // Prevent jQuery from processing the data
-        contentType: false,  // Prevent jQuery from setting contentType (needed for FormData)
+        processData: false,
+        contentType: false,
         success: function(data) {
             try {
-                var response = JSON.parse(data);  // Parse the server response
+                var response = JSON.parse(data);
                 if (response.status === 'success') {
-                    alert('Product updated successfully.');
-                    
-                    // Hide the modal after success
-                    $('#editModal').modal('hide');  // Bootstrap hides the modal
-
-                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    // Hide the modal
+                    $('#editModal').modal('hide');
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
-
-                    refreshProductList();  // Call your function to refresh the product list
-
-                    // Optional: Clear modal content (reset form) if necessary
                     $('#editProductContent').html('');
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Product updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshProductList();
+                    });
+                } else if (response.status === 'no_changes') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes Made',
+                        text: 'No changes were detected in the product details.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Optionally close the modal if you want
+                        $('#editModal').modal('hide');
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                    });
                 } else {
-                    alert('Error: ' + response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update product.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
-                alert("Error: Invalid response from the server.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
                 console.error("Response:", data);
             }
         },
         error: function(xhr, status, error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to update the product.',
+                footer: 'Please check your connection or try again later.'
+            });
             console.error("Error: " + xhr.responseText);
-            alert('Error updating the product item.');
         }
     });
 }
@@ -600,14 +902,10 @@ function updateItems(event) {
 
 
 
-
-
-
-
 // Function to refresh the product list without redirecting
 function refreshProductList() {
     $.ajax({
-        url: 'staffview/viewAllProducts.php',  // URL to load the product list
+        url: 'staffviewstaffview/viewAllProducts.php',  // URL to load the product list
         method: 'GET',
         success: function(data) {
             $('.allContent-section').html(data);  // Update the content with the product list
@@ -621,24 +919,64 @@ function refreshProductList() {
 
 
 
-// Delete product data 
+// Delete product data with SweetAlert2
 function itemDelete(id) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        $.ajax({
-            url: "/Scontrols/deleteItemController.php",
-            method: "POST",
-            data: { record: id },
-            success: function(data) {
-                console.log(data);  // Log the response for debugging
-                alert(data);  // Show success or error message
-                showProductItems();  // Refresh the product list after deletion
-            },
-            error: function(xhr, status, error) {
-                console.error("Error: " + xhr.responseText);  // Log any errors from the server
-                alert("Error: Unable to delete the product.");
-            }
-        });
-    }
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the product.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Send delete request
+            $.ajax({
+                url: "/Scontrols/deleteItemController.php",
+                method: "POST",
+                data: { record: id },
+                success: function(data) {
+                    console.log(data);  // Log the response for debugging
+                    
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'The product has been deleted.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        showProductItems();  // Refresh the product list after deletion
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error: " + xhr.responseText);
+                    
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Unable to delete the product.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+                }
+            });
+        }
+    });
 }
 
 
@@ -658,7 +996,7 @@ function UfilterItems() {
     var endDate = $('#endDate').val();
 
     $.ajax({
-      url: '/Scontrols/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
+      url: '/Scontrol/searchcontrol.php',  // Server-side PHP script to fetch filtered or all users
       method: 'GET',
       data: {
         search: searchTerm,       // Pass search term (empty by default)
@@ -713,17 +1051,11 @@ function tableEditForm(id) {
     });
 }
 
-// Update table data with image handling
 function updateTables(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the form element
-    const form = document.getElementById('update-Table'); // Ensure this matches the form's ID
-
-    // Create a FormData object from the form
+    const form = document.getElementById('update-Table');
     const formData = new FormData(form);
-
-    // Get the product_id from the form and append it to the FormData object
     const product_id = document.getElementById('table_id').value;
     formData.append('table_id', product_id);
 
@@ -739,7 +1071,17 @@ function updateTables(event) {
     if (right_view) formData.append('new_image_right_view', right_view);
     if (front_view) formData.append('new_image_front_view', front_view);
 
-    // Send the AJAX request to update the table
+    // Show loading state
+    Swal.fire({
+        title: 'Updating Table...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
         url: '/Scontrols/updateTableController.php',
         type: 'POST',
@@ -748,39 +1090,56 @@ function updateTables(event) {
         contentType: false,
         success: function (data) {
             try {
-                // Parse the response
                 var response = JSON.parse(data);
 
-                // Handle success case
                 if (response.status === 'success') {
-                    alert('Table updated successfully.');
-
-                    // Hide the modal after success
-                    $('#editTableModal').modal('hide');  // Bootstrap hides the modal
-
-                    // Manually remove the modal backdrop and close classes to prevent the grey overlay
+                    // Hide the modal
+                    $('#editTableModal').modal('hide');
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
 
-                    // Optionally refresh the table list or UI here
-                    refreshUpdateTableList(); 
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Table updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshUpdateTableList();
+                    });
                 } else {
-                    // Handle error cases
-                    alert('Error: ' + response.message);
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
                 }
             } catch (e) {
-                // Handle cases where the server response is not JSON
-                alert("Error: Invalid response from the server.");
-                console.error("Response:", data); // Log the response for debugging
+                console.error("Response:", data);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please check your connection or contact support.'
+                });
             }
         },
         error: function (xhr, status, error) {
-            console.error("AJAX Error: ", status, error);
-            alert('There was an error updating the table.');
+            console.error("AJAX Error:", status, error);
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to update the table.',
+                footer: 'Please check your connection or try again later.'
+            });
         }
     });
 }
-
 
 
 // Function to refresh the table list
@@ -798,30 +1157,70 @@ function refreshUpdateTableList() {
 }
 
 // delete table
+// delete table
 function deleteTable(table_id) {
-    if (confirm('Are you sure you want to delete this table?')) {
-        // Disable the delete button and show a loading spinner (optional, for better UX)
-        const button = document.querySelector(`button[onclick="deleteTable('${table_id}')"]`);
-        button.disabled = true;
-        button.innerHTML = 'Deleting...';
+    // Show confirmation dialog using SweetAlert2
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Disable the delete button and show loading state
+            const button = document.querySelector(`button[onclick="deleteTable('${table_id}')"]`);
+            button.disabled = true;
+            button.innerHTML = 'Deleting...';
 
-        $.ajax({
-            url: '/Scontrols/deletetableController.php',  // Adjust the path to match your setup
-            method: 'POST',
-            data: { table_id: table_id },
-            success: function(response) {
-                alert(response);  // Show the response from the server
-                refreshTableList();  // Reload the page to refresh the table list
-            },
-            error: function(xhr, status, error) {
-                console.error('Error: ' + xhr.responseText);  // Log any errors from the server
-                alert('Error: Unable to delete the table.');
-                // Re-enable the button if there is an error
-                button.disabled = false;
-                button.innerHTML = 'Delete';
-            }
-        });
-    }
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the table.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: '/Scontrols/deletetableController.php',
+                method: 'POST',
+                data: { table_id: table_id },
+                success: function(response) {
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: response,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        refreshTableList();  // Refresh the table list after deletion
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error: ' + xhr.responseText);
+                    
+                    // Show error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Unable to delete the table.',
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+
+                    // Re-enable the button if there is an error
+                    button.disabled = false;
+                    button.innerHTML = 'Delete';
+                }
+            });
+        }
+    });
 }
 
 
@@ -891,20 +1290,24 @@ function categoryEditForm(id) {
 
 // Add Category function
 function addCategory() {
-    var categoryName = document.getElementById('add_category_name').value.trim(); // Get the input value
+    var categoryName = document.getElementById('add_category_name').value.trim();
 
     // Validate the input for the category name
     if (categoryName === '') {
-        alert('Category name is required.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Required Field',
+            text: 'Category name is required.',
+        });
         return;
     }
 
     // AJAX request to add category
     $.ajax({
-        url: '/Scontrols/addCatController.php', // URL to your PHP controller
+        url: '/Scontrols/addCatController.php',
         type: 'POST',
-        dataType: 'json', // Expect JSON response
-        data: { category_name: categoryName }, // Send the category name to the server
+        dataType: 'json',
+        data: { category_name: categoryName },
         success: function(response) {
             if (response.success) {
                 // Clear the input field
@@ -912,106 +1315,174 @@ function addCategory() {
 
                 // Hide the modal after successful addition
                 $('#categoryModal').modal('hide');
-                $('.modal-backdrop').remove();  // Remove the backdrop
-                $('#categoryModal').data('bs.modal', null);  // Reset modal state
+                $('.modal-backdrop').remove();
+                $('#categoryModal').data('bs.modal', null);
 
-                // Display a success message
-                alert('Category added successfully.');
-
-                // Refresh the category list dynamically
-                refreshCategoryList();
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Category added successfully.',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    refreshCategoryList();
+                });
             } else {
-                // Display the error message from the server
-                alert(response.message || 'An error occurred while adding the category.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'An error occurred while adding the category.'
+                });
             }
         },
         error: function(xhr, status, error) {
-            alert('An unexpected error occurred: ' + error); // Handle server errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred: ' + error
+            });
         }
     });
 }
 
-
-// Update catesgory data without image handling
+// Update category data
 function updateCategory(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Get the values from the form fields
     var category_id = document.getElementById('category_id').value;
     var category_name = document.getElementById('category_name').value;
 
-    // Create FormData object to handle form fields
     var fd = new FormData();
     fd.append('category_id', category_id);
     fd.append('category_name', category_name);
 
-    // Send the AJAX request to update the category
+    // Show loading state
+    Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update the category.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
-        url: '/Scontrols/updatecatController.php',  // URL to your update controller
+        url: '/ScontrolsScontrols/updatecatController.php',
         type: 'POST',
         data: fd,
-        processData: false,  // Prevent jQuery from automatically transforming the data into a query string
-        contentType: false,  // Required to send form data
-        success: function (data) {
+        processData: false,
+        contentType: false,
+        success: function(data) {
             try {
-                // Parse the response
                 var response = JSON.parse(data);
-
-                // Handle success case
                 if (response.success) {
-                    alert('Category updated successfully.');
-                    $('#editModal').modal('hide');  // Hide the modal
-                    $('.modal-backdrop').remove();  // Remove the backdrop
-                    $('#editModal').data('bs.modal', null);  // Reset modal state
-                    showCategory();  // Call showCategory() to load the updated category list
+                    // Hide the modal and clean up
+                    $('#editModal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    $('#editModal').data('bs.modal', null);
+
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: 'Category updated successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        showCategory();
+                    });
                 } else {
-                    // Handle error cases
-                    alert('Error: ' + response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update category.'
+                    });
                 }
             } catch (e) {
-                // Handle cases where the server response is not JSON
-                alert("Error: Invalid response from the server.");
-                console.error("Response:", data); // Log the response for debugging
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid response from the server.',
+                    footer: 'Please try again or contact support if the problem persists.'
+                });
+                console.error("Response:", data);
             }
         },
-        error: function (xhr, status, error) {
-            console.error("AJAX Error: ", status, error);
-            alert('There was an error updating the category.');
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error updating the category.',
+                footer: 'Please try again or contact support if the problem persists.'
+            });
         }
     });
 }
 
-
-
+// Delete category function
 function categoryDelete(categoryId) {
-    if (confirm('Are you sure you want to delete this category?')) {
-        $.ajax({
-            url: '/Scontrols/deletecatController.php',
-            type: 'POST',
-            dataType: 'json',
-            data: { category_id: categoryId },
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    refreshCategoryList();
-                } else {
-                    alert(response.message);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the category.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
                 }
-            },
-            error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);
-            }
-        });
-    }
+            });
+
+            $.ajax({
+                url: '/Scontrols/deletecatController.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { category_id: categoryId },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            refreshCategoryList();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to delete category.'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while deleting the category: ' + error,
+                        footer: 'Please try again or contact support if the problem persists.'
+                    });
+                }
+            });
+        }
+    });
 }
 
-
-
-
-
-
-
-  
 // Function to refresh the entire category list section dynamically
 function refreshCategoryList() {
     updateContent("staffview/viewAllCategory.php", {}, '.allContent-section');
@@ -1019,15 +1490,19 @@ function refreshCategoryList() {
 
 
 function showmessage() {
+    console.log("showmessage function called");
     $.ajax({
-        url: "staffviewstaffviewstaffview/message.php",
+        url: "staffviewstaffview/message.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
+            console.log("AJAX request successful");
             $('.allContent-section').html(data);
         },
         error: function() {
+            console.error("Error loading messages.");
             alert("Error.");
         }
     });
 }
+

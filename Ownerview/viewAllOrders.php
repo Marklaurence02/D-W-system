@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include_once "../assets/config.php"; // Ensure the correct path for your config file
 ?>
@@ -208,6 +209,53 @@ $(document).ready(function() {
                 pageSize: 'A4',
                 exportOptions: {
                     columns: ':visible:not(:last-child)'
+                },
+                customize: function (doc) {
+                    // Add a header
+                    doc['header'] = (function() {
+                        return {
+                            columns: [
+                                {
+                                    alignment: 'left',
+                                    text: 'Company Name',
+                                    fontSize: 12,
+                                    margin: [10, 0]
+                                },
+                                {
+                                    alignment: 'right',
+                                    text: 'Order Report',
+                                    fontSize: 12,
+                                    margin: [0, 0, 10, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        }
+                    });
+
+                    // Add a footer
+                    doc['footer'] = (function(page, pages) {
+                        return {
+                            columns: [
+                                {
+                                    alignment: 'left',
+                                    text: ['Page ', { text: page.toString() },  ' of ', { text: pages.toString() }],
+                                    margin: [10, 0]
+                                },
+                                {
+                                    alignment: 'right',
+                                    text: 'Generated on: ' + new Date().toLocaleDateString(),
+                                    margin: [0, 0, 10, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        }
+                    });
+
+                    // Customize the layout
+                    doc.content[1].table.widths = ['10%', '20%', '15%', '15%', '10%', '15%', '15%'];
+                    doc.styles.tableHeader.fontSize = 10;
+                    doc.styles.tableBodyEven.fontSize = 9;
+                    doc.styles.tableBodyOdd.fontSize = 9;
                 }
             },
             {
@@ -288,11 +336,10 @@ $(document).ready(function() {
             }
         });
 
-        // Update the filter buttons with counts
+        // Update the filter buttons without counts
         $('.filter-btn').each(function() {
             var status = $(this).data('status');
-            var count = statusCounts[status];
-            $(this).html(`${status} <span class="badge">${count}</span>`);
+            $(this).html(status); // Remove the count from the button text
         });
     }
 

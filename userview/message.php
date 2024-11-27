@@ -11,8 +11,7 @@ session_start();
                 <div class="history-message">
                     <!-- Dynamic chat messages will load here -->
                 </div>
-                <div class="welcome-sent p-3">
-</div>
+
             </div>
         </div>
         <div class="options row gx-2 gy-2 p-3">

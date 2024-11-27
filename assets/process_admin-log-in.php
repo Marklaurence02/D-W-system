@@ -17,6 +17,13 @@ include 'config.php';
 $message = '';
 $error = '';
 
+// Function to handle errors
+function handleError($errorMessage) {
+    $_SESSION['error'] = $errorMessage;
+    header('Location: ad-sign-in.php');
+    exit();
+}
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize and capture form inputs
@@ -26,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Basic validation
     if (!empty($email) && !empty($password)) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Invalid email format.";
+            handleError("Invalid email format.");
         } else {
             // Prepare the SQL statement to fetch user data
             $sql = "SELECT password_hash, role, username, user_id FROM users WHERE email = ?";
@@ -34,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Check for errors in preparing the statement
             if (!$stmt) {
-                die("Database query error: " . $conn->error);
+                handleError("Database query error: " . $conn->error);
             }
 
             $stmt->bind_param('s', $email);
@@ -94,25 +101,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             header('Location: Staff-panel.php');
                             break;
                         default:
-                            $error = "Unknown role. Please contact support.";
+                            handleError("Unknown role. Please contact support.");
                     }
                 } else {
-                    $error = "Invalid password. Please try again.";
+                    handleError("Invalid password. Please try again.");
                 }
             } else {
-                $error = "No user found with this email.";
+                handleError("No user found with this email.");
             }
         }
     } else {
-        $error = "Please fill in all the required fields.";
+        handleError("Please fill in all the required fields.");
     }
 }
 
 // Close the database connection
 $conn->close();
-
-// Direct error output instead of redirecting
-if (!empty($error)) {
-    echo "<p style='color: red;'>$error</p>";
-}
-?>

@@ -1,3 +1,7 @@
+<?php
+// Move the include to the very top of the file, before any HTML
+include 'assets/process_admin-log-in.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +17,7 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f8f9fa; /* Light gray background */
+            background: linear-gradient(135deg, #f8f9fa, #e0e0e0); /* Gradient background */
             font-family: Arial, sans-serif;
         }
 
@@ -49,6 +53,11 @@
             border-radius: 12px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             padding: 40px;
+            transition: transform 0.3s ease; /* Add transition for hover effect */
+        }
+
+        .signup-card:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
         }
 
         .signup-card h2 {
@@ -81,7 +90,17 @@
             color: #ff6700;
         }
 
+        .form-control {
+            border: 1px solid #ddd; /* Add border to input fields */
+            border-radius: 8px;
+            padding: 10px;
+            transition: border-color 0.3s ease;
+        }
 
+        .form-control:focus {
+            border-color: #ff6700; /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(255, 103, 0, 0.5); /* Add shadow on focus */
+        }
 
         .btn-next {
             background-color: #333;
@@ -92,11 +111,13 @@
             border-radius: 8px;
             border: none;
             margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow to button */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .btn-next:hover {
             background-color: #ff6700;
-            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhance shadow on hover */
         }
 
         .small-text {
@@ -128,6 +149,38 @@
             color: #721c24;
         }
 
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+        }
+
+        .footer {
+            background-color: #ff6700;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .logo-img {
+            transition: transform 0.3s ease; /* Add transition for hover effect */
+        }
+
+        .logo-img:hover {
+            transform: scale(1.1); /* Slightly enlarge logo on hover */
+        }
     </style>
 </head>
 <body>
@@ -151,7 +204,13 @@
             <div class="col-12 col-md-6">
                 <div class="signup-card mx-auto">
                     <h2>Sign In</h2>
-                    <?php include 'assets/process_admin-log-in.php'; ?>
+                    <?php 
+                        // Display any error messages
+                        if (!empty($_SESSION['error'])): 
+                            echo "<p class='text-danger'>" . $_SESSION['error'] . "</p>";
+                            unset($_SESSION['error']); // Clear the error after displaying
+                        endif;
+                    ?>
                     <form method="POST">
                         <!-- Email Input -->
                         <div class="form-group position-relative">
@@ -166,7 +225,6 @@
                             <i class="bx bx-show position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
                         </div>
 
-
                         <button type="submit" class="btn-next">Next</button>
 
                         <div class="small-text">
@@ -180,7 +238,14 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2024 Dine&Watch. All rights reserved.</p>
+        <div class="container">
+            <p class="mb-0">&copy; 2024 Dine&Watch. All rights reserved.</p>
+            <p class="mb-0">Follow us on 
+                <a href="https://facebook.com" target="_blank" class="text-white">Facebook</a>, 
+                <a href="https://twitter.com" target="_blank" class="text-white">Twitter</a>, 
+                <a href="https://instagram.com" target="_blank" class="text-white">Instagram</a>
+            </p>
+        </div>
     </footer>
 
     <!-- Bootstrap JS and Boxicons -->

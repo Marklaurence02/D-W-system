@@ -6,26 +6,26 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Assume user_id is stored in session (modify based on your authentication system)
+// Start the session if it's not already started
 session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Function to find the lowest available ID
 function getLowestAvailableID($conn) {
-    // Query to find gaps in the product_id sequence
     $query = "SELECT MIN(t1.product_id + 1) AS missing_id 
               FROM product_items t1 
               LEFT JOIN product_items t2 ON t1.product_id + 1 = t2.product_id 
               WHERE t2.product_id IS NULL";
-    
     $result = mysqli_query($conn, $query);
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
         if ($row['missing_id']) {
-            return $row['missing_id'];  // Return the first missing ID
+            return $row['missing_id'];
         }
     }
-    // If no gaps are found, return NULL
     return NULL;
 }
 
@@ -46,13 +46,26 @@ function logActivity($conn, $user_id, $action_type, $action_details) {
 if (isset($_POST['upload'])) {
     // Sanitize and capture form inputs
     $item_name = htmlspecialchars($_POST['item_name']);
-    $item_type = htmlspecialchars($_POST['item_type']);
+    $item_type = htmlspecialchars($_POST['item_type']); // This is the category name
     $stock = intval($_POST['stock']);
     $price = floatval($_POST['price']);
     $special_instructions = htmlspecialchars($_POST['special_instructions']);
-    
+
     // Check if there's a gap in the product IDs
     $missing_id = getLowestAvailableID($conn);
+
+    // Fetch the category_id based on the category name (item_type)
+    $category_query = "SELECT category_id FROM product_categories WHERE category_name = ?";
+    $stmt = $conn->prepare($category_query);
+    $stmt->bind_param("s", $item_type);
+    $stmt->execute();
+    $stmt->bind_result($category_id);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!$category_id) {
+        die("Error: Invalid category selected.");
+    }
 
     // File upload handling
     if (isset($_FILES['item_image']) && $_FILES['item_image']['error'] == 0) {
@@ -86,23 +99,22 @@ if (isset($_POST['upload'])) {
         // Use a custom ID if there's a missing one, otherwise use AUTO_INCREMENT
         if ($missing_id) {
             // Insert with specific product_id
-            $query = "INSERT INTO product_items (product_id, product_name, category, quantity, price, special_instructions, product_image) 
+            $query = "INSERT INTO product_items (product_id, product_name, category_id, quantity, price, special_instructions, product_image) 
                       VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($query);
             if (!$stmt) {
                 die("Error preparing the SQL statement: " . $conn->error);
             }
-            // Bind the missing ID explicitly
-            $stmt->bind_param("isssdss", $missing_id, $item_name, $item_type, $stock, $price, $special_instructions, $image_path);
+            $stmt->bind_param("isssdss", $missing_id, $item_name, $category_id, $stock, $price, $special_instructions, $image_path);
         } else {
             // Standard insert without specifying product_id (use AUTO_INCREMENT)
-            $query = "INSERT INTO product_items (product_name, category, quantity, price, special_instructions, product_image) 
+            $query = "INSERT INTO product_items (product_name, category_id, quantity, price, special_instructions, product_image) 
                       VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($query);
             if (!$stmt) {
                 die("Error preparing the SQL statement: " . $conn->error);
             }
-            $stmt->bind_param("sssdss", $item_name, $item_type, $stock, $price, $special_instructions, $image_path);
+            $stmt->bind_param("sssdss", $item_name, $category_id, $stock, $price, $special_instructions, $image_path);
         }
 
         // Execute the query
@@ -110,7 +122,7 @@ if (isset($_POST['upload'])) {
             echo "Product added successfully.";
 
             // Log the activity with 'Add Product' as action_type
-            $action_details = "Added a new product: " . $item_name . " (Category: " . $item_type . ")";
+            $action_details = "Added a new product: " . $item_name . " (Category ID: " . $category_id . ")";
             logActivity($conn, $user_id, 'Add Product', $action_details);  // Log the action
 
         } else {

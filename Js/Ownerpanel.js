@@ -492,8 +492,15 @@ function ChangeOrderStatus(orderId, newStatus) {
         success: function(response) {
             response = response.trim();
             if (response === "success") {
-                alert('Order Status updated successfully');
-                
+                // Show success message using SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Order Status updated successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
                 // Update the button text immediately
                 const dropdownButton = document.querySelector(`#order-status-button-${orderId}`);
                 if (dropdownButton) {
@@ -510,11 +517,21 @@ function ChangeOrderStatus(orderId, newStatus) {
                 // Dynamically refresh the orders list
                 refreshOrderList();
             } else {
-                alert('Failed to update the order status');
+                // Show error message using SweetAlert2
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update the order status'
+                });
             }
         },
         error: function() {
-            alert('Error during the request');
+            // Show error message using SweetAlert2
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error during the request'
+            });
         }
     });
 }
@@ -1471,14 +1488,17 @@ function refreshCategoryList() {
 
 
 function showmessage() {
+    console.log("showmessage function called");
     $.ajax({
         url: "Ownerview/message.php",
         method: "post",
         data: { record: 1 },
         success: function(data) {
+            console.log("AJAX request successful");
             $('.allContent-section').html(data);
         },
         error: function() {
+            console.error("Error loading messages.");
             alert("Error.");
         }
     });

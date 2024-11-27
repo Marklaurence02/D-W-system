@@ -12,85 +12,66 @@
 <body>
     <?php include "Header_nav/staffHeader .php"; 
     ?>
+    <?php
+    include 'assets/config.php';
+    header('Content-Type: text/html; charset=UTF-8');
 
-<?php
-include 'assets/config.php';
-header('Content-Type: text/html; charset=UTF-8');
+    $users = [];
+    if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
+        error_log("User  not authenticated or missing role");
+        exit("<div class='alert alert-danger text-center'>User  not authenticated.</div>");
+    }
 
-$users = [];
-if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
-    error_log("User not authenticated or missing role");
-    exit("<div class='alert alert-danger text-center'>User not authenticated.</div>");
-}
+    $currentRole = $_SESSION['role'];
+    $rolesToFetch = [];
+    switch ($currentRole) {
+        case 'Admin':
+            $rolesToFetch = ['Owner', 'Staff'];
+            break;
+        case 'Owner':
+            $rolesToFetch = ['Admin'];
+            break;
+        case 'Staff':
+            $rolesToFetch = ['Admin', 'General User'];
+            break;
+        default:
+            error_log("Undefined role: $currentRole");
+            exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
+    }
 
-$currentRole = $_SESSION['role'];
-$currentUserId = $_SESSION['user_id'];
-$rolesToFetch = [];
-
-switch ($currentRole) {
-    case 'Admin':
-        $rolesToFetch = ['Owner', 'Staff'];
-        break;
-    case 'Owner':
-        $rolesToFetch = ['Admin'];
-        break;
-    case 'Staff':
-        $rolesToFetch = ['Admin', 'General User'];
-        break;
-    default:
-        error_log("Undefined role: $currentRole");
-        exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
-}
-
-// Construct SQL to get assigned users if the user is a Staff member
-if ($currentRole === 'Staff') {
-    $sql = "SELECT DISTINCT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS username, u.role
-            FROM users u
-            LEFT JOIN user_staff_assignments usa ON u.user_id = usa.user_id
-            WHERE (u.role = 'Admin' OR (u.role = 'General User' AND usa.assigned_staff_id = ?))";
-    $params = [$currentUserId];
-    $paramTypes = 'i';
-} else {
-    // If the user is not Staff, use a simple role-based query
     if (!empty($rolesToFetch)) {
         $rolePlaceholders = implode(',', array_fill(0, count($rolesToFetch), '?'));
-        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role
-                FROM users
+        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role 
+                FROM users 
                 WHERE role IN ($rolePlaceholders)";
-        $params = $rolesToFetch;
-        $paramTypes = str_repeat('s', count($rolesToFetch));
+        
+        try {
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) throw new Exception($conn->error);
+            $stmt->bind_param(str_repeat('s', count($rolesToFetch)), ...$rolesToFetch);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+        } catch (Exception $e) {
+            error_log("Database error: " . $e->getMessage());
+            exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
+        }
     }
-}
 
-try {
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) throw new Exception($conn->error);
-    
-    // Bind parameters based on the current user's role
-    $stmt->bind_param($paramTypes, ...$params);
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    $users = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-} catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
-    exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
-}
-
-$conn->close();
-?>
-
+    $conn->close();
+    ?>
 
     <div class="container mt-4">
         <!-- User List -->
         <div class="card mx-auto user-list" id="user-list">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Messages</h5>
-    <a href="Staff-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
-        <i class='bx bxs-dashboard mr-1'></i> Dashboard
-    </a>
-</div>
+                
+                <!-- Only keep the Dashboard Link -->
+                <a href="Staff-panel.php" class="btn btn-primary ml-2 d-flex align-items-center">
+                    <i class='bx bxs-dashboard mr-1'></i> Dashboard
+                </a>
             </div>
             <div class="list-group list-group-flush" id="user-list-content">
                 <?php if (!empty($users)): ?>
@@ -292,6 +273,60 @@ $conn->close();
         .search-input {
             display: none;
         }
+
+        /* Add these new styles while keeping existing ones */
+        .custom-select {
+            background-color: #fff;
+            border: 2px solid #3B3131;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .custom-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(59, 49, 49, 0.25);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+        }
+
+        .btn-primary {
+            background: #3B3131;
+            border: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #4a3f3f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Enhanced user list items */
+        .list-group-item {
+            transition: all 0.3s ease;
+            border-left: 5px solid #3B3131;
+        }
+
+        .list-group-item:hover {
+            transform: translateX(5px);
+            background-color: #f8f9fa;
+        }
+
+        .user-initial {
+            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Hide the toggle button on the message.php page */
+        .openbtn {
+            display: none;
+        }
     </style>
 
     <!-- Script Loading Order and Dependencies -->
@@ -299,38 +334,24 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="Js/staffpanel.js"></script>
+    <script src="Js/Ownerpanel.js"></script>
     <script src="Js/navb.js"></script>
-    <script src="Js/viewmessage.js"></script>
+    <script src="Js/Oviewmessage.js"></script>
 
     <script>
-// Toggle the visibility of the search input field
-function toggleSearchInput() {
-    const searchInput = document.getElementById('search-input');
-    searchInput.classList.toggle('d-none');
-    if (!searchInput.classList.contains('d-none')) {
-        searchInput.focus(); // Focus on the input field when visible
-    }
-}
-
-// Enhanced Search Functionality
-function searchMessage() {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const users = document.querySelectorAll('.user-item');
-    users.forEach(user => {
-        const username = user.querySelector('.username').textContent.toLowerCase();
-        const role = user.querySelector('.role').textContent.toLowerCase();
-        const message = user.querySelector('.recent-message').textContent.toLowerCase();
-
-        // Check if the query matches the username, role, or recent message
-        if (username.includes(query) || role.includes(query) || message.includes(query)) {
-            user.style.display = ''; // Show the user item
-        } else {
-            user.style.display = 'none'; // Hide the user item
+        function filterByRole() {
+            const selectedRole = document.getElementById('role-filter').value.toLowerCase();
+            const users = document.querySelectorAll('.user-item');
+            
+            users.forEach(user => {
+                const role = user.querySelector('.role').textContent.toLowerCase();
+                if (!selectedRole || role.includes(selectedRole)) {
+                    user.style.display = '';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
         }
-    });
-}
-
     </script>
 </body>
 </html>

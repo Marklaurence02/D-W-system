@@ -15,10 +15,11 @@ include_once "assets/config.php"; // Database connection
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-             #Sidebar{
+           #Sidebar{
             height:auto;
         }
         .card {
+            
             background-color: #ADADAD;
             border: none;
             border-radius: 10px;
@@ -43,6 +44,34 @@ include_once "assets/config.php"; // Database connection
             margin-bottom: 0.5rem;
             border-radius: 5px;
         }
+        /* Add padding to account for fixed header */
+        body {
+            padding-top: 60px;
+        }
+
+        /* Update main content area */
+        #main-content {
+            margin-left: 250px; /* Match sidebar width */
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+            min-height: calc(100vh - 60px); /* Subtract header height */
+        }
+
+        /* Adjust main content when sidebar is collapsed */
+        #main-content.sidebar-collapsed {
+            margin-left: 70px; /* Match collapsed sidebar width */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0;
+            }
+            
+            #main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -50,15 +79,16 @@ include_once "assets/config.php"; // Database connection
         include "Header_nav/staffHeader .php"; // Header for admin panel
     ?>
 
-    <div class="d-flex" >
+    <div class="d-flex" style="min-height: 100vh; overflow-x: hidden;">
         <!-- Sidebar -->
-        <div id="Sidebar" class="flex-shrink-0">
+ <!-- Sidebar -->
+ <div id="Sidebar" class="flex-shrink-0">
 <?php
         include "Header_nav/staffsidebar.php"; // Sidebar for navigation
 
 ?>        
 </div>
-<div id="main-content" class="container-fluid allContent-section py-4 text-center " >
+    <div id="main-content" class="container-fluid allContent-section py-4 text-center " >
         <h1 class="text-center">Dashboard</h1>
         <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
            <!-- Total Sales -->
@@ -310,7 +340,6 @@ include_once "assets/config.php"; // Database connection
     <script src="Js/sales_chart.js"></script>
     <script src="Js/staffpanel.js"></script>
     <script src="Js/navb.js"></script>
-    <script src="Js/viewmessage.js"></script>
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
 <!-- DataTables CSS -->
@@ -320,8 +349,11 @@ include_once "assets/config.php"; // Database connection
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
 
-
+<!-- generate report -->
+ <!-- Include jQuery -->
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
 
 
 <!-- Include DataTables Buttons extension CSS & JS -->
@@ -332,10 +364,13 @@ include_once "assets/config.php"; // Database connection
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-  <script src="Js/viewmessage.js"></script>
 </body>
 </html>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
+<!-- Add SweetAlert2 CSS and JS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
 fetch('../assets/fetch_data.php')

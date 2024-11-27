@@ -87,7 +87,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
         </button>
 
         <!-- Logout Button -->
-        <a href="assets/ad-logout.php" class="logout-btn">
+        <a href="assets/ad-logout.php" class="logout-btn ml-auto">
             <i class="fa fa-sign-out"></i> Log-out
         </a>
     </div>

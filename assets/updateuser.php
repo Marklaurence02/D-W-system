@@ -71,6 +71,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    // Check if email or username already exists
+    $check_sql = "SELECT user_id FROM users WHERE (email = ? OR username = ?) AND user_id != ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param('ssi', $email, $username, $user_id);
+    $check_stmt->execute();
+    $check_stmt->store_result();
+
+    if ($check_stmt->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Email or username is already in use.']);
+        exit;
+    }
+
     // Prepare SQL statement for updating user details
     $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW()";
     $params = [$first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username];

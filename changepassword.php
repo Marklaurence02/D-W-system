@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if the OTP was successfully verified and the email exists in the session
 if (!isset($_SESSION['otp_email'])) {
@@ -56,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,8 +197,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
     <!-- Header -->
-    <header class="header">
-        <h1>DINE&WATCH</h1>
+    <!-- Header -->
+    <header class="header d-flex align-items-center">
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -268,3 +272,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </body>
 </html>
+

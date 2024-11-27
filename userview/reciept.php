@@ -146,7 +146,6 @@ foreach ($orders as $order) {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success btn-sm" onclick="addOrder()">Add Order</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Go Back</button>
             </div>
         </div>

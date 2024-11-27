@@ -29,13 +29,12 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'User');
     <hr style="border:1px solid; background-color:#8a7b6d; border-color:#3B3131;">
     <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
     <a href="User-Panel.php"><i class="fa fa-home"></i> Home</a>
-    <a href="#orders" onclick="order_list()"><i class="fa fa-cart-arrow-down"></i> Orders</a>
-    <a href="#reservation" onclick="savedreservation()"><i class="fa fa-calendar-check-o"></i> Reservations</a>
-    <a href="#reservation" onclick="recieptrecords()"><i class="fa fa-calendar-check-o"></i> Receipt</a>
-    <a href="#reschedule" onclick="reschedule()"><i class="fa fa-calendar-check-o"></i> Reschedule</a>
-    <a href="#reschedule" onclick="Feedback()"><i class="fa fa-calendar-check-o"></i>FeedBack</a>
-
-    <a href="#Message"onclick="messageview()"><i class="fa fa-cog"></i> Message</a>
+    <a href="#orders" onclick="order_list()"><i class="fa fa-shopping-cart"></i> Orders</a>
+    <a href="#reservation" onclick="savedreservation()"><i class="fa fa-calendar"></i> Reservations</a>
+    <a href="#reservation" onclick="recieptrecords()"><i class="fa fa-file-text"></i> Receipt</a>
+    <a href="#reschedule" onclick="reschedule()"><i class="fa fa-clock-o"></i> Reschedule</a>
+    <a href="#reschedule" onclick="Feedback()"><i class="fa fa-comment"></i> Feedback</a>
+    <a href="#Message" onclick="messageview()"><i class="fa fa-envelope"></i> Message</a>
     <a href="assets/log-out.php"><i class="fa fa-sign-out"></i> Log-out</a>
 </div>
 
@@ -256,21 +255,21 @@ document.getElementById('editProfileBtn').addEventListener('click', function () 
                         document.getElementById('username').value = user.username;
                     } else {
                         // In case username is not found in response, you can show an error or handle it
-                        alert("Error: Username not found in response.");
+                        Swal.fire("Error", "Username not found in response.", "error");
                     }
 
                     // Show the modal
                     $('#updateProfileModal').modal('show');
                 } else {
-                    alert('Error: No user data found or ' + user.error);
+                    Swal.fire("Error", 'No user data found or ' + user.error, "error");
                 }
             } catch (e) {
                 console.error('Error parsing JSON response:', e);
-                alert('Error fetching profile data');
+                Swal.fire("Error", "Error fetching profile data", "error");
             }
         },
         error: function () {
-            alert('Error fetching profile data');
+            Swal.fire("Error", "Error fetching profile data", "error");
         }
     });
 });
@@ -278,7 +277,14 @@ document.getElementById('editProfileBtn').addEventListener('click', function () 
 // Update Profile Function
 function updateProfile() {
     // Show loading alert
-    alert("Loading... Please wait.");
+    Swal.fire({
+        title: 'Loading...',
+        text: 'Please wait.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     // Get the form element
     const form = document.getElementById('updateProfileForm');
@@ -304,18 +310,19 @@ function updateProfile() {
         // Handle the server's JSON response
         if (data.status === 'success') {
             // Update the alert to show success
-            alert("Profile updated successfully!");
-            // Optionally refresh the UI or close the modal
-            $("#updateProfileModal").modal("hide");
+            Swal.fire("Success", "Profile updated successfully!", "success").then(() => {
+                // Optionally refresh the UI or close the modal
+                $("#updateProfileModal").modal("hide");
+            });
         } else {
             // Show error in alert
-            alert('Error updating profile: ' + (data.message || 'Unknown error.'));
+            Swal.fire("Error", 'Error updating profile: ' + (data.message || 'Unknown error.'), "error");
         }
     })
     .catch(error => {
         // Log and display any errors that occurred
         console.error('Error during update operation:', error);
-        alert('An error occurred while updating the profile. Please check your network or try again.');
+        Swal.fire("Error", "An error occurred while updating the profile. Please check your network or try again.", "error");
     });
 }
 </script>

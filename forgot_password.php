@@ -201,10 +201,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
 </head>
 <body>
     <!-- Header -->
-    <header class="header d-flex align-items-center justify-content-center">
-        <h1>DINE&WATCH</h1>
+    <header class="header d-flex align-items-center">
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
-
     <!-- Main Content -->
     <div class="container my-5">
         <div class="row align-items-center">

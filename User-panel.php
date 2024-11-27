@@ -96,7 +96,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
                     <div class="slide-content-box">
                         <div class="slide-button">
                             <div class="title">Table</div>
-                            <button class="select" id="tableButton" onclick="reservetable()" style="background-color: #E6A513;">
+                            <button class="select" id="CARDbutton" onclick="reservetable()" style="background-color: #E6A513;">
                             <div class="image-box">
                                     <i class="fa fa-calendar-check-o big" aria-hidden="true"></i>
                                 </div>
@@ -108,7 +108,7 @@ if ($first_reservation && $first_reservation['reservation_time']) {
                     <div class="slide-content-box">
                         <div class="slide-button">
                             <div class="title">Payment</div>
-                            <button class="select" onclick="paymentlist()" id="paymentButton" style="background-color: #EAC784;">
+                            <button class="select" onclick="paymentlist()" id="proceedpayment" style="background-color: #EAC784;">
                                 <div class="image-box">
                                     <i class="fa fa-credit-card big" aria-hidden="true"></i>
                                 </div>
@@ -144,36 +144,30 @@ if ($first_reservation && $first_reservation['reservation_time']) {
 
 <script>
 $(document).ready(function() {
-    // AJAX call to disabletable.php to check if orders and reservations exist
+    // AJAX call to check if orders and reservations exist
     $.ajax({
         url: '/Usercontrol/disabletable.php',
         method: 'GET',
         dataType: 'json',
-        beforeSend: function() {
-            showProgressBar();
-            updateProgressBar(0);
-        },
         success: function(response) {
-            updateProgressBar(100);
-            setTimeout(function() {
-                hideProgressBar();
-            }, 500);
-
             if (response.status === 'success') {
-                // Disable the Table button if no orders exist
+                // Disable the table button if no orders exist
                 if (!response.has_orders) {
-                    $('#tableButton').attr('disabled', true).css({
-                        'cursor': 'not-allowed',
-                        'opacity': '0.5'
-                    }).on('click', function(e) {
-                        e.preventDefault();
-                        alert("Please add an order before reserving a table.");
-                    });
+                    $('#CARDbutton')
+                        .attr('disabled', true)
+                        .css({
+                            'cursor': 'not-allowed',
+                            'opacity': '0.5'
+                        })
+                        .on('click', function(e) {
+                            e.preventDefault(); // Prevent default behavior
+                            alert("Please add an order before completing the reservation.");
+                        });
                 }
 
                 // Disable the Payment button if no reservations exist
                 if (!response.has_reservations) {
-                    $('#paymentButton').attr('disabled', true).css({
+                    $('#proceedpayment, #return').attr('disabled', true).css({
                         'cursor': 'not-allowed',
                         'opacity': '0.5'
                     }).on('click', function(e) {
@@ -182,12 +176,11 @@ $(document).ready(function() {
                     });
                 }
             } else {
-                console.error("Server error:", response.message);
+                console.error("Failed to fetch table status:", response.message);
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("AJAX error:", textStatus, errorThrown);
-            hideProgressBar();
+        error: function(xhr, status, error) {
+            console.error("Error during AJAX request:", error);
         }
     });
 });
@@ -201,4 +194,5 @@ function updateProgress() {
                 alert("Progress complete!");
             }
         }
+
 </script>

@@ -1,10 +1,17 @@
-
 <?php
 session_start();
 
+// Include PHPMailer
+require './otpphpmailer/PHPMailer-master/src/Exception.php';
+require './otpphpmailer/PHPMailer-master/src/PHPMailer.php';
+require './otpphpmailer/PHPMailer-master/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Check if the OTP has been sent and stored in the session
 if (!isset($_SESSION['otp_sent'])) {
-    header('Location: forgot_password.php'); // Redirect back to the email input page if OTP wasn't sent
+    header('Location: forgot_password.php'); // Redirect to the email input page if OTP wasn't sent
     exit();
 }
 
@@ -20,21 +27,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Redirect to change-password.php
             header('Location: changepassword.php');
             exit(); // Ensure no further code is executed after redirect
-            
-            // Clear the OTP from session after successful verification
-            unset($_SESSION['otp']);
-            unset($_SESSION['otp_email']);
-            unset($_SESSION['otp_sent']); // Clear OTP sent flag
         } else {
             // Incorrect OTP
-            echo "<script>alert('Incorrect OTP. Please try again.');</script>";
+            $_SESSION['otp_error'] = 'Incorrect OTP. Please try again.';
         }
     } else {
         // Session expired or invalid state
-        echo "<script>alert('Session expired. Please request a new OTP.');</script>";
+        $_SESSION['otp_error'] = 'Session expired. Please request a new OTP.';
     }
 }
 
+// Handle OTP resend request
+if (isset($_GET['resend'])) {
+    // Ensure the email is set in the session
+    if (isset($_SESSION['otp_email'])) {
+        // Logic to generate and send a new OTP
+        $_SESSION['otp'] = generateNewOtp(); // Generate a new OTP
+        $_SESSION['otp_sent'] = true; // Set the OTP sent flag
+        $_SESSION['resend_time'] = time(); // Set the resend time
+        $_SESSION['resend_triggered'] = true; // Set the resend triggered flag
+        if (sendOtpEmail($_SESSION['otp_email'], $_SESSION['otp'])) { // Use the new function
+            $_SESSION['otp_error'] = 'A new OTP has been sent to your email.';
+        } else {
+            $_SESSION['otp_error'] = 'Failed to send OTP. Please try again later.';
+        }
+    } else {
+        // Handle case where email is not set
+        $_SESSION['otp_error'] = 'Email not set. Please request a new OTP.';
+    }
+}
+
+function generateNewOtp() {
+    // Generate a 6-digit random number
+    return str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+}
+
+function sendOtpEmail($email, $otp) {
+    $mail = new PHPMailer(true);
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Use Gmail SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'dinewatchph@gmail.com'; // Your Gmail email
+        $mail->Password = 'ywed icaf boco yrzx'; // Your generated Google App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Recipients
+        $mail->setFrom('dinewatchph@gmail.com', 'Dine&Watch Support');
+        $mail->addAddress($email); // Recipient email
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Your OTP Code';
+        $mail->Body    = "Your OTP code is: <b>$otp</b>";
+
+        // Send email
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        return false;
+    }
+}
 ?>
 
 
@@ -178,8 +234,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
     <!-- Header -->
-    <header class="header">
-        <h1>DINE&WATCH</h1>
+    <header class="header d-flex align-items-center">
+        <div class="logo ms-4">
+            <img src="Images/dinewatchlogo.png" alt="Dine & Watch Logo" class="logo-img" style="max-height: 50px;">
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -213,7 +271,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <button type="submit" class="btn-submit">Verify OTP</button>
 
                         <div class="small-text">
-                            <p>Didn’t receive the code? <a href="forgot_password.php">Resend OTP</a></p>
+                            <p>Didn’t receive the code? <a href="verify-otp-mail.php?resend=true" id="resend-link">Resend OTP</a></p>
+                            <p id="countdown-timer"></p>
                         </div>
                     </form>
                 </div>
@@ -230,7 +289,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
-    <!-- Custom JS to hide alert after 5 seconds -->
+    <!-- Custom JS to hide alert after 5 seconds and countdown timer -->
     <script>
         window.onload = function() {
             const errorMessage = document.getElementById('error-message');
@@ -239,6 +298,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     errorMessage.classList.add('fade-out');
                 }, 5000); // Hide after 5 seconds
             }
+
+            const resendLink = document.getElementById('resend-link');
+            const countdownTimer = document.getElementById('countdown-timer');
+            let countdown = 60; // 30 seconds countdown
+
+            // Check if the resend was triggered
+            <?php if (isset($_SESSION['resend_triggered'])): ?>
+                resendLink.style.pointerEvents = 'none'; // Disable link
+                countdownTimer.innerText = `You can resend OTP in ${countdown} seconds.`;
+
+                const interval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        countdownTimer.innerText = `You can resend OTP in ${countdown} seconds.`;
+                    } else {
+                        clearInterval(interval);
+                        resendLink.style.pointerEvents = 'auto'; // Enable link
+                        countdownTimer.innerText = ''; // Clear the countdown text
+                    }
+                }, 1000);
+
+                <?php unset($_SESSION['resend_triggered']); // Clear the flag ?>
+            <?php endif; ?>
         };
     </script>
 

@@ -131,6 +131,18 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->execute();
         $stmt->close();
 
+        // Deduct the ordered quantity from product_items
+        $deductQuantityQuery = "
+            UPDATE product_items pi
+            JOIN order_items oi ON pi.product_id = oi.product_id
+            SET pi.quantity = pi.quantity - oi.quantity
+            WHERE oi.user_id = ?;
+        ";
+        $stmt = $conn->prepare($deductQuantityQuery);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->close();
+
         // Clear order_items and data_reservations for this user
         $clearOrderItemsQuery = "DELETE FROM order_items WHERE user_id = ?";
         $stmt = $conn->prepare($clearOrderItemsQuery);

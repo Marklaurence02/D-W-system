@@ -474,6 +474,27 @@ if (!response.has_reservations) {
     }
 }
 
+/* Styling for the menu navigation buttons to match ordertable.php */
+.menu-nav {
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #f8f9fa; /* Light background color */
+    border: 1px solid #ddd; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.menu-nav.active {
+    background-color: #007bff; /* Active state color */
+    color: white; /* Text color when active */
+}
+
+.menu-nav:hover {
+    background-color: #0056b3; /* Hover state color */
+    color: white; /* Text color on hover */
+}
 
 </style>
 

@@ -8,25 +8,29 @@
         </div>
 
         <!-- Filter and Add Item Button -->
-        <div class="d-flex justify-content-end mb-2">
-            <?php
-            include_once "../assets/config.php";
-
-            // Fetch all categories from the database
-            $category_sql = "SELECT * FROM product_categories";
-            $category_result = $conn->query($category_sql);
-            ?>
-
+        <div class="d-flex justify-content-between mb-2">
             <!-- Item Type Filter -->
             <div class="filter-container">
-                <button type="button" class="btn-view-details" data-toggle="modal" data-target="#myModal">
-                    <i class="fas fa-plus"></i> Add Item
-                </button>
+                <div class="status-filters">
+                    <button class="filter-btn active" data-category="All">All</button>
+                    <?php
+                    include_once "../assets/config.php";
+                    $category_sql = "SELECT * FROM product_categories";
+                    $category_result = $conn->query($category_sql);
+                    mysqli_data_seek($category_result, 0);
+                    if ($category_result->num_rows > 0) {
+                        while ($category_row = $category_result->fetch_assoc()) {
+                            echo '<button class="filter-btn" data-category="' . htmlspecialchars($category_row['category_name']) . '">' . htmlspecialchars($category_row['category_name']) . '</button>';
+                        }
+                    }
+                    ?>
+                </div>
             </div>
+            <!-- Add Item Button -->
         </div>
 
         <!-- Product List Table (Visible on Desktop) -->
-        <div class="product-list ">
+        <div class="product-list">
             <!-- Product Table -->
             <div class="table-responsive">
                 <table id="productTable" class="table table-striped table-hover table-bordered display nowrap">
@@ -39,8 +43,6 @@
                             <th class="text-center">Stock</th>
                             <th class="text-center">Unit Price</th>
                             <th class="text-center">Details</th>
-                            <th class="text-center">Edit</th>
-                            <th class="text-center">Delete</th>
                         </tr>
                     </thead>
                     <tbody id="product_table_body">
@@ -70,18 +72,12 @@
                             <td class="text-center"><?= htmlspecialchars($row["quantity"]) ?></td>
                             <td class="text-center">&#8369;<?= htmlspecialchars($row["price"]) ?></td>
                             <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
-                            <td class="text-center">
-                                <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-danger btn-sm" onclick="itemDelete('<?= $row['product_id'] ?>')">Delete</button>
-                            </td>
                         </tr>
                         <?php
                                 $counter++;
                             }
                         } else {
-                            echo "<tr><td colspan='10' class='text-center'>No items found</td></tr>";
+                            echo "<tr><td colspan='7' class='text-center'>No items found</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -247,12 +243,14 @@ $(document).ready(function() {
     });
 
     // Category filter handler
-    $('#filter_item_type').change(function() {
-        var selectedType = $(this).val();
-        if (selectedType === 'All') {
-            table.column(2).search('').draw();
+    $('.filter-btn').click(function() {
+        var selectedCategory = $(this).data('category');
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        if (selectedCategory === 'All') {
+            table.column(3).search('').draw();
         } else {
-            table.column(2).search(selectedType).draw();
+            table.column(3).search(selectedCategory).draw();
         }
     });
 });

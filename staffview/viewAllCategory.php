@@ -13,9 +13,7 @@ include_once "../assets/config.php"; // Include database connection
             <!-- Filter and Add Category Button -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div></div> <!-- Empty div for spacing -->
-                <button type="button" class="btn-view-details" data-toggle="modal" data-target="#categoryModal">
-                    <i class="fas fa-plus"></i> Add Category
-                </button>
+
             </div>
             <!-- Table for Categories -->
             <div class="table-responsive">
@@ -164,7 +162,7 @@ include_once "../assets/config.php"; // Include database connection
         // DataTable Initialization
         if ($('#categoriesTable').length) {
             new DataTable('#categoriesTable', {
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                dom: '<"row"<"col-sm-12 col-md-12"f>>' +
                      '<"row"<"col-sm-12"tr>>' +
                      '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 paging: true,
@@ -177,9 +175,7 @@ include_once "../assets/config.php"; // Include database connection
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search categories...",
-                    lengthMenu: "_MENU_ records per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                    infoEmpty: "Showing 0 to 0 of 0 entries",
                     infoFiltered: "(filtered from _MAX_ total entries)",
                     zeroRecords: "No matching records found",
                     paginate: {

@@ -563,28 +563,17 @@ function addItems() {
     var stock = $('#stock').val();
     var price = $('#price').val();
     var special_instructions = $('#special_instructions').val();
-    var file = $('#item_image')[0].files[0];
+    var file = $('#item_image')[0].files[0];  // Ensure this matches the input field
 
     // Check if all fields are filled
     if (!item_name || !item_type || !stock || !price || !file) {
         Swal.fire({
             icon: 'warning',
-            title: 'Required Fields',
-            text: 'Please fill in all fields and select a file.',
+            title: 'Missing Information',
+            text: 'Please fill in all fields and select a file.'
         });
         return;
     }
-
-    // Show loading state
-    Swal.fire({
-        title: 'Adding Product...',
-        text: 'Please wait while we process your request.',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
 
     var fd = new FormData();
     fd.append('item_name', item_name);
@@ -592,46 +581,39 @@ function addItems() {
     fd.append('stock', stock);
     fd.append('price', price);
     fd.append('special_instructions', special_instructions);
-    fd.append('item_image', file);
-    fd.append('upload', '1');
+    fd.append('item_image', file);  // Add the file input
+    fd.append('upload', '1'); // Add a flag to signify the upload process
 
     $.ajax({
-        url: "/controls/addItemController.php",
+        url: "/Ocontrols/addItemController.php",  // Ensure the correct path
         method: "POST",
         data: fd,
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log(data);
+            console.log(data);  // Log the response for debugging
+            $('#myModal').modal('hide');  // Hide the modal after success
+            $('#productForm').trigger('reset');  // Reset the form fields
             
-            // Hide the modal
-            $('#myModal').modal('hide');
-            $('#productForm').trigger('reset');
-
-            // Show success message
+            // Show success message and refresh after the user clicks "OK"
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
-                text: 'Product added successfully.',
-                showConfirmButton: false,
-                timer: 1500
+                title: 'Product Added',
+                text: 'Product added successfully.'
             }).then(() => {
-                refreshProductList();
+                refreshProductList();  // Refresh the product list after OK
             });
         },
         error: function(xhr, status, error) {
-            console.error("Error: " + xhr.responseText);
-            
+            console.error("Error: " + xhr.responseText);  // Log the error response
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Unable to add the product. Please try again.',
-                footer: 'Please check your connection or contact support if the problem persists.'
+                text: 'Unable to add the product. Please try again.'
             });
         }
     });
 }
-
 
 
 // Refresh product list dynamically without redirecting
@@ -1009,7 +991,6 @@ function UfilterItems() {
         }, 100);  // Adjust the delay if needed
       },
       error: function(xhr, status, error) {
-        alert('Error loading users. Please try again.');
         console.error('AJAX error:', status, error);
       }
     });

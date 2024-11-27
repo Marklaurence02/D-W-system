@@ -183,7 +183,11 @@ function submitFeedback() {
     const feedbackText = document.getElementById('feedbackText').value;
     
     if (!feedbackText || !selectedRating) {
-        alert("Please fill in all fields.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Incomplete Fields',
+            text: 'Please fill in all fields.'
+        });
         return;
     }
 
@@ -202,21 +206,34 @@ function submitFeedback() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            alert(data.message);
-            Feedback(); // Refresh the content after feedback submission
+            Swal.fire({
+                icon: 'success',
+                title: 'Feedback Submitted',
+                text: data.message
+            }).then(() => {
+                Feedback(); // Refresh the content after feedback submission
 
-            // Hide the modal after successful feedback submission
-            $('#feedbackModal').modal('hide');
-            
-            // Remove the modal backdrop
-            $('.modal-backdrop').remove(); 
+                // Hide the modal after successful feedback submission
+                $('#feedbackModal').modal('hide');
+                
+                // Remove the modal backdrop
+                $('.modal-backdrop').remove(); 
+            });
         } else {
-            alert(data.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Submission Failed',
+                text: data.message
+            });
         }
     })
     .catch(error => {
         console.error("Error submitting feedback:", error);
-        alert("Failed to submit feedback. Please try again.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to submit feedback. Please try again.'
+        });
     });
 }
 
@@ -224,50 +241,6 @@ function submitFeedback() {
 </script>
 
 <style>
-.container {
-    background-color: #f8f9fa; /* Light background for the container */
-    border-radius: 8px; /* Rounded corners */
-    padding: 20px; /* Padding around the content */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
-}
-
-.card:hover {
-    transform: translateY(-5px); /* Lift the card on hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
-}
-
-.card-header {
-    font-weight: bold; /* Bold text for the header */
-    text-align: center; /* Center the header text */
-}
-
-.card-body p {
-    margin-bottom: 10px; /* Space between paragraphs */
-}
-
-.btn-warning {
-    background-color: #ffc107; /* Custom color for the button */
-    border: none; /* Remove border */
-    transition: background-color 0.3s ease; /* Smooth transition for hover */
-}
-
-.btn-warning:hover {
-    background-color: #e0a800; /* Darker shade on hover */
-}
-
-.modal-content {
-    border-radius: 8px; /* Rounded corners for modal */
-}
-
-.modal-header {
-    background-color: #007bff; /* Blue background for modal header */
-    color: white; /* White text for contrast */
-}
-
 .star {
     font-size: 30px;
     color: #ccc;

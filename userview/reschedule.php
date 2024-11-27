@@ -233,7 +233,7 @@ function updateReservation() {
     const editNote = document.getElementById('editNote').value;
 
     if (!reservationId || !editDate || !editTime) {
-        showNotification("Please fill in all required fields.");
+        showNotification("Please fill in all required fields.", 'warning');
         return;
     }
 
@@ -253,35 +253,30 @@ function updateReservation() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            showNotification(data.message);
-             // Hide the modal after successful feedback submission
-             $('#editReservationModal').modal('hide');
+            showNotification("Reservation Updated", 'success');
+            // Hide the modal after successful feedback submission
+            $('#editReservationModal').modal('hide');
             
             // Remove the modal backdrop
             $('.modal-backdrop').remove(); 
-                } else {
-            showNotification(data.message);
+        } else {
+            showNotification(data.message, 'error');
         }
     })
     .catch(error => {
         console.error("Error updating reservation:", error);
-        showNotification("Failed to update reservation. Please try again.");
+        showNotification("Failed to update reservation. Please try again.", 'error');
     });
 }
 
-
-
-// Show Notification Function
-function showNotification(message) {
-    const notificationMessage = document.getElementById('notificationMessage');
-    notificationMessage.textContent = message;
-
-    const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
-    notificationModal.show();
-    reschedule()
-
+// Show Notification Function using SweetAlert
+function showNotification(message, icon) {
+    Swal.fire({
+        title: 'Notification',
+        text: message,
+        icon: icon,
+        confirmButtonText: 'OK'
+    });
 }
-
-
 
 </script>

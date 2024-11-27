@@ -27,9 +27,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
             <!-- Add Table Button -->
             <div class="filter-container">
-                <button type="button" class="btn-view-details" data-toggle="modal" data-target="#addTableModal">
-                    <i class="fas fa-plus"></i> Add Table
-                </button>
+
             </div>
         </div>
 
@@ -45,8 +43,7 @@ if (session_status() === PHP_SESSION_NONE) {
                             <th class="text-center">Seating Capacity</th>
                             <th class="text-center">Area</th>
                             <th class="text-center">Views</th>
-                            <th class="text-center">Edit</th>
-                            <th class="text-center">Delete</th>
+
                         </tr>
                     </thead>
                     <tbody id="table_body">
@@ -80,12 +77,6 @@ if (session_status() === PHP_SESSION_NONE) {
                                     echo "No Images";
                                 }
                                 ?>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-warning" onclick="tableEditForm('<?= $row['table_id'] ?>')">Edit</button>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-danger btn-sm" onclick="deleteTable('<?= $row['table_id'] ?>')">Delete</button>
                             </td>
                         </tr>
                         <?php
@@ -243,7 +234,7 @@ $(document).ready(function() {
             }
         ],
         columnDefs: [
-            { orderable: false, targets: [4, 5, 6] }
+            { orderable: false, targets: [4] }
         ]
     });
 

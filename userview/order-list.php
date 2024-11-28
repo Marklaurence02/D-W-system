@@ -3,6 +3,59 @@ session_name("user_session");
 session_start();
 include_once "../assets/config.php";
 
+// Add the highlighted section here
+?>
+
+<style>
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
+    .progress-line.active {
+        background-color: #007bff; /* Change to blue */
+    }
+</style>
+
+<div class="progress-container">
+    <div class="progress-step active"onclick="ordertable()">1</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active">2</div>
+    <div class="progress-line "></div>
+    <div class="progress-step" onclick="submitReservationForm()">3</div>
+    <div class="progress-line"></div>
+    <div class="progress-step">4</div>
+    <div class="progress-line "></div>
+    <div class="progress-step ">5</div>
+</div>
+
+<h4 class="text-center">Pick Food</h4>
+
+<?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
     $userId = $_SESSION['user_id'];
 
@@ -18,6 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
     $stmt->bind_result($totalPayment);
     $stmt->fetch();
     $stmt->close();
+
+    // Add your new content here
+    echo '<div class="container mt-4">';
 
     // Display total payment, set to "P 0.00" if no payment
     echo '<div class="container mt-4">';
@@ -108,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record'])) {
         <button class="btn proceed-button" onclick="ordertable()">Back</button>
         <form id="reservationForm" method="post" class="ml-2">
     <input type="hidden" name="record" value="1">
-    <button type="button" class="btn proceed-button" id="proceedbutton" onclick="submitReservationForm()">Proceed</button> 
+    <button type="button" class="btn proceed-button" onclick="submitReservationForm()">Proceed</button> 
     </form>
 
     </div>
@@ -270,4 +326,35 @@ $(document).ready(function() {
 .card:hover {
     transform: scale(1.05);
 }
+
+.progress-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.progress-step {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.progress-step.active {
+    background-color: #007bff;
+}
+
+.progress-line {
+    width: 50px;
+    height: 4px;
+    background-color: #ddd;
+    align-self: center;
+}
 </style>
+

@@ -23,6 +23,58 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+?>
+
+<!-- Progress Bar -->
+<style>
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
+    .progress-line.active {
+        background-color: #007bff; /* Change to blue */
+    }
+</style>
+
+<div class="progress-container">
+    <div class="progress-step active"onclick="ordertable()">1</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active"onclick="order_list()">2</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active"onclick="submitReservationForm()" >3</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active" >4</div>
+    <div class="progress-line "></div>
+    <div class="progress-step " onclick="paymentlist()">5</div>
+</div>
+
+<?php
+
 echo '<div class="container my-4">';
 echo '<h4 class="text-center">Your Reservations</h4>';
 echo '    <div class="row p-3" style="background-color: #D9D9D9; border-radius: 10px;  justify-content: space-evenly">';
@@ -75,10 +127,11 @@ echo '</div>'; // End container
 $stmt->close();
 $conn->close();
 ?>
+
   <div class="containers mt-4">
         <div class="d-flex justify-content-end">
         <button id="" class="btn proceed-button" onclick="reservetable()">Back</button>
-            <button id="proceedpayment" class="btn proceed-button ml-2" onclick="paymentlist()" style="width:fit-content;" >Proceed-Payment</button>
+            <button id="CARDbutton" class="btn proceed-button ml-2" onclick="paymentlist()" style="width:fit-content;" >Proceed-Payment</button>
         </div>
     </div>
 
@@ -386,36 +439,30 @@ function loadAvailableTimesForEdit(currentTime) {
 }
 
 $(document).ready(function() {
-    // AJAX call to disabletable.php to check if orders and reservations exist
+    // AJAX call to check if orders and reservations exist
     $.ajax({
         url: '/Usercontrol/disabletable.php',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
             if (response.status === 'success') {
-// Disable the Payment button if no reservations exist
-if (!response.has_reservations) {
-                    $('#return').attr('disabled', true).css({
-                        'cursor': 'not-allowed',
-                        'opacity': '0.5'
-                    }).on('click', function(e) {
-                        e.preventDefault();
-                        alert("Please reserve a table before proceeding to payment.");
-                    });
-                }// Disable the Payment button if no reservations exist
-                if (!response.has_reservations) {
-                    $('#proceedpayment').attr('disabled', true).css({
-                        'cursor': 'not-allowed',
-                        'opacity': '0.5'
-                    }).on('click', function(e) {
-                        e.preventDefault();
-                        alert("Please reserve a table before proceeding to payment.");
-                    });
+                // Disable the table button if no orders exist
+                if (!response.has_orders) {
+                    $('#CARDbutton')
+                        .attr('disabled', true)
+                        .css({
+                            'cursor': 'not-allowed',
+                            'opacity': '0.5'
+                        })
+                        .on('click', function(e) {
+                            e.preventDefault(); // Prevent default behavior
+                            alert("Please add an order before completing the reservation.");
+                        });
                 }
 
                 // Disable the Payment button if no reservations exist
                 if (!response.has_reservations) {
-                    $('#proceedpayment').attr('disabled', true).css({
+                    $('#proceedpayment, #return').attr('disabled', true).css({
                         'cursor': 'not-allowed',
                         'opacity': '0.5'
                     }).on('click', function(e) {
@@ -424,14 +471,15 @@ if (!response.has_reservations) {
                     });
                 }
             } else {
-                console.error("Server error:", response.message);
+                console.error("Failed to fetch table status:", response.message);
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("AJAX error:", textStatus, errorThrown);
+        error: function(xhr, status, error) {
+            console.error("Error during AJAX request:", error);
         }
     });
 });
+
 
 </script>
 

@@ -60,6 +60,12 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
         align-items: center;
     }
 
+    @media (max-width: 576px) { /* For small screens like phones */
+        .food-box {
+            height: 200px; /* Reduce height for smaller screens */
+        }
+    }
+
     .food-box:hover {
         transform: scale(1.05);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -88,53 +94,95 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
         margin-top: 10px;
         text-align: center;
     }
+
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
 </style>
 
-<div class="container p-5"> 
-    <h4 class="text-center">Pick Food</h4>
-    <div class="menu_nav text-center mb-3">
-        <?php
-        // Fetch categories from the database
-        $categoryQuery = "SELECT category_id, category_name FROM product_categories";
-        $categoryResult = $conn->query($categoryQuery);
+<div class="progress-container">
+    <div class="progress-step active">1</div>
+    <div class="progress-line" ></div>
+    <div class="progress-step"onclick="order_list()">2</div>
+    <div class="progress-line"></div>
+    <div class="progress-step">3</div>
+    <div class="progress-line"></div>
+    <div class="progress-step">4</div>
+        <div class="progress-line "></div>
+    <div class="progress-step ">5</div>
+</div>
 
-        if ($categoryResult->num_rows > 0) {
-            while ($category = $categoryResult->fetch_assoc()) {
-                echo '<button class="menu-nav" onclick="filterProducts(' . $category['category_id'] . ', this)">' . htmlspecialchars($category['category_name']) . '</button>';
-            }
-        } else {
-            echo "<p>No categories available</p>";
-        }
-        ?>
-    </div>
+<h4 class="text-center">Pick Food</h4>
 
-    <!-- Add a search input field -->
-    <div class="text-center mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search for food..." onkeyup="searchProducts()">
-    </div>
-
-    <h1 class="text-center">Delicious Starts Here!</h1>
-
-    <!-- Food Selection Section -->
-    <div class="food-selection-container text-center row" id="foodSelectionContainer">
-    <!-- Placeholder for the no products message -->
-    <p id="noProductsMessage" class="w-100 text-center mt-4" style="display: none;">No Foods Available</p>
-
+<div class="menu_nav text-center mb-3">
     <?php
-    // Fetch all products initially
-    $query = "SELECT product_id, product_name, price, special_instructions, product_image, category_id FROM product_items";
-    $result = $conn->query($query);
+    // Fetch categories from the database
+    $categoryQuery = "SELECT category_id, category_name FROM product_categories";
+    $categoryResult = $conn->query($categoryQuery);
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            ?>
-            <div class="food-box col-md-3 product-item" data-category="<?php echo $row['category_id']; ?>">
-                <button class="food-btn" data-toggle="modal" data-target="#productModal<?php echo $row['product_id']; ?>">
-                    <img src="<?php echo htmlspecialchars($row['product_image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>">
-                </button>
-                <!-- Product name at the bottom -->
-                <h6 class="mt-2"><?php echo htmlspecialchars($row['product_name']); ?></h6>
-            </div>
+    if ($categoryResult->num_rows > 0) {
+        while ($category = $categoryResult->fetch_assoc()) {
+            echo '<button class="menu-nav" onclick="filterProducts(' . $category['category_id'] . ', this)">' . htmlspecialchars($category['category_name']) . '</button>';
+        }
+    } else {
+        echo "<p>No categories available</p>";
+    }
+    ?>
+</div>
+
+<!-- Add a search input field -->
+<div class="text-center mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search for food..." onkeyup="searchProducts()">
+</div>
+
+<h1 class="text-center">Delicious Starts Here!</h1>
+
+<!-- Food Selection Section -->
+<div class="food-selection-container text-center row" id="foodSelectionContainer">
+<!-- Placeholder for the no products message -->
+<p id="noProductsMessage" class="w-100 text-center mt-4" style="display: none;">No Foods Available</p>
+
+<?php
+// Fetch all products initially
+$query = "SELECT product_id, product_name, price, special_instructions, product_image, category_id FROM product_items";
+$result = $conn->query($query);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        ?>
+        <div class="food-box col-12 col-sm-6 col-md-4 col-lg-3 product-item" data-category="<?php echo $row['category_id']; ?>">
+            <button class="food-btn" data-toggle="modal" data-target="#productModal<?php echo $row['product_id']; ?>">
+                <img src="<?php echo htmlspecialchars($row['product_image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>">
+            </button>
+            <!-- Product name at the bottom -->
+            <h6 class="mt-2"><?php echo htmlspecialchars($row['product_name']); ?></h6>
+        </div>
 
 <!-- Alert Modal -->
 <div class="modal fade" id="table-alert-modal" tabindex="-1" role="dialog" aria-labelledby="tableAlertModalLabel" aria-hidden="true">
@@ -158,50 +206,50 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
 
 
 
-            <!-- Modal for Product Details -->
-            <div class="modal fade" id="productModal<?php echo $row['product_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="productModalLabel<?php echo $row['product_id']; ?>" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="productModalLabel<?php echo $row['product_id']; ?>"><?php echo htmlspecialchars($row['product_name']); ?></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+        <!-- Modal for Product Details -->
+        <div class="modal fade" id="productModal<?php echo $row['product_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="productModalLabel<?php echo $row['product_id']; ?>" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel<?php echo $row['product_id']; ?>"><?php echo htmlspecialchars($row['product_name']); ?></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body d-flex">
+                        <!-- Left side: Product Image -->
+                        <div class="col-md-6">
+                            <img src="<?php echo htmlspecialchars($row['product_image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" class="img-fluid rounded">
                         </div>
-                        <div class="modal-body d-flex">
-                            <!-- Left side: Product Image -->
-                            <div class="col-md-6">
-                                <img src="<?php echo htmlspecialchars($row['product_image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" class="img-fluid rounded">
-                            </div>
-                            <!-- Right side: Product Details -->
-                            <div class="col-md-6">
-                                <p><strong>Price per Item:</strong> &#x20B1; <span id="pricePerItem<?php echo $row['product_id']; ?>"><?php echo number_format($row['price'], 2); ?></span></p>
-                                <p><strong>Total Price:</strong> &#x20B1; <span id="totalPrice<?php echo $row['product_id']; ?>"><?php echo number_format($row['price'], 2); ?></span></p>
-                                <p><strong>Instructions:</strong> <?php echo htmlspecialchars($row['special_instructions']); ?></p>
-                                <div class="form-group">
-                                    <label for="quantity<?php echo $row['product_id']; ?>">Quantity:</label>
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <button type="button" class="btn btn-qtyminus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, -1)">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </button>
-                                        <input type="number" id="quantity<?php echo $row['product_id']; ?>" name="quantity" min="1" value="1" class="form-control text-center mx-2" onchange="updateTotalPrice(<?php echo $row['product_id']; ?>)">
-                                        <button type="button" class="btn btn-qtyplus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, 1)">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
+                        <!-- Right side: Product Details -->
+                        <div class="col-md-6">
+                            <p><strong>Price per Item:</strong> &#x20B1; <span id="pricePerItem<?php echo $row['product_id']; ?>"><?php echo number_format($row['price'], 2); ?></span></p>
+                            <p><strong>Total Price:</strong> &#x20B1; <span id="totalPrice<?php echo $row['product_id']; ?>"><?php echo number_format($row['price'], 2); ?></span></p>
+                            <p><strong>Instructions:</strong> <?php echo htmlspecialchars($row['special_instructions']); ?></p>
+                            <div class="form-group">
+                                <label for="quantity<?php echo $row['product_id']; ?>">Quantity:</label>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <button type="button" class="btn btn-qtyminus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, -1)">
+                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                    </button>
+                                    <input type="number" id="quantity<?php echo $row['product_id']; ?>" name="quantity" min="1" value="1" class="form-control text-center mx-2" onchange="updateTotalPrice(<?php echo $row['product_id']; ?>)">
+                                    <button type="button" class="btn btn-qtyplus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, 1)">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </button>
                                 </div>
-                                <button class="btn btn-primary" onclick="confirmOrder(<?php echo $row['product_id']; ?>)">Confirm Order</button>
                             </div>
+                            <button class="btn btn-primary" onclick="confirmOrder(<?php echo $row['product_id']; ?>)">Confirm Order</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php
-        }
-    } else {
-        echo "<p class='text-center'>No food items available</p>";
+        </div>
+        <?php
     }
-    ?>
+} else {
+    echo "<p class='text-center'>No food items available</p>";
+}
+?>
 </div>
 
 

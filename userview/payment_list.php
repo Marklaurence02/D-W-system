@@ -135,7 +135,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 
 ?>
+<style>
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
 
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
+    .progress-line.active {
+        background-color: #007bff; /* Change to blue */
+    }
+</style>
+
+<div class="progress-container">
+<div class="progress-step active"onclick="ordertable()">1</div>
+<div class="progress-line active"></div>
+    <div class="progress-step active"onclick="order_list()">2</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active" onclick="submitReservationForm()">3</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active" onclick="savedreservation()">4</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active">5</div>
+</div>
 <div class="container mt-5">
     <h2 class="text-center mb-4">Payment Receipt</h2>
 

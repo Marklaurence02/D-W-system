@@ -28,6 +28,52 @@ function getTableImages($conn, $tableId) {
 }
 
 ?>
+<style>
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
+    .progress-line.active {
+        background-color: #007bff; /* Change to blue */
+    }
+</style>
+
+<div class="progress-container">
+    <div class="progress-step active" onclick="ordertable()">1</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active" onclick="order_list()">2</div>
+    <div class="progress-line active"></div>
+    <div class="progress-step active">3</div>
+    <div class="progress-line"></div>
+    <div class="progress-step"  onclick="savedreservation()">4</div>
+    <div class="progress-line "></div>
+    <div class="progress-step ">5</div>
+</div>
 <div class="container p-5"> 
     <h4 class="text-center">Reserve a Table</h4>
     <div class="menu_nav text-center mb-3">

@@ -186,13 +186,6 @@ $(document).ready(function() {
 });
 
 
-function updateProgress() {
-            const progressBar = document.getElementById("progress-bar");
-            if (progressBar.value < progressBar.max) {
-                progressBar.value += 10; // Increment by 10
-            } else {
-                alert("Progress complete!");
-            }
-        }
+
 
 </script>

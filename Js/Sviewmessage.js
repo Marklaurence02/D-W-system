@@ -1,9 +1,13 @@
 const MessageBox = document.getElementById('message-box');
 let latestMessageTimestamp = null;  // Track the latest message timestamp
 let selectedUserId = null;  // Track the selected user ID
+let lastReceivedMessage = null; // Track the last received message
+let lastReceivedMessageSenderId = null; // Track the sender ID of the last received message
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUserRecentMessages();
+    setInterval(loadUserRecentMessages, 5000); // Auto-refresh recent messages every 5 seconds
+    setInterval(loadMessages, 1000); // Auto-refresh messages in the conversation every 5 seconds
 });
 
 function loadUserRecentMessages() {
@@ -106,13 +110,13 @@ function openConversation(userId, username) {
 // Load the messages of the selected conversation
 // Load the messages of the selected conversation
 function loadMessages() {
-    if (!selectedUserId) {  // Corrected variable name
+    if (!selectedUserId) {
         console.error("No user selected.");
         return;
     }
 
     const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
-    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +  // Corrected variable name
+    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +
                 (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
     let lastMessageMinute = null;
@@ -125,25 +129,34 @@ function loadMessages() {
             return response.json();
         })
         .then(messages => {
-            if (!messages.length) return;
+            if (!messages.length) {
+                // Display "No messages yet" message
+                MessageBox.innerHTML = `
+                    <div id="no-messages" class="text-center text-muted py-4">
+                        <i class='bx bx-message-square-detail' style="font-size: 2rem;"></i>
+                        <p class="mt-2">No messages yet. Start a conversation!</p>
+                    </div>
+                `;
+                return;  // Exit if there are no messages
+            }
+
+            // Clear the "No messages yet" message if there are messages
+            MessageBox.innerHTML = '';
 
             messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp);
                 const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();
 
-                // Check if the message is in a new minute compared to the last message
                 if (lastMessageMinute !== currentMessageMinute) {
                     const separatorElement = document.createElement('div');
-                    separatorElement.classList.add('separator', 'separator-centered');  // Add centered class
+                    separatorElement.classList.add('separator', 'separator-centered');
                     separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
                     MessageBox.appendChild(separatorElement);
                 }
 
-                // Create a new message bubble
                 const messageElement = document.createElement('div');
-                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');  // Corrected variable name
-                
+                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');
                 messageElement.innerHTML = `
                     <p><strong>${msg.first_name}:</strong> ${msg.message}</p>
                 `;
@@ -152,13 +165,19 @@ function loadMessages() {
                 lastMessageMinute = currentMessageMinute;
             });
 
-            // After messages are loaded, update the recent message and status for the selected user
             if (messages.length > 0) {
-                // Update the latest message timestamp for future loads
+                const latestMessage = messages[messages.length - 1].message;
+                const latestMessageSenderId = messages[messages.length - 1].sender_id;
                 latestMessageTimestamp = messages[messages.length - 1].timestamp;
 
-                // Add the blue dot and border for unread messages for the selected user
-                updateRecentMessageForUser(selectedUserId, messages[messages.length - 1].message);
+                // Check if the latest message is different and from a different sender
+                if (latestMessage !== lastReceivedMessage || latestMessageSenderId !== lastReceivedMessageSenderId) {
+                    lastReceivedMessage = latestMessage;
+                    lastReceivedMessageSenderId = latestMessageSenderId;
+
+                    // Update the recent message and show the blue dot if the conversation is not open
+                    updateRecentMessageForUser(selectedUserId, latestMessage, false);
+                }
             }
 
             if (isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;

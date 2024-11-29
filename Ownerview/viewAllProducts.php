@@ -1,6 +1,8 @@
 <?php
     session_start();
 ?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <div class="container-fluid p-2">
     <div class="col-12">
         <div class="text-center mb-2">
@@ -8,7 +10,7 @@
         </div>
 
         <!-- Filter and Add Item Button -->
-        <div class="d-flex justify-content-end mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
             <?php
             include_once "../assets/config.php";
 
@@ -18,6 +20,19 @@
             ?>
 
             <!-- Item Type Filter -->
+            <div class="filter-container mb-4">
+                <div class="status-filters">
+                    <button class="filter-btn active" data-status="all">All Products</button>
+                    <?php
+                    mysqli_data_seek($category_result, 0);
+                    if ($category_result->num_rows > 0) {
+                        while ($category_row = $category_result->fetch_assoc()) {
+                            echo '<button class="filter-btn" data-status="' . htmlspecialchars($category_row['category_name']) . '">' . htmlspecialchars($category_row['category_name']) . '</button>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
             <div class="filter-container">
                 <button type="button" class="btn-view-details" data-toggle="modal" data-target="#myModal">
                     <i class="fas fa-plus"></i> Add Item
@@ -157,10 +172,10 @@
                         <label for="item_image">Item Image:</label>
                         <div class="image-upload-container">
                             <!-- Image Preview -->
-                            <div class="image-preview-container mb-2" style="display: none;">
+                            <div class="image-preview-container mb-2" style="display: none; position: relative;">
                                 <h6>New Image:</h6>
                                 <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; height: auto;">
-                                <button type="button" class="btn btn-sm btn-danger" onclick="removeNewImage()">Remove</button>
+                                <button type="button" class="btn btn-sm btn-danger remove-image-btn" onclick="removeNewImage()">×</button>
                             </div>
                             
                             <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
@@ -246,15 +261,24 @@ $(document).ready(function() {
         ]
     });
 
-    // Category filter handler
-    $('#filter_item_type').change(function() {
-        var selectedType = $(this).val();
-        if (selectedType === 'All') {
-            table.column(2).search('').draw();
+    // Filter button click handler
+    $('.filter-btn').on('click', function() {
+        var status = $(this).data('status');
+        
+        // Remove active class from all buttons and add to clicked button
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        // Apply the filter
+        if (status === 'all') {
+            table.column(3).search('').draw(); // Clear filter
         } else {
-            table.column(2).search(selectedType).draw();
+            table.column(3).search(status).draw(); // Filter by category
         }
     });
+
+    // Initial filter (if needed)
+    $('.filter-btn.active').trigger('click');
 });
 
 function previewImage(input) {
@@ -967,5 +991,25 @@ select.no-padding {
 .form-control-file {
     display: block;
     margin: 0 auto;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 </style>

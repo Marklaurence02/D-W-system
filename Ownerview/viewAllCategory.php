@@ -81,7 +81,6 @@ include_once "../assets/config.php"; // Include database connection
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal" style="height:40px">Close</button>
             </div>
         </div>
     </div>

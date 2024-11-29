@@ -75,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             saveChatMessage($currentUserId, $staffId, $request);
             echo json_encode(['response' => "Your message has been sent to our staff."]);
         } else {
-            echo json_encode(['response' => "Thanks for your message Customer . We're away right now and will get back to you during business hours."]);
+            saveChatMessage($currentUserId, $staffId, $request);
+            echo json_encode(['response' => "Thanks for your message Customer. We're away right now and will get back to you during business hours."]);
         }
     } else {
         echo json_encode(['response' => "No staff member is assigned to assist you at the moment."]);
@@ -85,6 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $messages = getChatMessages($currentUserId);
-    echo json_encode(['messages' => $messages]);
+    $staffId = getAssignedStaff($currentUserId);
+    $isStaffOnline = $staffId ? isStaffOnline($staffId) : false;
+    echo json_encode(['messages' => $messages, 'isStaffOnline' => $isStaffOnline]);
 }
 ?>

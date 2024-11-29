@@ -1,8 +1,5 @@
 <?php
-session_name("admin_session");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
 include_once "../assets/config.php"; // Ensure the correct path for your config file
 ?>
@@ -31,13 +28,13 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
             <table id="ordersTable" class="table table-striped table-hover table-bordered display nowrap">
                 <thead>
                     <tr>
-                        <th>O.N.</th>
-                        <th>Customer</th>
-                        <th>Contact</th>
-                        <th>Order Date</th>
-                        <th>Total</th>
-                        <th>Order Status</th>
-                        <th>Payment Method</th>
+                        <th>O.N. <i class="fas fa-sort"></i></th>
+                        <th>Customer <i class="fas fa-sort"></i></th>
+                        <th>Contact <i class="fas fa-sort"></i></th>
+                        <th>Order Date <i class="fas fa-sort"></i></th>
+                        <th>Total <i class="fas fa-sort"></i></th>
+                        <th>Order Status <i class="fas fa-sort"></i></th>
+                        <th>Payment Method <i class="fas fa-sort"></i></th>
                         <th>More Details</th>
                     </tr>
                 </thead>
@@ -519,6 +516,10 @@ $(document).ready(function() {
 }
 
 #ordersTable th {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding-right: 30px;
     background: linear-gradient(135deg, #FD6610 0%, #FF8142 100%);
     color: white;
     padding: 15px;
@@ -526,6 +527,23 @@ $(document).ready(function() {
     text-transform: uppercase;
     font-size: 14px;
     border: none;
+}
+
+#ordersTable th i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+#ordersTable th:hover {
+    background-color: #f8f9fa;
+}
+
+#ordersTable th:hover i {
+    opacity: 1;
 }
 
 #ordersTable td {
@@ -1019,5 +1037,25 @@ $(document).ready(function() {
         width: 100%;
         margin-bottom: 10px;
     }
+}
+
+/* Add hover effect for table headers */
+#ordersTable th {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#ordersTable th:hover {
+    background-color: #f8f9fa; /* Light gray background on hover */
+}
+
+#ordersTable th i {
+    opacity: 0.5; /* Default icon opacity */
+    transition: opacity 0.3s ease;
+}
+
+#ordersTable th:hover i {
+    opacity: 1; /* Full opacity on hover */
 }
 </style>

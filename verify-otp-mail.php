@@ -151,35 +151,78 @@ function sendOtpEmail($email, $otp) {
             padding: 40px;
             max-width: 450px;
             margin: 0 auto;
-        }
-
-        .otp-container h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
             text-align: center;
         }
 
-        .form-group {
-            position: relative;
+        .otp-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .otp-input:focus {
+            border-color: #ff6700;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 103, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .otp-input.filled {
+            background-color: #f8f9fa;
+            border-color: #ff6700;
+            animation: bounce 0.3s ease-in-out;
+        }
+
+        .otp-input.error {
+            border-color: #dc3545;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .verification-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .verification-subtitle {
+            color: #666;
+            font-size: 14px;
             margin-bottom: 20px;
         }
 
-        label {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            pointer-events: none;
+        .resend-link {
+            color: #ff6700;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        input:focus + label,
-        input:not(:placeholder-shown) + label {
-            top: -10px;
-            font-size: 12px;
-            color: #ff6700;
+        .form-group label {
+            display: none;
         }
 
         .btn-submit {
@@ -229,6 +272,57 @@ function sendOtpEmail($email, $otp) {
                 display: none;
             }
         }
+
+        .custom-alert {
+            display: flex;
+            align-items: center;
+            background-color: #ffe5e5;
+            border: 1px solid #ffcccc;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 20px;
+            color: #cc0000;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #cc0000;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #cc0000;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        /* Update the fade-out animation */
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out 2.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -251,29 +345,41 @@ function sendOtpEmail($email, $otp) {
             <!-- OTP Form Section -->
             <div class="col-12 col-md-6">
                 <div class="otp-container">
-                    <h2>Enter OTP</h2>
-
-                    <!-- Error Notification -->
-                    <?php if (isset($_SESSION['otp_error'])): ?>
-                        <div class="alert alert-danger fade-out" role="alert" id="error-message">
-                            <?php echo $_SESSION['otp_error']; unset($_SESSION['otp_error']); ?>
-                        </div>
-                    <?php endif; ?>
+                    <h2 class="verification-title">Email Verification</h2>
+                    <p class="verification-subtitle">Enter the code we just sent to your email: <?php echo isset($_SESSION['otp_email']) ? $_SESSION['otp_email'] : ''; ?></p>
 
                     <form method="POST">
-                        <!-- OTP Input -->
-                        <div class="form-group position-relative">
-                            <input type="text" class="form-control" name="otp" id="otp" placeholder=" " maxlength="6" required>
-                            <label for="otp">OTP Code</label>
+                        <div class="otp-input-group">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required oninput="moveToNext(this, 'otp2')">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required id="otp2" oninput="moveToNext(this, 'otp3')">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required id="otp3" oninput="moveToNext(this, 'otp4')">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required id="otp4" oninput="moveToNext(this, 'otp5')">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required id="otp5" oninput="moveToNext(this, 'otp6')">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required id="otp6" oninput="moveToNext(this, null)">
                         </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn-submit">Verify OTP</button>
+                        
+                        <!-- Hidden input to store complete OTP -->
+                        <input type="hidden" name="otp" id="complete-otp">
 
                         <div class="small-text">
-                            <p>Didn’t receive the code? <a href="verify-otp-mail.php?resend=true" id="resend-link">Resend OTP</a></p>
-                            <p id="countdown-timer"></p>
+                            <p>Don't receive the code? 
+                                <a href="verify-otp-mail.php?resend=true" class="resend-link" id="resend-link">Resend</a>
+                            </p>
+                            <p id="countdown-timer" class="text-muted"></p>
+                            <p id="timer" style="color: #666; font-size: 14px;"></p>
                         </div>
+                        
+                        <!-- Error Notification -->
+                        <?php if (isset($_SESSION['otp_error'])): ?>
+                            <div class="alert custom-alert fade-out" role="alert" id="error-message">
+                                <i class='bx bx-error-circle alert-icon'></i>
+                                <div class="alert-content">
+                                    <?php echo $_SESSION['otp_error']; unset($_SESSION['otp_error']); ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <button type="submit" class="btn-submit">Verify OTP</button>
                     </form>
                 </div>
             </div>
@@ -322,6 +428,26 @@ function sendOtpEmail($email, $otp) {
                 <?php unset($_SESSION['resend_triggered']); // Clear the flag ?>
             <?php endif; ?>
         };
+    </script>
+
+    <script>
+        function moveToNext(current, nextFieldID) {
+            if (current.value.length >= 1) {
+                if (nextFieldID) {
+                    document.getElementById(nextFieldID).focus();
+                }
+                updateCompleteOtp();
+            }
+        }
+
+        function updateCompleteOtp() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            let completeOtp = '';
+            otpInputs.forEach(input => {
+                completeOtp += input.value;
+            });
+            document.getElementById('complete-otp').value = completeOtp;
+        }
     </script>
 
 </body>

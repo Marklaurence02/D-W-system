@@ -84,7 +84,7 @@
             <div class="image-preview-container mb-2" style="display: none;">
                 <h6>New Image Preview:</h6>
                 <img id="imagePreview" src="#" alt="New Image Preview" style="max-width: 200px; height: auto;">
-                <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeNewImage(event)">Remove New Image</button>
+                <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeNewImage(event)">X</button>
             </div>
             
             <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
@@ -135,6 +135,7 @@ function removeNewImage(event) {
 
 <style>
 .image-upload-container {
+    position: relative;
     border: 2px dashed #ddd;
     padding: 20px;
     border-radius: 8px;
@@ -143,6 +144,7 @@ function removeNewImage(event) {
 }
 
 .image-preview-container, .current-image-container {
+    position: relative;
     margin-bottom: 15px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -163,6 +165,57 @@ function removeNewImage(event) {
 .form-control-file {
     display: block;
     margin: 0 auto;
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    background-color: #f00;
+    color: #fff;
+    border: none;
+}
+
+.btn.btn-sm.btn-danger.mt-2 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    background-color: #f00;
+    color: #fff;
+    border: none;
+}
+
+.circle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background-color: #f00;
+    border-radius: 50%;
 }
 </style>
 

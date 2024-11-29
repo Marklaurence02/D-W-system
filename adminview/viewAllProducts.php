@@ -1,6 +1,8 @@
 <?php
     session_start();
 ?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <div class="container-fluid p-2">
     <div class="col-12">
         <div class="text-center mb-2">
@@ -8,7 +10,7 @@
         </div>
 
         <!-- Filter and Add Item Button -->
-        <div class="d-flex justify-content-end mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
             <?php
             include_once "../assets/config.php";
 
@@ -18,7 +20,20 @@
             ?>
 
             <!-- Item Type Filter -->
-            <div class="filter-container">
+            <div class="filter-container mb-4">
+                <div class="status-filters">
+                    <button class="filter-btn active" data-status="all">All Products</button>
+                    <?php
+                    mysqli_data_seek($category_result, 0);
+                    if ($category_result->num_rows > 0) {
+                        while ($category_row = $category_result->fetch_assoc()) {
+                            echo '<button class="filter-btn" data-status="' . htmlspecialchars($category_row['category_name']) . '">' . htmlspecialchars($category_row['category_name']) . '</button>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+                    <div class="filter-container">
                 <button type="button" class="btn-view-details" data-toggle="modal" data-target="#myModal">
                     <i class="fas fa-plus"></i> Add Item
                 </button>
@@ -246,15 +261,24 @@ $(document).ready(function() {
         ]
     });
 
-    // Category filter handler
-    $('#filter_item_type').change(function() {
-        var selectedType = $(this).val();
-        if (selectedType === 'All') {
-            table.column(2).search('').draw();
+    // Filter button click handler
+    $('.filter-btn').on('click', function() {
+        var status = $(this).data('status');
+        
+        // Remove active class from all buttons and add to clicked button
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        // Apply the filter
+        if (status === 'all') {
+            table.column(3).search('').draw(); // Clear filter
         } else {
-            table.column(2).search(selectedType).draw();
+            table.column(3).search(status).draw(); // Filter by category
         }
     });
+
+    // Initial filter (if needed)
+    $('.filter-btn.active').trigger('click');
 });
 
 function previewImage(input) {

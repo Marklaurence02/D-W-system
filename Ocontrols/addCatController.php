@@ -14,6 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_name'])) {
         exit;
     }
 
+    // Check if the category name already exists
+    $check_query = "SELECT category_id FROM product_categories WHERE category_name = '$catname'";
+    $check_result = mysqli_query($conn, $check_query);
+
+    if (mysqli_num_rows($check_result) > 0) {
+        echo json_encode(['success' => false, 'message' => 'Category name already in use']);
+        exit;
+    }
+
     // Function to find the lowest available category_id
     function getLowestAvailableID($conn) {
         $query = "SELECT MIN(t1.category_id + 1) AS missing_id

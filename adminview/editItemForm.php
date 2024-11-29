@@ -84,7 +84,7 @@
             <div class="image-preview-container mb-2" style="display: none;">
                 <h6>New Image Preview:</h6>
                 <img id="imagePreview" src="#" alt="New Image Preview" style="max-width: 200px; height: auto;">
-                <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeNewImage(event)">Remove New Image</button>
+                <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn" onclick="removeNewImage(event)">Remove New Image</button>
             </div>
             
             <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
@@ -140,6 +140,7 @@ function removeNewImage(event) {
     border-radius: 8px;
     text-align: center;
     background: #f8f9fa;
+    position: relative;
 }
 
 .image-preview-container, .current-image-container {
@@ -148,6 +149,7 @@ function removeNewImage(event) {
     border: 1px solid #ddd;
     border-radius: 4px;
     background: white;
+    position: relative;
 }
 
 .image-preview-container img, .current-image-container img {
@@ -163,6 +165,40 @@ function removeNewImage(event) {
 .form-control-file {
     display: block;
     margin: 0 auto;
+}
+
+.image-preview-container .btn-danger {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dc3545; /* Bootstrap danger color */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.image-preview-container .remove-image-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dc3545; /* Bootstrap danger color */
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 </style>
 

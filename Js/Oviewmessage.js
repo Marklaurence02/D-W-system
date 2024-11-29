@@ -1,9 +1,13 @@
 const MessageBox = document.getElementById('message-box');
 let latestMessageTimestamp = null;  // Track the latest message timestamp
 let selectedUserId = null;  // Track the selected user ID
+let lastReceivedMessage = null; // Track the last received message
+let lastReceivedMessageSenderId = null; // Track the sender ID of the last received message
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUserRecentMessages();
+    setInterval(loadUserRecentMessages, 5000); // Auto-refresh recent messages every 5 seconds
+    setInterval(loadMessages, 1000); // Auto-refresh messages in the conversation every 5 seconds
 });
 
 function loadUserRecentMessages() {
@@ -17,7 +21,7 @@ function loadUserRecentMessages() {
         const usernameElement = userItem.querySelector('.username'); // Element for the username
 
         // Fetch the most recent message and unread count for each user
-        fetch(`/OmessageC/get_recent_message.php?user_id=${userId}`)
+        fetch(`/SmessageC/get_recent_message.php?user_id=${userId}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
                 return response.json();
@@ -80,8 +84,10 @@ function formatMessageDate(messageDate) {
     return messageDate.toLocaleString('en-US', options); // You can adjust 'en-US' as needed
 }
 
+
+// Open a conversation with the selected user
 function openConversation(userId, username) {
-    selectedUserId = userId;
+    selectedUserId = userId;  // Corrected variable name
     latestMessageTimestamp = null;
     document.getElementById('conversation-username').textContent = username;
 
@@ -92,34 +98,25 @@ function openConversation(userId, username) {
     // Clear unread indicator
     const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
     const blueDotElement = userItem.querySelector('.blue-dot');
-    blueDotElement.classList.add('d-none');
-    userItem.classList.remove('border-blue');
+    blueDotElement.classList.add('d-none');  // Hide blue dot
+    userItem.classList.remove('border-blue');  // Remove blue border
 
-    // Initialize message box with the no-messages div
-    MessageBox.innerHTML = `
-        <div id="no-messages" class="text-center text-muted py-4">
-            <i class='bx bx-message-square-detail' style="font-size: 2rem;"></i>
-            <p class="mt-2">No messages yet. Start a conversation!</p>
-        </div>
-    `;
+    // Clear the message box before loading new messages
+    MessageBox.innerHTML = ''; // Clear previous messages
 
     loadMessages();
 }
 
+// Load the messages of the selected conversation
+// Load the messages of the selected conversation
 function loadMessages() {
     if (!selectedUserId) {
         console.error("No user selected.");
         return;
     }
 
-    const messageBox = document.getElementById('message-box');
-    if (!messageBox) {
-        console.error("Message box element not found");
-        return;
-    }
-
-    const isAtBottom = messageBox.scrollTop >= (messageBox.scrollHeight - messageBox.clientHeight - 20);
-    const url = `/OmessageC/get_messages.php?receiver=${selectedUserId}` +
+    const isAtBottom = MessageBox.scrollTop >= (MessageBox.scrollHeight - MessageBox.clientHeight - 20);
+    const url = `/SmessageC/get_messages.php?receiver=${selectedUserId}` +
                 (latestMessageTimestamp ? `&after=${latestMessageTimestamp}` : '');
 
     let lastMessageMinute = null;
@@ -132,28 +129,34 @@ function loadMessages() {
             return response.json();
         })
         .then(messages => {
-            // Always update the no messages indicator
-            updateNoMessagesIndicator(messages);
+            if (!messages.length) {
+                // Display "No messages yet" message
+                MessageBox.innerHTML = `
+                    <div id="no-messages" class="text-center text-muted py-4">
+                        <i class='bx bx-message-square-detail' style="font-size: 2rem;"></i>
+                        <p class="mt-2">No messages yet. Start a conversation!</p>
+                    </div>
+                `;
+                return;  // Exit if there are no messages
+            }
 
-            if (!messages || !messages.length) return;
+            // Clear the "No messages yet" message if there are messages
+            MessageBox.innerHTML = '';
 
             messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp);
                 const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();
 
-                // Check if the message is in a new minute compared to the last message
                 if (lastMessageMinute !== currentMessageMinute) {
                     const separatorElement = document.createElement('div');
-                    separatorElement.classList.add('separator', 'separator-centered');  // Add centered class
+                    separatorElement.classList.add('separator', 'separator-centered');
                     separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
                     MessageBox.appendChild(separatorElement);
                 }
 
-                // Create a new message bubble
                 const messageElement = document.createElement('div');
-                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');  // Corrected variable name
-                
+                messageElement.classList.add('message', msg.sender_id === selectedUserId ? 'received' : 'sent');
                 messageElement.innerHTML = `
                     <p><strong>${msg.first_name}:</strong> ${msg.message}</p>
                 `;
@@ -163,74 +166,117 @@ function loadMessages() {
             });
 
             if (messages.length > 0) {
+                const latestMessage = messages[messages.length - 1].message;
+                const latestMessageSenderId = messages[messages.length - 1].sender_id;
                 latestMessageTimestamp = messages[messages.length - 1].timestamp;
+
+                // Check if the latest message is different and from a different sender
+                if (latestMessage !== lastReceivedMessage || latestMessageSenderId !== lastReceivedMessageSenderId) {
+                    lastReceivedMessage = latestMessage;
+                    lastReceivedMessageSenderId = latestMessageSenderId;
+
+                    // Update the recent message and show the blue dot if the conversation is not open
+                    updateRecentMessageForUser(selectedUserId, latestMessage, false);
+                }
             }
 
-            if (isAtBottom) messageBox.scrollTop = messageBox.scrollHeight;
+            if (isAtBottom) MessageBox.scrollTop = MessageBox.scrollHeight;
         })
-        .catch(error => {
-            console.error("Error loading messages:", error);
-            updateNoMessagesIndicator([]); // Show no messages on error
-        });
+        .catch(error => console.error("Error loading messages:", error));
 }
 
+
+
+// Send a message to the selected user
 let lastSentMessageMinute = null;  // Track the last message minute for sent messages
 
+// Send a message to the selected user
 function sendMessage(event) {
-    event.preventDefault();
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
+    event.preventDefault();  // Prevent form submission if it's a button click
 
-    if (!message || !selectedUserId) {  // Ensure message and selected user exist
+    const messageInput = document.getElementById('message-input');  // Get the message input field
+    const message = messageInput.value.trim();  // Get the trimmed value from the input field
+
+    // Ensure that the message is not empty and that a user is selected
+    if (!message || !selectedUserId) {  
         alert("Please enter a message.");
         return;
     }
 
-    fetch("/OmessageC/post_message.php", {
+    // Send the message to the server
+    fetch("/SmessageC/post_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send message data
+        body: `receiver=${selectedUserId}&message=${encodeURIComponent(message)}`  // Send the message data to backend
     })
-    .then(response => response.json())
+    .then(response => response.json())  // Parse the JSON response
     .then(result => {
         if (result.status === 'success') {
-            const msgDate = new Date();  // Current timestamp for the new message
-            const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();  // Minute of the day
+            const msgDate = new Date();  // Get the current timestamp for the new message
+            const currentMessageMinute = msgDate.getHours() * 60 + msgDate.getMinutes();  // Get the minute of the day
 
-            // Only add a timestamp if this message is in a new minute
+            // Check if the message should have a timestamp (if it's in a new minute)
             if (lastSentMessageMinute !== currentMessageMinute) {
                 const msgTimeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                // Create a separator element with the timestamp
+                // Create a separator element to show the timestamp
                 const separatorElement = document.createElement('div');
                 separatorElement.classList.add('separator', 'separator-centered');
                 separatorElement.innerHTML = `<small class="timestamp">${msgTimeString}</small>`;
                 MessageBox.appendChild(separatorElement);
 
-                // Update the last message minute
+                // Update the last sent message minute
                 lastSentMessageMinute = currentMessageMinute;
             }
 
-            // Add the message directly to the message box
+            // Create a new message element
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message', 'sent');  // Mark as sent message
-            messageElement.innerHTML = `
+            messageElement.classList.add('message', 'sent');  // Mark the message as sent
+            messageElement.innerHTML = ` 
                 <p><strong>You:</strong> ${message}</p>
             `;
 
-            // Append message and auto-scroll to the bottom
+            // Append the message to the message box and scroll to the bottom
             MessageBox.appendChild(messageElement);
             MessageBox.scrollTop = MessageBox.scrollHeight;
 
-            // Clear the input field
+            // Clear the input field for the next message
             messageInput.value = '';
+
+            // Update the recent message for the selected user
+            updateRecentMessageForUser(selectedUserId, message);
         } else {
-            console.error("Error sending message:", result.message);
+            console.error("Error sending message:", result.message);  // Handle sending error
         }
     })
-    .catch(error => console.error("Error sending message:", error));
+    .catch(error => console.error("Error sending message:", error));  // Catch network errors
 }
 
+
+// Function to update the recent message for the selected user
+function updateRecentMessageForUser(userId, message, isConversationOpen) {
+    const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
+    const recentMessageElement = userItem.querySelector('.recent-message');
+    const messageDateElement = userItem.querySelector('.message-date');
+    const blueDotElement = userItem.querySelector('.blue-dot');
+    
+    // Get the current time for the message
+    const messageDate = new Date();
+    const formattedDate = messageDate.toLocaleString(); // Format the date as per local timezone
+    messageDateElement.textContent = formattedDate;
+
+    if (isConversationOpen) {
+        // If the conversation is open, show the actual messages and hide the recent message notification
+        recentMessageElement.textContent = ""; // Clear the recent message
+        blueDotElement.classList.add('d-none'); // Hide the blue dot
+        userItem.classList.remove('border-blue'); // Remove the blue border
+    } else {
+        // If the conversation is not open, show the "New Message" notification and blue dot
+        recentMessageElement.textContent = message;
+        blueDotElement.classList.remove('d-none'); // Show the blue dot
+        userItem.classList.add('border-blue'); // Add blue border for unread messages
+    }
+}
 
 
 // Switch back to user list view
@@ -238,34 +284,4 @@ function backToUserList() {
     document.getElementById('user-list').classList.remove('d-none');
     document.getElementById('conversation-view').classList.add('d-none');
     selectedUserId = null;  // Reset selected user
-}
-
-function updateNoMessagesIndicator(messages) {
-    const noMessagesDiv = document.getElementById('no-messages');
-    const messageBox = document.getElementById('message-box');
-    
-    if (!noMessagesDiv || !messageBox) {
-        console.warn('Required message elements not found');
-        return;
-    }
-
-    if (!messages || messages.length === 0) {
-        // Show no messages indicator
-        noMessagesDiv.style.display = 'block';
-        // Hide any existing messages
-        Array.from(messageBox.children).forEach(child => {
-            if (child !== noMessagesDiv) {
-                child.style.display = 'none';
-            }
-        });
-    } else {
-        // Hide no messages indicator
-        noMessagesDiv.style.display = 'none';
-        // Show all messages
-        Array.from(messageBox.children).forEach(child => {
-            if (child !== noMessagesDiv) {
-                child.style.display = 'block';
-            }
-        });
-    }
 }

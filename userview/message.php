@@ -42,11 +42,21 @@ function loadMessages() {
                 $('#chat-box .history-message').append(welcomeMessageHtml);
             }
 
+            let lastMessageMinute = null; // Track the last message minute
+
             // Loop through the messages and render each one
             messagesData.forEach(function(message) {
                 let senderClass;
                 let sideClass;
-                
+                const messageTime = new Date(message.timestamp);
+                const msgTimeString = messageTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+
+                // Add a separator for each message
+                const separatorElement = document.createElement('div');
+                separatorElement.classList.add('separator', 'separator-centered');
+                separatorElement.innerHTML = `------${msgTimeString}----`;
+                $('#chat-box .history-message').append(separatorElement);
+
                 // Check if the message is from a user or assistant (staff, bot, etc.)
                 if (message.sender_role === 'assistant') {
                     senderClass = 'assistant-message';
@@ -59,6 +69,9 @@ function loadMessages() {
                 // Create HTML for each message
                 const messageHtml = `<div class="${senderClass} ${sideClass}">${message.message}<div class="timestamp">${message.timestamp}</div></div>`;
                 $('#chat-box .history-message').append(messageHtml);
+
+                // Add a separator line after each message
+                $('#chat-box .history-message').append('<div class="message-separator"></div>');
             });
 
             // Scroll to the bottom to show the latest message
@@ -79,16 +92,51 @@ function loadMessages() {
 
 $(document).ready(function() {
     let messages = [];
+    let isStaffOnline = false; // Track staff online status
 
     function renderMessages() {
-        $('#chat-box').find('.user-message, .assistant-message').remove();
+        $('#chat-box').find('.user-message, .assistant-message, .separator').remove();
         messages.forEach(function(message) {
             const senderClass = message.sender === 'user' ? 'user-message' : 'assistant-message';
-            const sideClass = message.sender === 'user' ? 'left' : 'right'; // Left for user, right for assistant
-            const messageHtml = `<div class="${senderClass} ${sideClass}">${message.text}<div class="timestamp">${message.sender === 'user' ? 'You' : 'Assistant'}</div></div>`;
+            const sideClass = message.sender === 'user' ? 'left' : 'right';
+            
+
+            // Format the timestamp to show only the time
+            const messageTime = new Date(message.timestamp);
+            const formattedTime = messageTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+
+            // Include sender label and timestamp
+            const senderLabel = message.sender === 'user' ? 'You' : 'Assistant';
+            const messageHtml = `<div class="${senderClass} ${sideClass}">${message.text}<div class="timestamp">${senderLabel} - ${formattedTime}</div></div>`;
+            
             $('#chat-box').append(messageHtml);
         });
-        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight); // Scroll to the bottom
+        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+    }
+
+    function fetchMessages() {
+        $.ajax({
+            url: '/usermessagecontrol/chat.php',
+            type: 'GET',
+            success: function(response) {
+                const data = JSON.parse(response);
+                messages = data.messages.map(msg => ({
+                    sender: msg.sender_role,
+                    text: msg.message,
+                    timestamp: msg.timestamp
+                }));
+                isStaffOnline = data.isStaffOnline; // Update staff online status
+                renderMessages();
+
+                // Start polling only if staff is online
+                if (isStaffOnline) {
+                    setTimeout(fetchMessages, 10000); // Poll every 10 seconds
+                }
+            },
+            error: function() {
+                console.error('Error fetching messages.');
+            }
+        });
     }
 
     $('#send-btn').click(function() {
@@ -97,7 +145,8 @@ $(document).ready(function() {
             $('#send-btn').prop('disabled', true);
             $('#message-input').prop('disabled', true); // Disable input field
 
-            messages.push({ sender: 'user', text: message });
+            const currentTime = new Date().toISOString(); // Get current date and time
+            messages.push({ sender: 'user', text: message, timestamp: currentTime });
             renderMessages();
 
             $.ajax({
@@ -106,7 +155,8 @@ $(document).ready(function() {
                 data: { message: message },
                 success: function(response) {
                     const jsonResponse = JSON.parse(response);
-                    messages.push({ sender: 'assistant', text: jsonResponse.response });
+                    const assistantTime = new Date().toISOString(); // Use current date and time for assistant
+                    messages.push({ sender: 'assistant', text: jsonResponse.response, timestamp: assistantTime });
                     renderMessages();
                     $('#message-input').val('');
                     $('#send-btn').prop('disabled', false);
@@ -123,13 +173,18 @@ $(document).ready(function() {
 
     $('.option').click(function() {
         const question = $(this).data('question');
-        messages.push({ sender: 'user', text: question });
+        const currentTime = new Date().toISOString(); // Get current date and time
+        messages.push({ sender: 'user', text: question, timestamp: currentTime });
         $('#message-input').val(question);
 
         const botResponse = getBotResponse(question);
-        messages.push({ sender: 'assistant', text: botResponse });
+        const assistantTime = new Date().toISOString(); // Use current date and time for assistant
+        messages.push({ sender: 'assistant', text: botResponse, timestamp: assistantTime });
         renderMessages();
         $('#message-input').val('');
+
+        // Add a 10-second delay before reloading messages
+        setTimeout(fetchMessages, 10000); // 10000 milliseconds = 10 seconds
     });
 
     function getBotResponse(question) {
@@ -145,7 +200,8 @@ $(document).ready(function() {
         }
     }
 
-    loadMessages(); // Initial message loading
+    // Initial message loading
+    fetchMessages();
 });
 
 </script>
@@ -261,6 +317,17 @@ $(document).ready(function() {
     max-width: 70%; /* Optional: Control the width of the assistant message */
 }
 
+.message-separator {
+    border-top: 1px solid #ccc; /* Light gray line */
+    margin: 10px 0; /* Space around the line */
+}
+
+.separator {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 0.9em;
+    color: #555;
+}
 
 </style>
 

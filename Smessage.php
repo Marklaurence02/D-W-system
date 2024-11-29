@@ -18,8 +18,8 @@
 
     $users = [];
     if (!isset($_SESSION['role'], $_SESSION['user_id'])) {
-        error_log("User  not authenticated or missing role");
-        exit("<div class='alert alert-danger text-center'>User  not authenticated.</div>");
+        error_log("User not authenticated or missing role");
+        exit("<div class='alert alert-danger text-center'>User not authenticated.</div>");
     }
 
     $currentRole = $_SESSION['role'];
@@ -92,7 +92,7 @@
                                     <div class="message-date text-muted"></div>
                                 </div>
                             </div>
-                            <span class="blue-dot d-none"></span>
+                            <span class="blue-dot "></span>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -201,7 +201,7 @@
             background-color: #007bff;
             border-radius: 50%;
             margin-left: 10px;
-            display: inline-block;
+            display: none;
         }
 
         /* User Initial */
@@ -336,7 +336,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="Js/Ownerpanel.js"></script>
     <script src="Js/navb.js"></script>
-    <script src="Js/Oviewmessage.js"></script>
+    <script src="Js/Sviewmessage.js"></script>
 
     <script>
         function filterByRole() {

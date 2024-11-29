@@ -472,18 +472,22 @@ function showUser() {
     });
 }
 
+
+
 function showOrders() {
     $.ajax({
         url: "adminview/viewAllOrders.php",
-        method: "post",
+        method: "POST",
         data: { record: 1 },
         success: function(data) {
             $('.allContent-section').html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert("Error fetching product items: " + textStatus);
+            console.error("Error details:", errorThrown); // {{ edit_2: Log error details for debugging }}
         }
     });
 }
-
-
 function ChangeOrderStatus(orderId, newStatus) {
     $.ajax({
         url: "/controls/updateOrderStatus.php",
@@ -758,19 +762,20 @@ function refreshTableList() {
 function showProductItems() {
     $.ajax({
         url: "adminview/viewAllProducts.php",
-        method: "post",
+        method: "POST",
         data: { record: 1 },
         success: function(data) {
             $('.allContent-section').html(data);
+            // {{ edit_1: Add any additional success handling logic here }}
         },
-        error: function() {
-            alert("Error fetching product items.");
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert("Error fetching product items: " + textStatus);
+            console.error("Error details:", errorThrown); // {{ edit_2: Log error details for debugging }}
         }
     });
 }
 
-// Load the edit form for a product
-// Load the edit form for a product
+
 // Load the edit form for a product inside the modal
 function itemEditForm(id) {
     $.ajax({

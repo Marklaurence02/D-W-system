@@ -14,11 +14,11 @@ session_start();
             <table id="generalUsersTable" class="table table-striped table-hover table-bordered display nowrap">
                 <thead>
                     <tr>
-                        <th class="text-center">O.N.</th>
-                        <th class="text-center">Username</th>
-                        <th class="text-center">Email</th>
-                        <th class="text-center">Contact Number</th>
-                        <th class="text-center">Joining Date</th>
+                        <th class="text-center">O.N. <i class="fas fa-sort"></i></th>
+                        <th class="text-center">Username <i class="fas fa-sort"></i></th>
+                        <th class="text-center">Email <i class="fas fa-sort"></i></th>
+                        <th class="text-center">Contact Number <i class="fas fa-sort"></i></th>
+                        <th class="text-center">Joining Date <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
             </table>
@@ -153,6 +153,23 @@ $(document).ready(function() {
     text-transform: uppercase;
     font-size: 14px;
     border: none;
+    position: relative;
+    padding-right: 25px;
+    cursor: pointer;
+}
+
+#generalUsersTable th i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 12px;
+    transition: color 0.3s ease;
+}
+
+#generalUsersTable th:hover i {
+    color: #FFD700;
 }
 
 #generalUsersTable td {

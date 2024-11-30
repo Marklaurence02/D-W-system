@@ -47,9 +47,12 @@ function toggleSidebar() {
     console.log("Main content:", mainContent);
 
     if (sidebar) {
-        sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
+        const isMobile = window.innerWidth <= 768; // Check if the screen is mobile-sized
+        const sidebarWidth = isMobile ? "100%" : "250px"; // Full width on mobile, 250px on larger screens
+
+        sidebar.style.width = sidebar.style.width === sidebarWidth ? "0" : sidebarWidth;
         if (mainContent) {
-            mainContent.style.marginRight = sidebar.style.width === "250px" ? "250px" : "0";
+            mainContent.style.marginRight = sidebar.style.width === sidebarWidth ? sidebarWidth : "0";
         }
     } else {
         console.error("Sidebar element not found");
@@ -155,6 +158,25 @@ function toggleSidebar() {
 .btn-primary:hover {
     background-color: #556B2F; /* Basil green */
     border-color: #556B2F;
+}
+
+/* Logo styling */
+.logo-img {
+    max-width: 100%; /* Ensures the logo doesn't exceed its container */
+    height: auto; /* Maintains aspect ratio */
+}
+
+/* Responsive adjustments for the logo */
+@media (max-width: 768px) {
+    .logo-img {
+        width: 150px; /* Adjust the width for smaller screens */
+    }
+}
+
+@media (min-width: 769px) {
+    .logo-img {
+        width: 200px; /* Default width for larger screens */
+    }
 }
 </style>
 <!-- Update Profile Modal -->

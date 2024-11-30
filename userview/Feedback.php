@@ -21,9 +21,9 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-echo '<div class="container my-4">';
+echo '<div class="container my-4" style="overflow-x: auto;">';
 echo '<h4 class="text-center">Your Complete Reservations</h4>';
-echo '<div class="row g-3 justify-content-center">';  // Added justify-content-center for centering
+echo '<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 justify-content-center">';  // Use row-cols for responsive columns
 
 if ($result->num_rows > 0) {
     while ($reservation = $result->fetch_assoc()) {
@@ -47,8 +47,7 @@ if ($result->num_rows > 0) {
             $reservationTime12 = $time ? $time->format('g:i A') : $reservationTime24;
         }
 
-        // Use col-md-6 col-lg-4 for responsive card layout, ensuring they are centered
-        echo '<div class="col-md-6 col-lg-4 d-flex justify-content-center">';  // Added d-flex and justify-content-center to center card
+        echo '<div class="col d-flex justify-content-center">';  // Use col for responsive column
         echo '<div class="card border-primary reservation-card" 
                 data-reservation-id="' . $reservationId . '" 
                 data-table-id="' . $reservation['table_id'] . '" 
@@ -108,11 +107,11 @@ $conn->close();
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating</label>
                         <div class="star-rating" id="starRating">
-                            <span class="star" data-value="1">&#9733;</span>
-                            <span class="star" data-value="2">&#9733;</span>
-                            <span class="star" data-value="3">&#9733;</span>
-                            <span class="star" data-value="4">&#9733;</span>
-                            <span class="star" data-value="5">&#9733;</span>
+                            <span class="star" data-value="1" onclick="selectStar(1)">&star;</span>
+                            <span class="star" data-value="2" onclick="selectStar(2)">&star;</span>
+                            <span class="star" data-value="3" onclick="selectStar(3)">&star;</span>
+                            <span class="star" data-value="4" onclick="selectStar(4)">&star;</span>
+                            <span class="star" data-value="5" onclick="selectStar(5)">&star;</span>
                         </div>
                         <div id="ratingText" class="mt-2">Select a rating</div>
                     </div>
@@ -124,27 +123,21 @@ $conn->close();
 </div>
 
 <script>
-// JavaScript to open the feedback modal
-function openFeedbackForm(reservationId) {
-    document.getElementById('reservationId').value = reservationId;
-    const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
-    feedbackModal.show();
-}
-
-// JavaScript to handle the star rating
-const stars = document.querySelectorAll('.star');
-const ratingText = document.getElementById('ratingText');
 let selectedRating = 0;
 
-stars.forEach(star => {
-    star.addEventListener('click', function () {
-        selectedRating = parseInt(star.getAttribute('data-value'));
-        updateStarRating();
-        updateRatingText();
-    });
-});
+function openFeedbackForm(reservationId) {
+    document.getElementById('reservationId').value = reservationId;
+    $('#feedbackModal').modal('show');  // Use jQuery to show the modal
+}
+
+function selectStar(value) {
+    selectedRating = value;
+    updateStarRating();
+    updateRatingText();
+}
 
 function updateStarRating() {
+    const stars = document.querySelectorAll('.star');
     stars.forEach(star => {
         const starValue = parseInt(star.getAttribute('data-value'));
         if (starValue <= selectedRating) {
@@ -156,6 +149,7 @@ function updateStarRating() {
 }
 
 function updateRatingText() {
+    const ratingText = document.getElementById('ratingText');
     switch (selectedRating) {
         case 1:
             ratingText.textContent = "Poor";
@@ -177,7 +171,6 @@ function updateRatingText() {
     }
 }
 
-// Function to handle feedback submission
 function submitFeedback() {
     const reservationId = document.getElementById('reservationId').value;
     const feedbackText = document.getElementById('feedbackText').value;
@@ -191,7 +184,6 @@ function submitFeedback() {
         return;
     }
 
-    // Send the feedback to the server
     fetch('/Usercontrol/submitFeedback.php', {
         method: 'POST',
         body: new URLSearchParams({
@@ -211,12 +203,8 @@ function submitFeedback() {
                 title: 'Feedback Submitted',
                 text: data.message
             }).then(() => {
-                Feedback(); // Refresh the content after feedback submission
-
-                // Hide the modal after successful feedback submission
+                Feedback();
                 $('#feedbackModal').modal('hide');
-                
-                // Remove the modal backdrop
                 $('.modal-backdrop').remove(); 
             });
         } else {
@@ -236,13 +224,11 @@ function submitFeedback() {
         });
     });
 }
-
-
 </script>
 
 <style>
 .star {
-    font-size: 30px;
+    font-size: 1.5rem; 
     color: #ccc;
     cursor: pointer;
     transition: color 0.3s ease;
@@ -257,7 +243,14 @@ function submitFeedback() {
 }
 
 #ratingText {
-    font-size: 16px;
+    font-size: 1rem; 
     color: #555;
+}
+
+/* Add this media query for mobile devices */
+@media (max-width: 768px) {
+    .container {
+        overflow-x: auto;  /* Enable horizontal scrolling on smaller screens */
+    }
 }
 </style>

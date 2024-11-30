@@ -46,11 +46,11 @@ if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
     }
 
     // Redirect to the home page
-    header("Location: ../index.php");
+    header("Location: ../login.php");
     exit();
 } else {
     // If the user is not logged in, redirect directly to the home page
-    header("Location: ../index.php");
+    header("Location: ../login.php");
     exit();
 }
 ?>

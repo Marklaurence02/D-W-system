@@ -140,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         display: flex;
         justify-content: center;
         margin-bottom: 20px;
+        flex-wrap: wrap;
     }
 
     .progress-step {
@@ -168,6 +169,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     .progress-line.active {
         background-color: #007bff; /* Change to blue */
     }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .progress-step {
+            width: 25px;
+            height: 25px;
+            margin: 0 5px;
+        }
+
+        .progress-line {
+            width: 30px;
+        }
+
+        .modal-dialog {
+            max-width: 90%;
+            margin: 1.75rem auto;
+        }
+
+        .modal-footer .btn {
+            width: auto; /* Allow buttons to adjust width */
+        }
+
+        .container.mt-5 {
+            padding: 0 15px; /* Add padding for smaller screens */
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .text-right {
+            text-align: center; /* Center align text on smaller screens */
+        }
+    }
+
+    .modal-body {
+        max-height: 400px; /* Set a maximum height for the modal body */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+
+    .receipt-divider {
+        border-top: 1px dashed #ccc;
+        margin: 10px 0;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+    }
+
+    .modal-footer .btn {
+        width: 100px; /* Adjusted for smaller buttons */
+    }
+
+    .modal-header .close {
+        padding: 1rem;
+    }
+
+    .modal-title {
+        font-size: 1rem;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .modal-dialog {
+            max-width: 90%;
+            margin: 1.75rem auto;
+        }
+    }
 </style>
 
 <div class="progress-container">
@@ -191,26 +260,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
         <div class="card-body">
             <?php if (count($orders) > 0): ?>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Total Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($orders as $order): ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td><?= htmlspecialchars($order['product_name']) ?></td>
-                                <td><?= htmlspecialchars($order['quantity']) ?></td>
-                                <td>&#x20B1;<?= number_format($order['price'], 2) ?></td>
-                                <td>&#x20B1;<?= number_format($order['totalprice'], 2) ?></td>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($orders as $order): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($order['product_name']) ?></td>
+                                    <td><?= htmlspecialchars($order['quantity']) ?></td>
+                                    <td>&#x20B1;<?= number_format($order['price'], 2) ?></td>
+                                    <td>&#x20B1;<?= number_format($order['totalprice'], 2) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php else: ?>
                 <p>No order items found.</p>
             <?php endif; ?>
@@ -323,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 <!-- Receipt Modal -->
 <div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title text-center w-100" id="receiptModalLabel">Payment Receipt</h5>
@@ -350,12 +421,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <h6 class="font-weight-bold">Reservation Summary</h6>
                 <?php if (count($reservations) > 0): ?>
                     <?php foreach ($reservations as $reservation): ?>
-                        <p class="mb-1 small"><strong>ID:</strong> <?= htmlspecialchars($reservation['reservation_id']) ?></p>
-                        <p class="mb-1 small"><strong>Table:</strong> <?= htmlspecialchars($reservation['table_id']) ?></p>
-                        <p class="mb-1 small"><strong>Date:</strong> <?= htmlspecialchars($reservation['reservation_date']) ?></p>
-                        <p class="mb-1 small"><strong>Time:</strong> <?= date('g:i A', strtotime($reservation['reservation_time'])) ?></p>
-                        <p class="mb-1 small"><strong>Status:</strong> <?= htmlspecialchars($reservation['status']) ?></p>
-                        <p class="mb-1 small"><strong>Note:</strong> <?= htmlspecialchars($reservation['custom_note']) ?></p>
+                        <div class="row mb-1 small">
+                            <div class="col-6"><strong>ID:</strong> <?= htmlspecialchars($reservation['reservation_id']) ?></div>
+                            <div class="col-6"><strong>Table:</strong> <?= htmlspecialchars($reservation['table_id']) ?></div>
+                            <div class="col-6"><strong>Date:</strong> <?= htmlspecialchars($reservation['reservation_date']) ?></div>
+                            <div class="col-6"><strong>Time:</strong> <?= date('g:i A', strtotime($reservation['reservation_time'])) ?></div>
+                            <div class="col-6"><strong>Status:</strong> <?= htmlspecialchars($reservation['status']) ?></div>
+                            <div class="col-6"><strong>Note:</strong> <?= htmlspecialchars($reservation['custom_note']) ?></div>
+                        </div>
                         <div class="receipt-divider"></div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -374,6 +447,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <a href="#" data-toggle="modal" data-target="#policyModal" onclick="markPolicyRead()">No Refund Policy</a>.
                     </label>
                 </div>
+                <style>
+                    @media (max-width: 768px) {
+                        .form-check {
+                            text-align: center; /* Center align text on smaller screens */
+                        }
+                        .form-check-label {
+                            display: block; /* Make label block-level for better spacing */
+                        }
+                    }
+                </style>
                 <!-- Pay Button -->
                 <button type="button" class="btn btn-success btn-sm" id="payButton" onclick="showPasswordModal()" disabled>Pay</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Go Back</button>
@@ -438,7 +521,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <div id="customLoader" class="loader-overlay">
     <div class="loader" id="loader"></div>
     <div class="checkmark hidden" id="checkmark">
-        ��
+        
     </div>
 </div>
 

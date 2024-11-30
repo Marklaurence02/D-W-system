@@ -63,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact_number = trim($_POST['contact_number']);
     $address = trim($_POST['address']);
     $username = trim($_POST['username']);
+    $old_password = trim($_POST['old_password']);
+    $password = trim($_POST['password']);
 
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($username)) {
@@ -70,8 +72,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    // Verify old password if a new password is provided
+    if (!empty($password)) {
+        $sql_check = "SELECT password_hash FROM users WHERE user_id = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("i", $user_id);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+        $user_data = $result_check->fetch_assoc();
+
+        if (!$user_data || !password_verify($old_password, $user_data['password_hash'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Old password is incorrect.']);
+            exit;
+        }
+    }
+
     // Prepare SQL statement for updating user details
-    $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW() WHERE user_id = ?";
+    $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW()";
+
+    // Check if password is provided
+    if (!empty($password)) {
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $sql .= ", password_hash = ?";
+    }
+
+    $sql .= " WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -80,7 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Bind parameters
-    $stmt->bind_param("ssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $user_id);
+    if (!empty($password)) {
+        $stmt->bind_param("sssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $password_hash, $user_id);
+    } else {
+        $stmt->bind_param("ssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $user_id);
+    }
 
     // Execute the statement
     if ($stmt->execute()) {

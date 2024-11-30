@@ -88,6 +88,15 @@ include_once "./assets/config.php"; // Include the DB connection file
                                 <label for="zip_code" class="form-label w-100">Zip Code</label>
                                 <input type="text" class="form-control" id="zip_code" name="zip_code">
                             </div>
+                            <div class="input-group">
+                                <label for="old_password" class="form-label w-100">Old Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="old_password" name="old_password">
+                                    <span class="input-group-text" id="toggleOldPassword" style="cursor: pointer;">
+                                        <i class="fa fa-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Right Column -->
@@ -107,6 +116,16 @@ include_once "./assets/config.php"; // Include the DB connection file
                             <div class="input-group">
                                 <label for="username" class="form-label w-100">Username</label>
                                 <input type="text" class="form-control" id="username" name="username">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="password" class="form-label w-100">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password">
+                                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                        <i class="fa fa-eye"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,8 +185,8 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
                 document.getElementById('zip_code').value = user.zip_code || '';
                 document.getElementById('username').value = user.username || '';
 
-                // Show modal
-                new bootstrap.Modal(document.getElementById('updateProfileModal')).show();
+                // Show modal using jQuery
+                $('#updateProfileModal').modal('show');
             } else {
                 Swal.fire('Error', user.error || 'Failed to fetch profile data', 'error');
             }
@@ -214,11 +233,10 @@ function updateProfile() {
             .then(data => {
                 if (data.status === 'success') {
                     Swal.fire('Success', data.message, 'success').then(() => {
-                        // Close the modal after the alert is acknowledged
-                        var modal = bootstrap.Modal.getInstance(document.getElementById('updateProfileModal'));
-                        if (modal) {
-                            modal.hide();
-                        }
+                        // Hide the modal
+                        $('#updateProfileModal').modal('hide');
+                        // Redirect to Owner-panel.php
+                        window.location.href = 'Owner-panel.php';
                     });
                 } else {
                     Swal.fire('Error', data.message, 'error');
@@ -232,7 +250,19 @@ function updateProfile() {
     });
 }
 
+document.getElementById('toggleOldPassword').addEventListener('click', function() {
+    const oldPasswordField = document.getElementById('old_password');
+    const type = oldPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    oldPasswordField.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+});
 
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordField = document.getElementById('password');
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+});
 
 </script>
 

@@ -47,12 +47,9 @@ function toggleSidebar() {
     console.log("Main content:", mainContent);
 
     if (sidebar) {
-        const isMobile = window.innerWidth <= 768; // Check if the screen is mobile-sized
-        const sidebarWidth = isMobile ? "100%" : "250px"; // Full width on mobile, 250px on larger screens
-
-        sidebar.style.width = sidebar.style.width === sidebarWidth ? "0" : sidebarWidth;
+        sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
         if (mainContent) {
-            mainContent.style.marginRight = sidebar.style.width === sidebarWidth ? sidebarWidth : "0";
+            mainContent.style.marginRight = sidebar.style.width === "250px" ? "250px" : "0";
         }
     } else {
         console.error("Sidebar element not found");
@@ -159,192 +156,199 @@ function toggleSidebar() {
     background-color: #556B2F; /* Basil green */
     border-color: #556B2F;
 }
-
-/* Logo styling */
-.logo-img {
-    max-width: 100%; /* Ensures the logo doesn't exceed its container */
-    height: auto; /* Maintains aspect ratio */
-}
-
-/* Responsive adjustments for the logo */
-@media (max-width: 768px) {
-    .logo-img {
-        width: 150px; /* Adjust the width for smaller screens */
-    }
-}
-
-@media (min-width: 769px) {
-    .logo-img {
-        width: 200px; /* Default width for larger screens */
-    }
-}
 </style>
 <!-- Update Profile Modal -->
 <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="updateProfileModalLabel">
+                    <i class="fa fa-user-edit me-2"></i>Update Profile
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="updateProfileForm" onsubmit="event.preventDefault(); updateProfile();">
-                    <div class="row">
+                    <div class="row g-3">
                         <!-- Left Column -->
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name</label>
+                            <div class="input-group">
+                                <label for="first_name" class="form-label w-100">First Name</label>
                                 <input type="text" class="form-control" id="first_name" name="first_name" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name</label>
+                            <div class="input-group">
+                                <label for="last_name" class="form-label w-100">Last Name</label>
                                 <input type="text" class="form-control" id="last_name" name="last_name" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <label for="email" class="form-label w-100">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="zip_code" class="form-label">Zip Code</label>
+                            <div class="input-group">
+                                <label for="zip_code" class="form-label w-100">Zip Code</label>
                                 <input type="text" class="form-control" id="zip_code" name="zip_code">
+                            </div>
+                            <div class="input-group">
+                                <label for="old_password" class="form-label w-100">Old Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="old_password" name="old_password">
+                                    <span class="input-group-text" id="toggleOldPassword" style="cursor: pointer;">
+                                        <i class="fa fa-eye"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Right Column -->
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="middle_initial" class="form-label">Middle Initial</label>
+                            <div class="input-group">
+                                <label for="middle_initial" class="form-label w-100">Middle Initial</label>
                                 <input type="text" class="form-control" id="middle_initial" name="middle_initial">
                             </div>
-                            <div class="mb-3">
-                                <label for="contact_number" class="form-label">Contact Number</label>
+                            <div class="input-group">
+                                <label for="contact_number" class="form-label w-100">Contact Number</label>
                                 <input type="text" class="form-control" id="contact_number" name="contact_number">
                             </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
+                            <div class="input-group">
+                                <label for="address" class="form-label w-100">Address</label>
                                 <input type="text" class="form-control" id="address" name="address">
                             </div>
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <label for="username" class="form-label w-100">Username</label>
                                 <input type="text" class="form-control" id="username" name="username">
                             </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password">
+
+                            <div class="input-group">
+                                <label for="password" class="form-label w-100">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password">
+                                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                        <i class="fa fa-eye"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-
 <script>
-// Show modal and pre-fill form fields
-document.getElementById('editProfileBtn').addEventListener('click', function () {
-    // Fetch current user data from the server
-    const userId = <?php echo $_SESSION['user_id']; ?>; // Assuming session has user_id
+document.getElementById('editProfileBtn').addEventListener('click', function() {
+    const userId = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;
+    
+    if (!userId) {
+        Swal.fire('Please log in to update your profile');
+        return;
+    }
 
-    // AJAX request to get the current profile information
-    $.ajax({
-        url: 'assets/datauser.php', // PHP file to fetch user data
-        method: 'GET',
-        data: { user_id: userId },
-        success: function (response) {
-            console.log('Profile Data:', response); // Debugging log to check the response
+    // Show loading state
+    this.disabled = true;
+    this.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
 
-            // Parse the JSON response and check if data exists
-            try {
-                const user = JSON.parse(response);
-                if (user && !user.error) {  // Ensure there is no error in the response
-                    // Populate the form fields with the fetched data
-                    document.getElementById('first_name').value = user.first_name;
-                    document.getElementById('middle_initial').value = user.middle_initial;
-                    document.getElementById('last_name').value = user.last_name;
-                    document.getElementById('contact_number').value = user.contact_number;
-                    document.getElementById('email').value = user.email;
-                    document.getElementById('address').value = user.address;
-                    document.getElementById('zip_code').value = user.zip_code;
+    // Fetch profile data
+    fetch('assets/datauser.php?user_id=' + userId)
+        .then(response => response.json())
+        .then(user => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="fa fa-pencil"></i>';
 
-                    // Ensure username field is correctly populated (no hardcoded "root" value)
-                    if (user.username) {
-                        document.getElementById('username').value = user.username;
-                    } else {
-                        // In case username is not found in response, you can show an error or handle it
-                        Swal.fire("Error", "Username not found in response.", "error");
-                    }
+            if (user && !user.error) {
+                // Populate modal fields
+                document.getElementById('first_name').value = user.first_name || '';
+                document.getElementById('middle_initial').value = user.middle_initial || '';
+                document.getElementById('last_name').value = user.last_name || '';
+                document.getElementById('contact_number').value = user.contact_number || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('address').value = user.address || '';
+                document.getElementById('zip_code').value = user.zip_code || '';
+                document.getElementById('username').value = user.username || '';
 
-                    // Show the modal
-                    $('#updateProfileModal').modal('show');
-                } else {
-                    Swal.fire("Error", 'No user data found or ' + user.error, "error");
-                }
-            } catch (e) {
-                console.error('Error parsing JSON response:', e);
-                Swal.fire("Error", "Error fetching profile data", "error");
+                // Show modal using jQuery
+                $('#updateProfileModal').modal('show');
+            } else {
+                Swal.fire('Error', user.error || 'Failed to fetch profile data', 'error');
             }
-        },
-        error: function () {
-            Swal.fire("Error", "Error fetching profile data", "error");
-        }
-    });
+        })
+        .catch(error => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="fa fa-pencil"></i>';
+            
+            console.error('Error:', error);
+            Swal.fire('Failed to fetch profile data', '', 'error');
+        });
 });
 
-// Update Profile Function
 function updateProfile() {
-    // Show loading alert
     Swal.fire({
-        title: 'Loading...',
-        text: 'Please wait.',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+        title: 'Are you sure?',
+        text: "Do you want to save the changes?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-    // Get the form element
-    const form = document.getElementById('updateProfileForm');
+            // Collect form data
+            const formData = new FormData(document.getElementById('updateProfileForm'));
 
-    // Create a FormData object from the form
-    const formData = new FormData(form);
-
-    // Use the Fetch API to send the form data to the server
-    fetch('assets/updateuser.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        // Ensure the server responds with a valid status
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Network error: ${response.status} - ${text}`);
+            // Send data to the server
+            fetch('assets/updateuser.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Success', data.message, 'success').then(() => {
+                        // Hide the modal
+                        $('#updateProfileModal').modal('hide');
+                        // Redirect to Owner-panel.php
+                        window.location.href = 'User-panel.php';
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Failed to update profile', '', 'error');
             });
         }
-        return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-        // Handle the server's JSON response
-        if (data.status === 'success') {
-            // Update the alert to show success
-            Swal.fire("Success", "Profile updated successfully!", "success").then(() => {
-                // Optionally refresh the UI or close the modal
-                $("#updateProfileModal").modal("hide");
-            });
-        } else {
-            // Show error in alert
-            Swal.fire("Error", 'Error updating profile: ' + (data.message || 'Unknown error.'), "error");
-        }
-    })
-    .catch(error => {
-        // Log and display any errors that occurred
-        console.error('Error during update operation:', error);
-        Swal.fire("Error", "An error occurred while updating the profile. Please check your network or try again.", "error");
     });
 }
+
+document.getElementById('toggleOldPassword').addEventListener('click', function() {
+    const oldPasswordField = document.getElementById('old_password');
+    const type = oldPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    oldPasswordField.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+});
+
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordField = document.getElementById('password');
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+});
+
 </script>

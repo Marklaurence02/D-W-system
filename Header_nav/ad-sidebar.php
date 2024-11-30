@@ -235,8 +235,7 @@ function updateProfile() {
                     Swal.fire('Success', data.message, 'success').then(() => {
                         // Hide the modal
                         $('#updateProfileModal').modal('hide');
-                        // Redirect to Owner-panel.php
-                        window.location.href = 'Owner-panel.php';
+                        window.location.href = 'Admin-panel.php';
                     });
                 } else {
                     Swal.fire('Error', data.message, 'error');

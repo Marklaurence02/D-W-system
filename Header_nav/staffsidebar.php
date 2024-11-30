@@ -233,7 +233,7 @@ function updateProfile() {
                         // Hide the modal
                         $('#updateProfileModal').modal('hide');
                         // Redirect to Owner-panel.php
-                        window.location.href = 'Owner-panel.php';
+                        window.location.href = 'Staff-panel.php';
                     });
                 } else {
                     Swal.fire('Error', data.message, 'error');

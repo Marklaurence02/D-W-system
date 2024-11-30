@@ -10,9 +10,9 @@ require '../otpphpmailer/PHPMailer-master/src/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-session_name("user_session");
-session_start();
 
+session_name(name: "user_session");
+session_start();
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['status' => 'error', 'message' => 'You must be logged in to perform this action.']);
@@ -63,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact_number = trim($_POST['contact_number']);
     $address = trim($_POST['address']);
     $username = trim($_POST['username']);
-    $password = trim($_POST['password']); // Retrieve the password from the form
+    $old_password = trim($_POST['old_password']);
+    $password = trim($_POST['password']);
 
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($username)) {
@@ -71,32 +72,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Check if email or username already exists
-    $check_sql = "SELECT user_id FROM users WHERE (email = ? OR username = ?) AND user_id != ?";
-    $check_stmt = $conn->prepare($check_sql);
-    $check_stmt->bind_param('ssi', $email, $username, $user_id);
-    $check_stmt->execute();
-    $check_stmt->store_result();
+    // Verify old password if a new password is provided
+    if (!empty($password)) {
+        $sql_check = "SELECT password_hash FROM users WHERE user_id = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("i", $user_id);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+        $user_data = $result_check->fetch_assoc();
 
-    if ($check_stmt->num_rows > 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Email or username is already in use.']);
-        exit;
+        if (!$user_data || !password_verify($old_password, $user_data['password_hash'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Old password is incorrect.']);
+            exit;
+        }
     }
 
     // Prepare SQL statement for updating user details
     $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW()";
-    $params = [$first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username];
 
-    // Check if a new password is provided
+    // Check if password is provided
     if (!empty($password)) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
         $sql .= ", password_hash = ?";
-        $params[] = $hashed_password;
     }
 
     $sql .= " WHERE user_id = ?";
-    $params[] = $user_id;
-
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -104,8 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // Bind parameters dynamically
-    $stmt->bind_param(str_repeat('s', count($params) - 1) . 'i', ...$params);
+    // Bind parameters
+    if (!empty($password)) {
+        $stmt->bind_param("sssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $password_hash, $user_id);
+    } else {
+        $stmt->bind_param("ssssssssi", $first_name, $middle_initial, $last_name, $email, $zip_code, $contact_number, $address, $username, $user_id);
+    }
 
     // Execute the statement
     if ($stmt->execute()) {
@@ -134,3 +138,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 ?>
+

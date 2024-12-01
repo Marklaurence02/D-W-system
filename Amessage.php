@@ -119,7 +119,7 @@
         </div>
     </div>
 </div>
-    <style>
+<style>
         /* Container and Card */
         .container {
             max-width: 100%;
@@ -139,7 +139,7 @@
 
         /* Header */
         .card-header {
-            background-color: #3B3131;
+            background-color: #fd7e14;
             color: #ffffff;
             padding: 20px 25px;
         }
@@ -290,11 +290,11 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+            background: #fd7e14;
         }
 
         .btn-primary {
-            background: #3B3131;
+            background: #dc3545;
             border: none;
             padding: 8px 16px;
             transition: all 0.3s ease;
@@ -318,7 +318,7 @@
         }
 
         .user-initial {
-            background: linear-gradient(135deg, #3B3131 0%, #4a3f3f 100%);
+            background: #dc3545;
             color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }

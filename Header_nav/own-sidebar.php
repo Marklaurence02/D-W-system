@@ -65,7 +65,6 @@ include_once "./assets/config.php"; // Include the DB connection file
                 <h5 class="modal-title" id="updateProfileModalLabel">
                     <i class="fa fa-user-edit me-2"></i>Update Profile
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="updateProfileForm" onsubmit="event.preventDefault(); updateProfile();">

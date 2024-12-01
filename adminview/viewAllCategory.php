@@ -81,7 +81,6 @@ include_once "../assets/config.php"; // Include database connection
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal" style="height:40px">Close</button>
             </div>
         </div>
     </div>
@@ -166,7 +165,7 @@ include_once "../assets/config.php"; // Include database connection
         // DataTable Initialization
         if ($('#categoriesTable').length) {
             new DataTable('#categoriesTable', {
-                dom: '<"row"<"col-sm-12 col-md-12 text-right"f>>' +
+                dom: '<"row"<"col-sm-12 col-md-6"><"col-sm-12 col-md-6"f>>' +
                      '<"row"<"col-sm-12"tr>>' +
                      '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 paging: true,

@@ -14,7 +14,7 @@ session_start();
             <table id="generalUsersTable" class="table table-striped table-hover table-bordered display nowrap">
                 <thead>
                     <tr>
-                        <th class="text-center">O.N.</th>
+                        <th class="text-center">No.</th>
                         <th class="text-center">Username</th>
                         <th class="text-center">Email</th>
                         <th class="text-center">Contact Number</th>

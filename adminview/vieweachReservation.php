@@ -43,3 +43,7 @@ if (empty($reservationDetails)) {
     echo "<p><strong>Status:</strong> " . htmlspecialchars($reservationDetails['status']) . "</p>";
 }
 ?>
+
+<style>
+    
+</style>

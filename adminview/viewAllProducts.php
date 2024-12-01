@@ -33,7 +33,7 @@
                     ?>
                 </div>
             </div>
-                    <div class="filter-container">
+            <div class="filter-container">
                 <button type="button" class="btn-view-details" data-toggle="modal" data-target="#myModal">
                     <i class="fas fa-plus"></i> Add Item
                 </button>
@@ -172,10 +172,10 @@
                         <label for="item_image">Item Image:</label>
                         <div class="image-upload-container">
                             <!-- Image Preview -->
-                            <div class="image-preview-container mb-2" style="display: none;">
+                            <div class="image-preview-container mb-2" style="display: none; position: relative;">
                                 <h6>New Image:</h6>
                                 <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; height: auto;">
-                                <button type="button" class="btn btn-sm btn-danger" onclick="removeNewImage()">Remove</button>
+                                <button type="button" class="btn btn-sm btn-danger remove-image-btn" onclick="removeNewImage()">×</button>
                             </div>
                             
                             <input type="file" class="form-control-file" id="item_image" name="item_image" accept="image/*" onchange="previewImage(this)">
@@ -991,5 +991,30 @@ select.no-padding {
 .form-control-file {
     display: block;
     margin: 0 auto;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+@media (max-width: 1024px) {
+    .table-responsive {
+        overflow-x: auto !important; /* Enable horizontal scrolling */
+    }
 }
 </style>

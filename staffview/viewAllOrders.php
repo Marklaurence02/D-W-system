@@ -20,6 +20,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                 <button class="filter-btn" data-status="In-Progress">In Progress</button>
                 <button class="filter-btn" data-status="Completed">Completed</button>
                 <button class="filter-btn" data-status="Canceled">Canceled</button>
+                <button class="filter-btn" data-status="paid in advance">Paid in Advance</button>
             </div>
         </div>
 
@@ -28,13 +29,13 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
             <table id="ordersTable" class="table table-striped table-hover table-bordered display nowrap">
                 <thead>
                     <tr>
-                        <th>O.N.</th>
-                        <th>Customer</th>
-                        <th>Contact</th>
-                        <th>Order Date</th>
-                        <th>Total</th>
-                        <th>Order Status</th>
-                        <th>Payment Method</th>
+                        <th>O.N. <i class="fas fa-sort"></i></th>
+                        <th>Customer <i class="fas fa-sort"></i></th>
+                        <th>Contact <i class="fas fa-sort"></i></th>
+                        <th>Order Date <i class="fas fa-sort"></i></th>
+                        <th>Total <i class="fas fa-sort"></i></th>
+                        <th>Order Status <i class="fas fa-sort"></i></th>
+                        <th>Payment Method <i class="fas fa-sort"></i></th>
                         <th>More Details</th>
                     </tr>
                 </thead>
@@ -55,6 +56,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                 'In-Progress' => 'btn-warning',
                                 'Completed' => 'btn-success',
                                 'Canceled' => 'btn-secondary',
+                                'paid in advance' => 'btn-info',
                                 default => 'btn-secondary',
                             };
                             ?>
@@ -75,7 +77,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                         'In-Progress' => [
                                             'class' => 'status-progress',
                                             'icon' => 'fa-spinner',
-                                            'text' => 'In Progress'
+                                            'text' => 'In-Progress'
                                         ],
                                         'Completed' => [
                                             'class' => 'status-completed',
@@ -86,6 +88,11 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                             'class' => 'status-canceled',
                                             'icon' => 'fa-times-circle',
                                             'text' => 'Canceled'
+                                        ],
+                                        'paid in advance' => [
+                                            'class' => 'status-paid-advance',
+                                            'icon' => 'fa-money-check-alt',
+                                            'text' => 'paid in advance'
                                         ],
                                         default => [
                                             'class' => 'status-default',
@@ -319,7 +326,8 @@ $(document).ready(function() {
             'Pending': 0,
             'In-Progress': 0,
             'Completed': 0,
-            'Canceled': 0
+            'Canceled': 0,
+            'paid in advance': 0
         };
 
         // Count rows for each status
@@ -516,6 +524,10 @@ $(document).ready(function() {
 }
 
 #ordersTable th {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding-right: 30px;
     background: linear-gradient(135deg, #FD6610 0%, #FF8142 100%);
     color: white;
     padding: 15px;
@@ -523,6 +535,23 @@ $(document).ready(function() {
     text-transform: uppercase;
     font-size: 14px;
     border: none;
+}
+
+#ordersTable th i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+#ordersTable th:hover {
+    background-color: #f8f9fa;
+}
+
+#ordersTable th:hover i {
+    opacity: 1;
 }
 
 #ordersTable td {
@@ -1015,6 +1044,31 @@ $(document).ready(function() {
     .dt-button {
         width: 100%;
         margin-bottom: 10px;
+    }
+}
+
+/* Add hover effect for table headers */
+#ordersTable th {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#ordersTable th:hover {
+    background-color: #f8f9fa; /* Light gray background on hover */
+}
+
+#ordersTable th i {
+    opacity: 0.5; /* Default icon opacity */
+    transition: opacity 0.3s ease;
+}
+
+#ordersTable th:hover i {
+    opacity: 1; /* Full opacity on hover */
+}
+@media (max-width: 1024px) {
+    .table-responsive {
+        overflow-x: auto !important; /* Enable horizontal scrolling */
     }
 }
 </style>

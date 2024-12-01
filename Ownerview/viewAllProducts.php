@@ -1012,4 +1012,9 @@ select.no-padding {
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+@media (max-width: 1024px) {
+    .table-responsive {
+        overflow-x: auto !important; /* Enable horizontal scrolling */
+    }
+}
 </style>

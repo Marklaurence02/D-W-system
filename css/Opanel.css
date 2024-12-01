@@ -888,3 +888,10 @@ tr {
   color: #ECDAC9;
   text-decoration: none;
 }
+
+@media (max-width: 1024px) {
+    .table-responsive {
+        overflow-x: auto !important; /* Enable horizontal scroll */
+    }
+}
+

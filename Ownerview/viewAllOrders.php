@@ -20,6 +20,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                 <button class="filter-btn" data-status="In-Progress">In Progress</button>
                 <button class="filter-btn" data-status="Completed">Completed</button>
                 <button class="filter-btn" data-status="Canceled">Canceled</button>
+                <button class="filter-btn" data-status="paid in advance">Paid in Advance</button>
             </div>
         </div>
 
@@ -55,6 +56,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                 'In-Progress' => 'btn-warning',
                                 'Completed' => 'btn-success',
                                 'Canceled' => 'btn-secondary',
+                                'paid in advance' => 'btn-info',
                                 default => 'btn-secondary',
                             };
                             ?>
@@ -75,7 +77,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                         'In-Progress' => [
                                             'class' => 'status-progress',
                                             'icon' => 'fa-spinner',
-                                            'text' => 'In Progress'
+                                            'text' => 'In-Progress'
                                         ],
                                         'Completed' => [
                                             'class' => 'status-completed',
@@ -86,6 +88,11 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                             'class' => 'status-canceled',
                                             'icon' => 'fa-times-circle',
                                             'text' => 'Canceled'
+                                        ],
+                                        'paid in advance' => [
+                                            'class' => 'status-paid-advance',
+                                            'icon' => 'fa-money-check-alt',
+                                            'text' => 'paid in advance'
                                         ],
                                         default => [
                                             'class' => 'status-default',
@@ -319,7 +326,8 @@ $(document).ready(function() {
             'Pending': 0,
             'In-Progress': 0,
             'Completed': 0,
-            'Canceled': 0
+            'Canceled': 0,
+            'paid in advance': 0
         };
 
         // Count rows for each status

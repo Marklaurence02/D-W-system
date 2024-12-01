@@ -966,4 +966,9 @@ select.no-padding {
     display: block;
     margin: 0 auto;
 }
+@media (max-width: 1024px) {
+    .table-responsive {
+        overflow-x: auto !important; /* Enable horizontal scrolling */
+    }
+}
 </style>

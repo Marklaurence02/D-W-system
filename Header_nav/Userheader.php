@@ -65,7 +65,7 @@ function toggleSidebar() {
     position: fixed;
     top: 0;
     right: 0;
-    background-color: #8B0000; /* Tomato red */
+    background-color: #8B0000; 
     overflow-x: hidden;
     transition: 0.3s;
     z-index: 1000;

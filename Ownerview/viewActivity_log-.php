@@ -25,7 +25,7 @@ $result = $conn->query($sql);
             <table id="activityLogTable" class="table table-striped table-hover table-bordered display nowrap">
                 <thead>
                     <tr>
-                        <th class='text-center'>O.N.</th>
+                        <th class='text-center'>No.</th>
                         <th class='text-center'>Action By (Role)</th>
                         <th class='text-center'>Action Type</th>
                         <th class='text-center'>Details</th>

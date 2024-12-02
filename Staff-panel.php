@@ -102,7 +102,7 @@ include_once "assets/config.php"; // Database connection
                     // Query to get the sum of total_amount for orders with status 'paid in advance' and 'completed'
                     $sql = "SELECT SUM(orders.total_amount) AS total_sales 
                             FROM orders 
-                            WHERE orders.status IN ('paid in advance', 'completed')";
+                            WHERE orders.status IN ('paid in advance', 'completed','In-Progress')";
                     $result = $conn->query($sql);
 
                     // Check if the query was successful and handle NULL values

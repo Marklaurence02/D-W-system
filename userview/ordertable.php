@@ -15,117 +15,6 @@ $username = $_SESSION['username'];
 include_once "../assets/config.php"; // Ensure correct path to your config file
 ?>
 
-<style>
-    .menu-nav {
-        margin: 5px;
-        padding: 10px 20px;
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .menu-nav.active {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .menu-nav:hover {
-        background-color: #0056b3;
-        color: white;
-    }
-
-    #searchInput {
-        width: 50%;
-        margin: 0 auto;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .food-box {
-        margin-bottom: 20px;
-        transition: transform 0.3s;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        height: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    @media (max-width: 576px) { /* For small screens like phones */
-        .food-box {
-            height: 200px; /* Reduce height for smaller screens */
-        }
-    }
-
-    .food-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .food-btn {
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .food-btn img {
-        max-width: 100%;
-        max-height: 150px;
-        height: auto;
-        transition: transform 0.3s;
-        object-fit: contain;
-    }
-
-    .food-btn:hover img {
-        transform: scale(1.1);
-    }
-
-    .food-box h6 {
-        margin-top: 10px;
-        text-align: center;
-    }
-
-    .progress-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
-    .progress-step {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #ddd;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0 10px;
-        font-weight: bold;
-        color: #fff;
-    }
-
-    .progress-step.active {
-        background-color: #007bff;
-    }
-
-    .progress-line {
-        width: 50px;
-        height: 4px;
-        background-color: #ddd;
-        align-self: center;
-    }
-</style>
-
 <div class="progress-container">
     <div class="progress-step active">1</div>
     <div class="progress-line" ></div>
@@ -170,15 +59,19 @@ include_once "../assets/config.php"; // Ensure correct path to your config file
 
 <?php
 // Fetch all products initially
-$query = "SELECT product_id, product_name, price, special_instructions, product_image, category_id FROM product_items";
+$query = "SELECT product_id, product_name, price, special_instructions, product_image, category_id, quantity FROM product_items";
 $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+        $isSoldOut = $row['quantity'] == 0;
         ?>
         <div class="food-box col-12 col-sm-6 col-md-4 col-lg-3 product-item" data-category="<?php echo $row['category_id']; ?>">
-            <button class="food-btn" data-toggle="modal" data-target="#productModal<?php echo $row['product_id']; ?>">
+            <button class="food-btn" data-toggle="modal" data-target="#productModal<?php echo $row['product_id']; ?>" <?php echo $isSoldOut ? 'disabled' : ''; ?>>
                 <img src="<?php echo htmlspecialchars($row['product_image']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>">
+                <?php if ($isSoldOut): ?>
+                    <span class="badge badge-danger sold-out-badge">Not Available</span>
+                <?php endif; ?>
             </button>
             <!-- Product name at the bottom -->
             <h6 class="mt-2"><?php echo htmlspecialchars($row['product_name']); ?></h6>
@@ -229,16 +122,16 @@ if ($result->num_rows > 0) {
                             <div class="form-group">
                                 <label for="quantity<?php echo $row['product_id']; ?>">Quantity:</label>
                                 <div class="d-flex align-items-center justify-content-center">
-                                    <button type="button" class="btn btn-qtyminus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, -1)">
+                                    <button type="button" class="btn btn-qtyminus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, -1)" <?php echo $isSoldOut ? 'disabled' : ''; ?>>
                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                     </button>
-                                    <input type="number" id="quantity<?php echo $row['product_id']; ?>" name="quantity" min="1" value="1" class="form-control text-center mx-2" onchange="updateTotalPrice(<?php echo $row['product_id']; ?>)">
-                                    <button type="button" class="btn btn-qtyplus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, 1)">
+                                    <input type="number" id="quantity<?php echo $row['product_id']; ?>" name="quantity" min="1" value="1" class="form-control text-center mx-2" onchange="updateTotalPrice(<?php echo $row['product_id']; ?>)" <?php echo $isSoldOut ? 'disabled' : ''; ?>>
+                                    <button type="button" class="btn btn-qtyplus" onclick="changedQuantity(<?php echo $row['product_id']; ?>, 1)" <?php echo $isSoldOut ? 'disabled' : ''; ?>>
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" onclick="confirmOrder(<?php echo $row['product_id']; ?>)">Confirm Order</button>
+                            <button class="btn btn-primary" onclick="confirmOrder(<?php echo $row['product_id']; ?>)" <?php echo $isSoldOut ? 'disabled' : ''; ?>>Confirm Order</button>
                         </div>
                     </div>
                 </div>
@@ -251,6 +144,82 @@ if ($result->num_rows > 0) {
 }
 ?>
 </div>
+<style>
+    .menu-nav {
+        margin: 5px;
+        padding: 10px 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-nav.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .menu-nav:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    #searchInput {
+        width: 50%;
+        margin: 0 auto;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+ 
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .progress-step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 10px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .progress-step.active {
+        background-color: #007bff;
+    }
+
+    .progress-line {
+        width: 50px;
+        height: 4px;
+        background-color: #ddd;
+        align-self: center;
+    }
+
+    .sold-out-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 1rem;
+        z-index: 10;
+    }
+</style>
+
 
 
 <div class="container mt-4">

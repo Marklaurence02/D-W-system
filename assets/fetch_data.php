@@ -25,7 +25,7 @@ if (!fetchSingleValue($conn, "
     SELECT SUM(receipt_items.item_total_price) AS totalSales 
     FROM receipt_items
     JOIN orders ON receipt_items.receipt_id = orders.order_id 
-    WHERE orders.status IN ('paid in advance', 'completed')
+    WHERE orders.status IN ('paid in advance', 'completed','In-Progress','Pending')
 ", $totalSales, 'totalSales')) {
     echo json_encode(['error' => 'Failed to fetch total sales']);
     $conn->close();
@@ -48,7 +48,7 @@ if (!fetchSingleValue($conn, "
     SELECT SUM(receipt_items.quantity) AS totalSold 
     FROM receipt_items 
     JOIN orders ON receipt_items.receipt_id = orders.order_id 
-    WHERE orders.status IN ('Completed', 'paid in advance')
+    WHERE orders.status IN ('paid in advance', 'completed','In-Progress','Pending')
 ", $totalSold, 'totalSold')) {
     echo json_encode(['error' => 'Failed to fetch total sold']);
     $conn->close();

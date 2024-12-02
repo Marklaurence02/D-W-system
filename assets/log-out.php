@@ -1,8 +1,10 @@
 <?php
-session_start(); // Start the session
-
+session_name("user_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // Include the database connection configuration
-include 'assets/config.php';
+include 'config.php';
 
 // Check if the user is logged in
 if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
@@ -20,7 +22,6 @@ if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
         $log_stmt->execute();
         $log_stmt->close();
     } else {
-        // Optional: Log an error if statement preparation fails
         error_log("Failed to prepare logout activity log statement: " . $conn->error);
     }
 
@@ -31,8 +32,27 @@ if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
         $update_stmt->execute();
         $update_stmt->close();
     } else {
-        // Optional: Log an error if the status update fails
         error_log("Failed to update user status to offline: " . $conn->error);
+    }
+
+    // Delete user-related data from order_items
+    $deleteOrderItemsSQL = "DELETE FROM order_items WHERE user_id = ?";
+    if ($delete_order_stmt = $conn->prepare($deleteOrderItemsSQL)) {
+        $delete_order_stmt->bind_param('i', $user_id);
+        $delete_order_stmt->execute();
+        $delete_order_stmt->close();
+    } else {
+        error_log("Failed to delete order items: " . $conn->error);
+    }
+
+    // Delete user-related data from data_reservations
+    $deleteReservationsSQL = "DELETE FROM data_reservations WHERE user_id = ?";
+    if ($delete_reservation_stmt = $conn->prepare($deleteReservationsSQL)) {
+        $delete_reservation_stmt->bind_param('i', $user_id);
+        $delete_reservation_stmt->execute();
+        $delete_reservation_stmt->close();
+    } else {
+        error_log("Failed to delete reservations: " . $conn->error);
     }
 
     // Clear session variables securely

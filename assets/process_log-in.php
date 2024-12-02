@@ -104,30 +104,60 @@ function checkExistingAssignment($userId, $conn) {
 
 // Function to assign a staff member to a new general user
 function assignStaffToUser($userId, $conn) {
+    // Check if the user already has an assigned staff member
+    $currentAssignmentSQL = "SELECT u.user_id, u.status 
+                             FROM users u
+                             JOIN user_staff_assignments usa ON u.user_id = usa.assigned_staff_id
+                             WHERE usa.user_id = ?";
+    $currentAssignmentStmt = $conn->prepare($currentAssignmentSQL);
+    $currentAssignmentStmt->bind_param('i', $userId);
+    $currentAssignmentStmt->execute();
+    $currentAssignmentResult = $currentAssignmentStmt->get_result();
+
+    if ($currentAssignmentResult && $currentAssignmentResult->num_rows > 0) {
+        $currentAssignment = $currentAssignmentResult->fetch_assoc();
+        if ($currentAssignment['status'] !== 'online') {
+            // Delete the current assignment if the staff is offline
+            $deleteAssignmentSQL = "DELETE FROM user_staff_assignments WHERE user_id = ?";
+            $deleteAssignmentStmt = $conn->prepare($deleteAssignmentSQL);
+            $deleteAssignmentStmt->bind_param('i', $userId);
+            $deleteAssignmentStmt->execute();
+            $deleteAssignmentStmt->close();
+        } else {
+            // If the current staff is online, no need to reassign
+            $currentAssignmentStmt->close();
+            return;
+        }
+    }
+    $currentAssignmentStmt->close();
+
     // Get the list of all staff members and their assignment counts
     $staffSQL = "
-        SELECT u.user_id, COUNT(usa.user_id) AS assigned_count 
+        SELECT u.user_id, u.status, COUNT(usa.user_id) AS assigned_count 
         FROM users u
         LEFT JOIN user_staff_assignments usa ON u.user_id = usa.assigned_staff_id
         WHERE u.role = 'Staff'
         GROUP BY u.user_id
-        ORDER BY assigned_count ASC, u.user_id ASC
-        LIMIT 1";
+        ORDER BY assigned_count ASC, u.user_id ASC";
     
     $staffStmt = $conn->prepare($staffSQL);
     $staffStmt->execute();
     $staffResult = $staffStmt->get_result();
     
     if ($staffResult && $staffResult->num_rows > 0) {
-        $staff = $staffResult->fetch_assoc();
-        $assignedStaffId = $staff['user_id'];
+        while ($staff = $staffResult->fetch_assoc()) {
+            if ($staff['status'] === 'online') {
+                $assignedStaffId = $staff['user_id'];
 
-        // Assign the selected staff to the user
-        $assignSQL = "INSERT INTO user_staff_assignments (user_id, assigned_staff_id) VALUES (?, ?)";
-        $assignStmt = $conn->prepare($assignSQL);
-        $assignStmt->bind_param('ii', $userId, $assignedStaffId);
-        $assignStmt->execute();
-        $assignStmt->close();
+                // Assign the selected staff to the user
+                $assignSQL = "INSERT INTO user_staff_assignments (user_id, assigned_staff_id) VALUES (?, ?)";
+                $assignStmt = $conn->prepare($assignSQL);
+                $assignStmt->bind_param('ii', $userId, $assignedStaffId);
+                $assignStmt->execute();
+                $assignStmt->close();
+                break; // Exit the loop once an online staff is assigned
+            }
+        }
     }
 
     $staffStmt->close();

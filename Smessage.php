@@ -22,41 +22,25 @@
         exit("<div class='alert alert-danger text-center'>User not authenticated.</div>");
     }
 
-    $currentRole = $_SESSION['role'];
-    $rolesToFetch = [];
-    switch ($currentRole) {
-        case 'Admin':
-            $rolesToFetch = ['Owner', 'Staff'];
-            break;
-        case 'Owner':
-            $rolesToFetch = ['Admin'];
-            break;
-        case 'Staff':
-            $rolesToFetch = ['Admin', 'General User'];
-            break;
-        default:
-            error_log("Undefined role: $currentRole");
-            exit("<div class='alert alert-danger text-center'>Undefined user role.</div>");
-    }
+    $currentUserId = $_SESSION['user_id'];
 
-    if (!empty($rolesToFetch)) {
-        $rolePlaceholders = implode(',', array_fill(0, count($rolesToFetch), '?'));
-        $sql = "SELECT DISTINCT user_id, CONCAT(first_name, ' ', last_name) AS username, role 
-                FROM users 
-                WHERE role IN ($rolePlaceholders)";
-        
-        try {
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) throw new Exception($conn->error);
-            $stmt->bind_param(str_repeat('s', count($rolesToFetch)), ...$rolesToFetch);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $users = $result->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
-        } catch (Exception $e) {
-            error_log("Database error: " . $e->getMessage());
-            exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
-        }
+    $sql = "SELECT DISTINCT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS username, u.role 
+            FROM users u
+            LEFT JOIN user_staff_assignments usa ON u.user_id = usa.user_id
+            WHERE (usa.assigned_staff_id = ? OR u.role = 'Admin')";
+
+    try {
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) throw new Exception($conn->error);
+
+        $stmt->bind_param('i', $currentUserId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+    } catch (Exception $e) {
+        error_log("Database error: " . $e->getMessage());
+        exit("<div class='alert alert-danger text-center'>Error loading users.</div>");
     }
 
     $conn->close();

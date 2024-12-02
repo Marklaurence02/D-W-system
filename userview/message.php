@@ -22,7 +22,7 @@ session_start();
 
         <div class="input-container">
             <input type="text" id="message-input" class="form-control me-2" placeholder="Type something..." required>
-            <button id="send-btn" class="btn btn-primary">Send</button>
+            <button id="send-btn" class="btn btn-send">Send</button>
         </div>
     </div>
 </div>
@@ -220,7 +220,7 @@ $(document).ready(function() {
 }
 
 .header {
-    background-color: #005bb5;
+    background-color: #FD6610;
     padding: 16px;
     color: #ffffff;
     text-align: center;
@@ -240,7 +240,7 @@ $(document).ready(function() {
 
 .options .option {
     padding: 10px;
-    background-color: #007bff;
+    background-color: #FD6610;
     color: #fff;
     cursor: pointer;
     border-radius: 4px;
@@ -252,8 +252,16 @@ $(document).ready(function() {
 }
 
 .options .option:hover {
-    background-color: #005bb5;
+    background-color: #d35004;
 }
+.btn-send{
+    background-color: #FD6610;
+}
+
+.btn-send:hover{
+    background-color: #d35004;
+}
+
 
 /* Align input and button in a row */
 .input-container {

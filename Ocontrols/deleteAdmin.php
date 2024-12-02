@@ -66,6 +66,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
     $conn->begin_transaction();
 
     try {
+        // Delete assignments where the user is the assigned staff
+        $delete_assigned_staff_sql = "DELETE FROM user_staff_assignments WHERE assigned_staff_id = ?";
+        $delete_assigned_staff_stmt = $conn->prepare($delete_assigned_staff_sql);
+        if ($delete_assigned_staff_stmt === false) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+
+        $delete_assigned_staff_stmt->bind_param("i", $user_id);
+        if (!$delete_assigned_staff_stmt->execute()) {
+            throw new Exception("Error deleting assigned staff: " . $delete_assigned_staff_stmt->error);
+        }
+
+        $delete_assigned_staff_stmt->close();
+
+        // Delete assignments for the target user
+        $delete_assignments_sql = "DELETE FROM user_staff_assignments WHERE user_id = ?";
+        $delete_assignments_stmt = $conn->prepare($delete_assignments_sql);
+        if ($delete_assignments_stmt === false) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+
+        $delete_assignments_stmt->bind_param("i", $user_id);
+        if (!$delete_assignments_stmt->execute()) {
+            throw new Exception("Error deleting user assignments: " . $delete_assignments_stmt->error);
+        }
+
+        $delete_assignments_stmt->close();
+
+        // Proceed with deleting the target user
         $delete_sql = "DELETE FROM users WHERE user_id = ?";
         $delete_stmt = $conn->prepare($delete_sql);
         if ($delete_stmt === false) {
@@ -99,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
 
         // Commit the transaction
         $conn->commit();
-        echo json_encode(['status' => 'success', 'message' => 'User deleted and action logged successfully.']);
+        echo json_encode(['status' => 'success', 'message' => 'User and assignments deleted, action logged successfully.']);
     } catch (Exception $e) {
         $conn->rollback();
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

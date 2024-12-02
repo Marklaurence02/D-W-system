@@ -24,6 +24,7 @@ include_once "../assets/config.php";
         margin: 0 10px;
         font-weight: bold;
         color: #fff;
+        transition: background-color 0.3s ease;
     }
 
     .progress-step.active {
@@ -35,9 +36,10 @@ include_once "../assets/config.php";
         height: 4px;
         background-color: #ddd;
         align-self: center;
+        transition: background-color 0.3s ease;
     }
     .progress-line.active {
-        background-color: #007bff; /* Change to blue */
+        background-color: #007bff;
     }
 
     .category-separator {
@@ -48,14 +50,19 @@ include_once "../assets/config.php";
         color: #333;
     }
     .card {
-        transition: transform 0.3s;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     .card:hover {
         transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
     .card-img-top {
         height: 150px;
         object-fit: cover;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
     .card-body {
         display: flex;
@@ -65,6 +72,21 @@ include_once "../assets/config.php";
     .card-footer {
         text-align: center;
     }
+    .btn {
+        transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+    .btn-plus {
+        background-color: #28a745;
+        color: #fff;
+    }
+    .btn-plus:hover {
+        background-color: #218838;
+    }
+
 </style>
 
 <div class="progress-container">

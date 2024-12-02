@@ -9,15 +9,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$logged_in_user_id = $_SESSION['user_id'];  // The currently logged-in user (e.g., Admin performing the deletion)
+$logged_in_user_id = $_SESSION['user_id'];  // The currently logged-in user (e.g., Admin performing the action)
 $role = $_SESSION['role'];  // The role of the logged-in user (e.g., Admin)
 $username = $_SESSION['username'] ?? 'User';  // The username of the logged-in user
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['user_password'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['user_password'], $_POST['action'])) {
     $user_id = intval($_POST['user_id']);
     $user_password = $_POST['user_password'];
+    $action = $_POST['action'];  // 'activate' or 'deactivate'
 
-    // Retrieve the password hash for the logged-in user (the one performing the deletion)
+    // Retrieve the password hash for the logged-in user (the one performing the action)
     $password_sql = "SELECT password_hash FROM users WHERE user_id = ?";
     $password_stmt = $conn->prepare($password_sql);
     if ($password_stmt === false) {
@@ -43,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
         exit;
     }
 
-    // Check if the target user (the one to be deleted) exists
+    // Check if the target user (the one to be activated/deactivated) exists
     $check_sql = "SELECT username FROM users WHERE user_id = ?";
     $check_stmt = $conn->prepare($check_sql);
     if ($check_stmt === false) {
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
         echo json_encode(['status' => 'error', 'message' => 'Database error.']);
         exit;
     }
-    $check_stmt->bind_param("i", $user_id);  // This is the target user to be deleted
+    $check_stmt->bind_param("i", $user_id);  // This is the target user
     $check_stmt->execute();
     $check_stmt->bind_result($target_username);
 
@@ -62,26 +63,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
     }
     $check_stmt->close();
 
-    // Proceed with deleting the target user if the logged-in user's password is verified
+    // Determine the new account status
+    $new_status = ($action === 'activate') ? 'active' : 'inactive';
+
+    // Proceed with updating the account status
     $conn->begin_transaction();
 
     try {
-        $delete_sql = "DELETE FROM users WHERE user_id = ?";
-        $delete_stmt = $conn->prepare($delete_sql);
-        if ($delete_stmt === false) {
+        $update_sql = "UPDATE users SET account_status = ? WHERE user_id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        if ($update_stmt === false) {
             throw new Exception("Database error: " . $conn->error);
         }
 
-        $delete_stmt->bind_param("i", $user_id);  // Delete the target user
-        if (!$delete_stmt->execute()) {
-            throw new Exception("Error deleting the user: " . $delete_stmt->error);
+        $update_stmt->bind_param("si", $new_status, $user_id);  // Update the target user's status
+        if (!$update_stmt->execute()) {
+            throw new Exception("Error updating the user status: " . $update_stmt->error);
         }
 
-        $delete_stmt->close();
+        $update_stmt->close();
 
         // Log the action in the activity_logs table
-        $action_type = 'Delete Admin';
-        $action_details = "Admin '$target_username' (ID: $user_id) was deleted by user '$username' (ID: $logged_in_user_id).";
+        $action_type = ucfirst($action) . ' Admin';
+        $action_details = "Admin '$target_username' (ID: $user_id) was $action by user '$username' (ID: $logged_in_user_id).";
         $log_query = "INSERT INTO activity_logs (action_by, action_type, action_details) 
                       VALUES (?, ?, ?)";
         $log_stmt = $conn->prepare($log_query);
@@ -99,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
 
         // Commit the transaction
         $conn->commit();
-        echo json_encode(['status' => 'success', 'message' => 'User deleted and action logged successfully.']);
+        echo json_encode(['status' => 'success', 'message' => "User $action and action logged successfully."]);
     } catch (Exception $e) {
         $conn->rollback();
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

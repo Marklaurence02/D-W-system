@@ -151,6 +151,7 @@ $statusCounts = array(
                         <th>Table</th>
                         <th>Capacity</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -202,6 +203,22 @@ $statusCounts = array(
                                         <i class="fas <?= $statusInfo['icon'] ?>"></i>
                                         <?= $statusInfo['text'] ?>
                                     </span>
+                                </td>
+                                <td>
+                                    <form method="POST" class="reservation-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                                        <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($row['reservation_id']) ?>">
+                                        <select name="status" class="form-select status-select mb-2">
+                                            <option value="Pending" <?= $row['status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                                            <option value="Complete" <?= $row['status'] === 'Complete' ? 'selected' : '' ?>>Complete</option>
+                                            <option value="Canceled" <?= $row['status'] === 'Canceled' ? 'selected' : '' ?>>Canceled</option>
+                                            <option value="Rescheduled" <?= $row['status'] === 'Rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
+                                            <option value="Reserved" <?= $row['status'] === 'Reserved' ? 'selected' : '' ?>>Reserved</option>
+                                        </select>
+                                        <button type="submit" class="btn-view-details">
+                                            <i class="fas fa-save"></i>
+                                            Update
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         <?php endwhile;
@@ -368,7 +385,7 @@ $(document).ready(function() {
                 return { class: 'status-canceled', icon: 'fa-times-circle' };
             case 'Rescheduled':
                 return { class: 'status-progress', icon: 'fa-sync' };
-            case 'Paid':
+            case 'Reserved':
                 return { class: 'status-completed', icon: 'fa-check-double' };
             default:
                 return { class: 'status-default', icon: 'fa-question-circle' };

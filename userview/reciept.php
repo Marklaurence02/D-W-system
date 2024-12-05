@@ -54,8 +54,10 @@ foreach ($orders as $order) {
         $orders_grouped[$receipt_id] = [
             'reservation_id' => $order['reservation_id'],
             'order_date' => $order['order_date'],
+            'order_time' => $order['order_time'],
             'reservation_date' => $order['reservation_date'],
             'table_number' => $order['table_number'],
+            'status' => $order['status'],
             'reservation_status' => $order['reservation_status'],
             'custom_note' => $order['custom_note'],
             'payment_method' => $order['payment_method'],
@@ -71,6 +73,59 @@ foreach ($orders as $order) {
     ];
 }
 ?>
+
+<style>
+    .container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-body {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .receipt-divider {
+        border-bottom: 1px solid #dee2e6;
+        margin: 10px 0;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+</style>
 
 <div class="container py-4">
     <h2>Receipts</h2>
@@ -88,7 +143,7 @@ foreach ($orders as $order) {
 
         // Loop through each date and display orders
         foreach ($orders_by_date as $date => $orders): ?>
-            <h3 class="text-success"><?= date('l, F j, Y', strtotime($date)); ?></h3>
+            <h3 class="text-color"><?= date('l, F j, Y', strtotime($date)); ?></h3>
             <?php foreach ($orders as $order): 
                 // Pre-calculate total price
                 $total_amount = array_sum(array_map(
@@ -104,7 +159,7 @@ foreach ($orders as $order) {
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <p><strong>Total Amount:</strong> &#x20B1;<?= number_format($total_amount, 2); ?></p>
-                            <small><?= date('g:i A', strtotime($order['order']['order_date'])); ?></small>
+                            <small><?= date('g:i A', strtotime($order['order']['order_time'])); ?></small>
                         </div>
                         <div>
                             <small class="text-muted">#<?= htmlspecialchars($order['receipt_id']); ?></small>
@@ -117,8 +172,6 @@ foreach ($orders as $order) {
         <p>No receipts found.</p>
     <?php endif; ?>
 </div>
-
-
 
 <!-- Receipt Modal -->
 <div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel" aria-hidden="true">
@@ -170,8 +223,8 @@ function showOrderDetails(element) {
         let orderSummary = `
             <p><strong>Order ID:</strong> #${order.reservation_id || 'N/A'}</p>
             <p><strong>Total Amount:</strong> &#x20B1;${totalAmount.toFixed(2)}</p>
-            <p><strong>Order Time:</strong> ${order.order_date ? new Date(order.order_date).toLocaleString() : 'N/A'}</p>
-            <p><strong>Status:</strong> ${order.reservation_status || 'N/A'}</p>
+            <p><strong>Order Time:</strong> <?= date('g:i A', strtotime($order['order']['order_time'])); ?></p>
+            <p><strong>Status:</strong> ${order.status || 'N/A'}</p>
             <p><strong>Payment Method:</strong> ${order.payment_method || 'N/A'}</p>
         `;
 

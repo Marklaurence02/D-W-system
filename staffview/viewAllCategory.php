@@ -22,7 +22,6 @@ include_once "../assets/config.php"; // Include database connection
                         <tr>
                             <th>ID</th>
                             <th>Category Name</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,14 +35,6 @@ include_once "../assets/config.php"; // Include database connection
                             <tr>
                                 <td><?= htmlspecialchars($row["category_id"]) ?></td>
                                 <td><?= htmlspecialchars($row["category_name"]) ?></td>
-                                <td>
-                                    <button 
-                                        class="btn btn-primary openPopup" 
-                                        data-id="<?= htmlspecialchars($row['category_id']) ?>">
-                                        Edit
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="categoryDelete('<?= $row['category_id'] ?>')">Delete</button>
-                                    </td>
                             </tr>
                         <?php
                             }

@@ -59,19 +59,19 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
     $conn->begin_transaction();
     
     try {
-        // Update the status of data_reservations to 'Paid'
-        $updateStatusQuery = "UPDATE data_reservations SET status = 'Paid' WHERE user_id = ? AND status = 'Pending'";
+        // Update the status of data_reservations to 'Reserved'
+        $updateStatusQuery = "UPDATE data_reservations SET status = 'Reserved' WHERE user_id = ? AND status = 'Pending'";
         $stmt = $conn->prepare($updateStatusQuery);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $stmt->close();
 
-        // Transfer reservations to the reservations table
+        // Transfer reservations to the reservations table with status 'Complete'
         $transferReservationsQuery = "
             INSERT INTO reservations (reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, created_at, updated_at)
-            SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, status, custom_note, created_at, updated_at
+            SELECT reservation_id, user_id, table_id, reservation_date, reservation_time, 'Reserved', custom_note, created_at, updated_at
             FROM data_reservations
-            WHERE user_id = ? AND status = 'Paid'
+            WHERE user_id = ? AND status = 'Reserved'
         ";
         $stmt = $conn->prepare($transferReservationsQuery);
         $stmt->bind_param("i", $user_id);
@@ -96,7 +96,7 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
                 NOW(),
                 'Credit Card'
             FROM order_items oi
-            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
+            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Reserved'
             JOIN product_items pi ON oi.product_id = pi.product_id
             WHERE oi.user_id = ?
             GROUP BY dr.reservation_id
@@ -123,7 +123,7 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
             INSERT INTO receipt_items (receipt_id, reservation_id, product_id, quantity, item_total_price, user_id)
             SELECT ?, dr.reservation_id, oi.product_id, oi.quantity, oi.totalprice, oi.user_id
             FROM order_items oi
-            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Paid'
+            JOIN data_reservations dr ON oi.user_id = dr.user_id AND dr.status = 'Reserved'
             WHERE oi.user_id = ?;
         ";
         $stmt = $conn->prepare($receiptItemsQuery);
@@ -150,7 +150,7 @@ function handleSuccessfulPayment($conn, $user_id, $totalPayment) {
         $stmt->execute();
         $stmt->close();
 
-        $clearReservationsQuery = "DELETE FROM data_reservations WHERE user_id = ? AND status = 'Paid'";
+        $clearReservationsQuery = "DELETE FROM data_reservations WHERE user_id = ? AND status = 'Reserved'";
         $stmt = $conn->prepare($clearReservationsQuery);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();

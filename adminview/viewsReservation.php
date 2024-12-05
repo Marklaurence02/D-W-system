@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['ajax'])) {
             'Complete' => ['class' => 'status-completed', 'icon' => 'fa-check-circle'],
             'Canceled' => ['class' => 'status-canceled', 'icon' => 'fa-times-circle'],
             'Rescheduled' => ['class' => 'status-progress', 'icon' => 'fa-sync'],
-            'Paid' => ['class' => 'status-completed', 'icon' => 'fa-check-double'],
+            'Reserved' => ['class' => 'status-completed', 'icon' => 'fa-check-double'],
             default => ['class' => 'status-default', 'icon' => 'fa-question-circle']
         };
         
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['ajax'])) {
                        <input type='hidden' name='reservation_id' value='{$row['reservation_id']}'>
                        <select name='status' class='form-select status-select mb-2'>";
         
-        foreach (['Pending', 'Complete', 'Canceled', 'Rescheduled', 'Paid'] as $status) {
+        foreach (['Pending', 'Complete', 'Canceled', 'Rescheduled', 'Reserved'] as $status) {
             $selected = $row['status'] === $status ? 'selected' : '';
             $actions .= "<option value='$status' $selected>$status</option>";
         }
@@ -99,7 +99,7 @@ $statusCounts = array(
     'Complete' => 0,
     'Canceled' => 0,
     'Rescheduled' => 0,
-    'Paid' => 0
+    'Reserved' => 0
 );
 ?>
 
@@ -133,8 +133,8 @@ $statusCounts = array(
                 <button class="filter-btn" data-status="Rescheduled">
                     Rescheduled
                 </button>
-                <button class="filter-btn" data-status="Paid">
-                    Paid
+                <button class="filter-btn" data-status="Reserved">
+                Reserved
                 </button>
             </div>
         </div>
@@ -187,10 +187,10 @@ $statusCounts = array(
                                             'icon' => 'fa-sync',
                                             'text' => 'Rescheduled'
                                         ],
-                                        'Paid' => [
+                                        'Reserved' => [
                                             'class' => 'status-completed',
                                             'icon' => 'fa-check-double',
-                                            'text' => 'Paid'
+                                            'text' => 'Reserved'
                                         ],
                                         default => [
                                             'class' => 'status-default',
@@ -212,7 +212,7 @@ $statusCounts = array(
                                             <option value="Complete" <?= $row['status'] === 'Complete' ? 'selected' : '' ?>>Complete</option>
                                             <option value="Canceled" <?= $row['status'] === 'Canceled' ? 'selected' : '' ?>>Canceled</option>
                                             <option value="Rescheduled" <?= $row['status'] === 'Rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
-                                            <option value="Paid" <?= $row['status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>
+                                            <option value="Reserved" <?= $row['status'] === 'Reserved' ? 'selected' : '' ?>>Reserved</option>
                                         </select>
                                         <button type="submit" class="btn-view-details">
                                             <i class="fas fa-save"></i>
@@ -385,7 +385,7 @@ $(document).ready(function() {
                 return { class: 'status-canceled', icon: 'fa-times-circle' };
             case 'Rescheduled':
                 return { class: 'status-progress', icon: 'fa-sync' };
-            case 'Paid':
+            case 'Reserved':
                 return { class: 'status-completed', icon: 'fa-check-double' };
             default:
                 return { class: 'status-default', icon: 'fa-question-circle' };

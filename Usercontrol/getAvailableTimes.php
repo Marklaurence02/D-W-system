@@ -8,7 +8,7 @@ if (isset($_GET['table_id'], $_GET['date'])) {
     $date = $_GET['date'];
 
     // Query to get reserved times for the given table and date
-    $query = "SELECT reservation_time FROM reservations WHERE table_id = ? AND reservation_date = ? AND status = 'Paid'";
+    $query = "SELECT reservation_time FROM reservations WHERE table_id = ? AND reservation_date = ? AND status = 'Reserved'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("is", $tableId, $date);
     $stmt->execute();

@@ -247,7 +247,7 @@ include_once "assets/config.php"; // Database connection
                         FROM reservations
                         JOIN tables ON reservations.table_id = tables.table_id
                         LEFT JOIN table_images ON tables.table_id = table_images.table_id
-                        WHERE reservations.status IN ('Complete', 'Paid') 
+                        WHERE reservations.status IN ('Complete', 'Reserved') 
                         GROUP BY tables.table_id
                         ORDER BY reservation_count DESC
                     ";

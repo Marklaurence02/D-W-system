@@ -1174,7 +1174,7 @@ function deleteTable(table_id) {
             });
 
             $.ajax({
-                url: '/controlscontrols/deletetableController.php',
+                url: '/controls/deletetableController.php',
                 method: 'POST',
                 data: { table_id: table_id },
                 success: function(response) {

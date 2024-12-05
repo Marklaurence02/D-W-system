@@ -9,7 +9,7 @@ if ($orderID <= 0) {
     exit;
 }
 
-// Fetch order details
+// Fetch order details with reservation note
 $order_sql = "
     SELECT o.order_id, 
            CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
@@ -19,11 +19,12 @@ $order_sql = "
            o.status AS order_status,
            o.payment_method,
            o.order_details,
-           o.feedback,
+           r.custom_note AS reservation_note,
            o.created_at,
            o.updated_at
     FROM orders o
     LEFT JOIN users u ON o.user_id = u.user_id
+    LEFT JOIN reservations r ON o.reservation_id = r.reservation_id
     WHERE o.order_id = ?
 ";
 
@@ -61,12 +62,10 @@ $order_stmt->close();
                     <td><strong>Order Date:</strong></td>
                     <td><?= date("F j, Y, g:i a", strtotime($order_data['order_time'])) ?></td>
                 </tr>
-
                 <tr>
                     <td><strong>Payment Method:</strong></td>
                     <td><?= htmlspecialchars($order_data['payment_method']) ?></td>
                 </tr>
-              
                 <tr>
                     <td><strong>Order Details:</strong></td>
                     <td><?= nl2br(htmlspecialchars($order_data['order_details'])) ?></td>
@@ -89,7 +88,10 @@ $order_stmt->close();
                         </div>
                     </td>
                 </tr>
-            
+                <tr>
+                    <td><strong>Note:</strong></td>
+                    <td><?= nl2br(htmlspecialchars($order_data['reservation_note'] ?? 'No additional notes.')) ?></td>
+                </tr>
                 <tr>
                     <td><strong>Total Amount:</strong></td>
                     <td>&#8369;<?= number_format($order_data['order_total'], 2) ?></td>

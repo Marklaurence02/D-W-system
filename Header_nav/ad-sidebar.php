@@ -51,8 +51,6 @@ include_once "./assets/config.php"; // Include the DB connection file
         <li class="nav-item"><a href="#products" onclick="showProductItems()" class="nav-link text-white"><i class="fas fa-pizza-slice sideicon"></i><span class="ml-2">Products</span></a></li>
         <li class="nav-item"><a href="#tables" onclick="showTableViews()" class="nav-link text-white"><i class="fas fa-table sideicon"></i><span class="ml-2">Tables</span></a></li>
         <li class="nav-item"><a href="#users" onclick="showUser()" class="nav-link text-white"><i class="fa fa-users sideicon"></i><span class="ml-2">Users</span></a></li>
-        <li class="nav-item"><a href="#admin" onclick="showadmin()" class="nav-link text-white"><i class="fa fa-user-plus sideicon"></i><span class="ml-2">Admin Management</span></a></li>
-        <li class="nav-item"><a href="#activity-log" onclick="showActivity_log()" class="nav-link text-white"><i class="fas fa-history sideicon"></i><span class="ml-2">Activity Log</span></a></li>
         <li class="nav-item"><a href="Amessage.php"class="nav-link text-white"><i class="fa fa-envelope sideicon"></i><span class="ml-2">Messages</span></a></li>
     </ul>
 </div>

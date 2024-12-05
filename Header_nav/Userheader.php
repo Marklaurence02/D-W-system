@@ -191,7 +191,7 @@ function toggleSidebar() {
                             <div class="input-group">
                                 <label for="old_password" class="form-label w-100">Current Password</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="old_password" name="old_password" required>
+                                    <input type="password" class="form-control" id="old_password" name="old_password" >
                                     <span class="input-group-text" id="toggleOldPassword" style="cursor: pointer;">
                                         <i class="fa fa-eye"></i>
                                     </span>

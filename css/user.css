@@ -14,9 +14,10 @@ html, body {
   flex-direction: column;
 }
 
-#main-content {
-  flex: 1;
-  padding: 20px;
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header, footer {
@@ -24,6 +25,15 @@ header, footer {
   padding: 10px 20px;
   text-align: center;
   border: 1px solid #dee2e6;
+  flex-shrink: 0; /* Ensure header and footer do not shrink */
+}
+
+#main-content {
+  flex: 1; /* Allow main content to grow and fill available space */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
 }
 
 /* Slider Styles */

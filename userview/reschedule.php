@@ -93,35 +93,73 @@ $conn->close();
 
 <!-- Edit Reservation Modal -->
 <div class="modal fade" id="editReservationModal" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editReservationModalLabel">Edit Reservation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fs-5" id="editReservationModalLabel">
+                   Edit Reservation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="editReservationForm">
+            <div class="modal-body p-3 p-sm-4">
+                <form id="editReservationForm" class="needs-validation" novalidate>
                     <input type="hidden" id="reservationId" name="reservationId">
-                    <div class="mb-3">
-                        <label for="viewTableId" class="form-label">Table ID</label>
-                        <input type="text" class="form-control" id="viewTableId" name="viewTableId" readonly>
+                    <div class="mb-4">
+                        <label for="viewTableId" class="form-label fw-bold">
+                            Table ID
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-table"></i>
+                            </span>
+                            <input type="text" class="form-control bg-light border-start-0" id="viewTableId" name="viewTableId" readonly>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editDate" class="form-label">Reservation Date</label>
-                        <input type="date" class="form-control" id="editDate" name="editDate" required onchange="loadAvailableTimesForEdit()">
+                    <div class="mb-4">
+                        <label for="editDate" class="form-label fw-bold">
+                            Reservation Date
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0">
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                            <input type="date" class="form-control border-start-0" id="editDate" name="editDate" required onchange="loadAvailableTimesForEdit()">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editTime" class="form-label">Reservation Time</label>
-                        <select class="form-select" id="editTime" name="editTime" required>
-                            <option value="">Select a time</option>
-                        </select>
+                    <div class="mb-4">
+                        <label for="editTime" class="form-label fw-bold">
+                           Reservation Time
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0">
+                                <i class="fas fa-clock"></i>
+                            </span>
+                            <select class="form-select border-start-0" id="editTime" name="editTime" required>
+                                <option value="">Select a time</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editNote" class="form-label">Note</label>
-                        <textarea class="form-control" id="editNote" name="editNote" rows="3"></textarea>
+                    <div class="mb-3 mb-sm-4">
+                        <label for="editNote" class="form-label fw-bold">
+                            Note
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0">
+                                <i class="fas fa-sticky-note"></i>
+                            </span>
+                            <textarea class="form-control border-start-0" id="editNote" name="editNote" 
+                                rows="2" style="max-height: 150px;" 
+                                placeholder="Add any special requests or notes here..."></textarea>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="updateReservation()">Update Reservation</button>
-                    </form>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="updateReservation()">
+                            <i class="fas fa-save me-2"></i>Update Reservation
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -280,3 +318,39 @@ function showNotification(message, icon) {
 }
 
 </script>
+
+<style>
+    /* Make cards more responsive */
+    .reservation-card {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 1rem;
+    }
+
+    /* Adjust modal content for small screens */
+    @media (max-width: 576px) {
+        .modal-body {
+            padding: 1rem !important;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+        }
+        
+        .input-group-text {
+            padding: 0.375rem 0.5rem;
+        }
+        
+        .btn-lg {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Improve input readability on mobile */
+    @media (max-width: 576px) {
+        input, select, textarea {
+            font-size: 16px !important; /* Prevents iOS zoom on focus */
+        }
+    }
+</style>

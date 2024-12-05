@@ -72,14 +72,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
 
         if (sendOtpEmail($email, $otp)) {
             $_SESSION['otp_sent'] = true; // Flag to show OTP form
-            header('Location: verify-otp-mail.php'); // Redirect to OTP form
-            exit();
+            echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'OTP has been sent to your email.',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'verify-otp-mail.php'; // Redirect to OTP form
+                            }
+                        });
+                    });
+                  </script>";
         } else {
-            echo "<script>alert('Failed to send OTP. Please try again.');</script>";
+            echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Failed to send OTP. Please try again.'
+                        });
+                    });
+                  </script>";
         }
     } else {
         // Email doesn't exist in the database
-        echo "<script>alert('The email you entered is not registered. Please try again.');</script>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'The email you entered is not registered. Please try again.'
+                    });
+                });
+              </script>";
     }
 }
 ?>
@@ -97,6 +125,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
 
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- Custom CSS -->
     <style>
@@ -223,8 +254,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
                             <label for="email">Email:</label>
                         </div>
                         <button type="submit" name="send_otp" class="btn-next">Send OTP</button>
-                        <p class="text-center">Already have an account? <a href="sign-in.php">Sign-in here</a></p>
-
+                        <div class="small-text mt-3 d-flex"><p class="text-center">Already have an account? <a href="sign-in.php">Sign-in here</a></p>
+                        </div>
+                        
                     </form>
                 </div>
             </div>
@@ -235,6 +267,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['send_otp'])) {
     <footer class="footer">
         <p>&copy; 2024 Dine&Watch. All rights reserved.</p>
     </footer>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Bootstrap JS and Boxicons -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

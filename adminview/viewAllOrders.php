@@ -122,7 +122,7 @@ include_once "../assets/config.php"; // Ensure the correct path for your config 
                                 </td>
                                 <td>
                                     <button class="btn-view-details openPopup" 
-                                            data-href="../Ownerview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>">
+                                            data-href="../staffview/viewEachOrder.php?orderID=<?= htmlspecialchars($row['order_id']) ?>">
                                         <i class="fas fa-eye"></i>
                                         View Details
                                     </button>

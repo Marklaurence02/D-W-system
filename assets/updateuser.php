@@ -87,6 +87,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Check if the new username is already taken by another user
+    if (!empty($username)) {
+        $check_username = "SELECT user_id FROM users WHERE username = ? AND user_id != ?";
+        $stmt_username = $conn->prepare($check_username);
+        $stmt_username->bind_param("si", $username, $user_id);
+        $stmt_username->execute();
+        $result_username = $stmt_username->get_result();
+        
+        if ($result_username->num_rows > 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Username is already taken. Please choose another.']);
+            exit;
+        }
+        $stmt_username->close();
+    }
+
     // Prepare SQL statement for updating user details
     $sql = "UPDATE users SET first_name = ?, middle_initial = ?, last_name = ?, email = ?, zip_code = ?, contact_number = ?, address = ?, username = ?, updated_at = NOW()";
 
@@ -113,6 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Execute the statement
     if ($stmt->execute()) {
+        // Update session variables
+        $_SESSION['username'] = $username;
+        $_SESSION['first_name'] = $first_name;
+        
         // Log the profile update action in activity_logs table
         $action_type = 'Update Profile';
         $action_details = "User {$username} updated their profile.";

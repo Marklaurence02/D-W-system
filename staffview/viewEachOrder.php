@@ -1,5 +1,4 @@
 <?php
-session_name("owner_session");
     session_start();
 
 include_once "../assets/config.php";
@@ -10,7 +9,7 @@ if ($orderID <= 0) {
     exit;
 }
 
-// Fetch order details
+// Fetch order details with reservation note
 $order_sql = "
     SELECT o.order_id, 
            CONCAT(u.first_name, ' ', u.last_name) AS customer_name, 
@@ -20,11 +19,13 @@ $order_sql = "
            o.status AS order_status,
            o.payment_method,
            o.order_details,
-           o.feedback,
+           r.custom_note AS reservation_note,
            o.created_at,
-           o.updated_at
+           o.updated_at,
+           o.reservation_id
     FROM orders o
     LEFT JOIN users u ON o.user_id = u.user_id
+    LEFT JOIN reservations r ON o.reservation_id = r.reservation_id
     WHERE o.order_id = ?
 ";
 
@@ -39,7 +40,7 @@ $order_stmt->close();
 <div class="container">
     <div class="order-details-wrapper">
         <h3>Order Receipt Details</h3>
-        <p><strong>Order #<?= htmlspecialchars($order_data['order_id']) ?></strong></p>
+        <p><strong>Order #<?= htmlspecialchars($order_data['order_id'] ?? 'N/A') ?></strong></p>
 
         <!-- Order Summary Table -->
         <table id="orderDetailsTable" class="table table-bordered">
@@ -51,26 +52,28 @@ $order_stmt->close();
             </thead>
             <tbody>
                 <tr>
+                    <td><strong>Reservation ID:</strong></td>
+                    <td><?= htmlspecialchars($order_data['reservation_id'] ?? 'N/A') ?></td>
+                </tr>
+                <tr>
                     <td><strong>Customer:</strong></td>
-                    <td><?= htmlspecialchars($order_data['customer_name']) ?></td>
+                    <td><?= htmlspecialchars($order_data['customer_name'] ?? 'N/A') ?></td>
                 </tr>
                 <tr>
                     <td><strong>Contact:</strong></td>
-                    <td><?= htmlspecialchars($order_data['contact_number']) ?></td>
+                    <td><?= htmlspecialchars($order_data['contact_number'] ?? 'N/A') ?></td>
                 </tr>
                 <tr>
                     <td><strong>Order Date:</strong></td>
-                    <td><?= date("F j, Y, g:i a", strtotime($order_data['order_time'])) ?></td>
+                    <td><?= date("F j, Y, g:i a", strtotime($order_data['order_time'] ?? 'now')) ?></td>
                 </tr>
-
                 <tr>
                     <td><strong>Payment Method:</strong></td>
-                    <td><?= htmlspecialchars($order_data['payment_method']) ?></td>
+                    <td><?= htmlspecialchars($order_data['payment_method'] ?? 'N/A') ?></td>
                 </tr>
-              
                 <tr>
                     <td><strong>Order Details:</strong></td>
-                    <td><?= nl2br(htmlspecialchars($order_data['order_details'])) ?></td>
+                    <td><?= nl2br(htmlspecialchars($order_data['order_details'] ?? 'N/A')) ?></td>
                 </tr>
                 <tr>
                     <td><strong>Order Status:</strong></td>
@@ -90,10 +93,13 @@ $order_stmt->close();
                         </div>
                     </td>
                 </tr>
-            
+                <tr>
+                    <td><strong>Note:</strong></td>
+                    <td><?= nl2br(htmlspecialchars($order_data['reservation_note'] ?? 'N/A')) ?></td>
+                </tr>
                 <tr>
                     <td><strong>Total Amount:</strong></td>
-                    <td>&#8369;<?= number_format($order_data['order_total'], 2) ?></td>
+                    <td>&#8369;<?= number_format($order_data['order_total'] ?? 0, 2) ?></td>
                 </tr>
 
             </tbody>

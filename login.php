@@ -9,20 +9,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Include SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f8f9fa;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Full viewport height */
+            min-height: 100vh; /* Ensures the body takes full viewport height */
             margin: 0;
         }
         .header {
-            background-color: #ff6700; /* Orange header */
+            background-color: #ff6700;
             color: white;
             padding: 20px 40px;
+            flex-shrink: 0; /* Prevents the header from shrinking */
         }
         .header h1 {
             margin: 0;
@@ -35,18 +38,18 @@
             text-align: center;
             font-size: 0.9rem;
             margin-top: auto; /* Pushes the footer to the bottom */
+            flex-shrink: 0; /* Prevents the footer from shrinking */
         }
         .logo-container {
             max-width: 350px;
             margin: 0 auto;
         }
         .page {
-            text-align: center;
-            padding: 50px 0;
             flex-grow: 1; /* Ensures the content takes the remaining space */
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 50px 0;
         }
         .btn {
             margin-top: 30px;
@@ -74,7 +77,20 @@
     </style>
 </head>
 <body>
-
+        <!-- SweetAlert Trigger -->
+        <?php if (isset($_GET['signup']) && $_GET['signup'] === 'success'): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Display the SweetAlert message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Your account has been created successfully! You can now log in.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>
+        <?php endif; ?>
     <!-- Header -->
        <header class="header d-flex align-items-center">
         <div class="logo ms-4">
@@ -98,12 +114,7 @@
             </div>
         </div>
 
-        <?php if (isset($_GET['signup']) && $_GET['signup'] === 'success'): ?>
-        <script>
-            // Display the alert message
-            alert("Your account has been created successfully! You can now log in.");
-        </script>
-        <?php endif; ?>
+
     </div>
 
     <!-- Footer -->

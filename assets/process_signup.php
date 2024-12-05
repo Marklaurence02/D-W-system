@@ -36,6 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username .= ($count + 1); // e.g., if 'mas' exists, use 'mas1'
     }
 
+    // Additional check to ensure the username is unique
+    $unique = false;
+    while (!$unique) {
+        $checkUniqueQuery = "SELECT * FROM users WHERE username = ?";
+        $stmt = $conn->prepare($checkUniqueQuery);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // If a match is found, increment the number and try again
+            $count++;
+            $username = strtolower($firstName[0] . $lastName) . $count;
+        } else {
+            $unique = true;
+        }
+    }
+
     // Hash the password for security
     $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 

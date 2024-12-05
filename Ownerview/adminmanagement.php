@@ -110,7 +110,8 @@ session_start();
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password" minlength="8" pattern=".{8,}" 
+                            title="Password must be at least 8 characters long">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="role">Role</label>

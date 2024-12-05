@@ -9,7 +9,55 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Function to find the first available reservation ID
+function findFirstAvailableId($conn) {
+    $id = 1; // Start from 1
+    
+    while (true) {
+        // Check both tables for the current ID
+        $query = "
+            SELECT reservation_id 
+            FROM (
+                SELECT reservation_id FROM reservations WHERE reservation_id = ?
+                UNION
+                SELECT reservation_id FROM data_reservations WHERE reservation_id = ?
+            ) AS combined_reservations
+        ";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ii", $id, $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        // If no results found, this ID is available
+        if ($result->num_rows === 0) {
+            return $id;
+        }
+        
+        $id++; // Try next ID
+    }
+}
+
 $user_id = $_SESSION['user_id'];
+
+// Add this function before the main logic
+function isReservationIdUnique($conn, $id) {
+    $query = "
+        SELECT reservation_id 
+        FROM (
+            SELECT reservation_id FROM reservations WHERE reservation_id = ?
+            UNION
+            SELECT reservation_id FROM data_reservations WHERE reservation_id = ?
+        ) AS combined_reservations
+    ";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $id, $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    return $result->num_rows === 0;
+}
 
 // Check if the required POST data is available
 if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_time'])) {
@@ -55,6 +103,9 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
         exit();
     }
 
+    // Add transaction start here
+    $conn->begin_transaction();
+
     // Insert reservation into `data_reservations` table
     $insertReservationQuery = "
         INSERT INTO data_reservations (user_id, table_id, reservation_date, reservation_time, custom_note) 
@@ -63,8 +114,29 @@ if (isset($_POST['table_id'], $_POST['reservation_date'], $_POST['reservation_ti
     $stmt->bind_param("iisss", $user_id, $table_id, $reservation_date, $reservation_time_formatted, $custom_note);
 
     if ($stmt->execute()) {
+        $newReservationId = $stmt->insert_id;
+        
+        if (!isReservationIdUnique($conn, $newReservationId)) {
+            // Instead of rolling back, find a new available ID
+            $availableId = findFirstAvailableId($conn);
+            
+            // Update the reservation with the new ID
+            $updateQuery = "UPDATE data_reservations SET reservation_id = ? WHERE reservation_id = ?";
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->bind_param("ii", $availableId, $newReservationId);
+            
+            if (!$updateStmt->execute()) {
+                $conn->rollback();
+                echo json_encode(['status' => 'error', 'message' => 'Failed to update reservation ID.']);
+                exit();
+            }
+            $updateStmt->close();
+        }
+        
+        $conn->commit();
         echo json_encode(['status' => 'success', 'message' => 'Reservation confirmed.']);
     } else {
+        $conn->rollback();
         echo json_encode(['status' => 'error', 'message' => 'Failed to reserve the table.']);
     }
 

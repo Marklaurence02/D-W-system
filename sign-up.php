@@ -318,18 +318,21 @@ input[type="password"] {
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="zipCode" placeholder=" " required pattern="[0-9]{4}" title="Zip Code must be exactly 4 digits" value="<?= htmlspecialchars($zipCode ?? ''); ?>">
+                                <input type="text" class="form-control" name="zipCode" placeholder=" " required 
+                                    minlength="4" maxlength="5" pattern="[0-9]{4,5}" title="Zip code must be 4 or 5 digits"
+                                    value="<?= htmlspecialchars($zipCode ?? ''); ?>">
                                 <label for="zipCode">Zip Code</label>
                             </div>
 
-                            <div class="btn-group">
+                            <div class="btn-group" style="flex-direction: row; gap: 10px;">
                                 <button type="button" id="backBtn" class="btn-back">Back</button>
                                 <button type="submit" class="btn-next">Sign Up</button>
                             </div>
 
                         </div>
                     </form>
-                    <p class="text-center">Already have an account? <a href="sign-in.php">Sign-in here</a></p>
+                    <div class="small-text mt-3 d-flex"><p class="text-center">Already have an account? <a href="sign-in.php">Sign-in here</a></p>
+                    </div>
 
                 </div>
             </div>
@@ -449,6 +452,10 @@ toggleConfirmPassword.addEventListener("click", function () {
             document.getElementById("nextBtn").style.display = "block";
         });
     </script>
+
+    <!-- Include SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

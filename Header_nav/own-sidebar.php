@@ -85,7 +85,7 @@ include_once "./assets/config.php"; // Include the DB connection file
                             </div>
                             <div class="input-group">
                                 <label for="zip_code" class="form-label w-100">Zip Code</label>
-                                <input type="text" class="form-control" id="zip_code" name="zip_code">
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" minlength="4" maxlength="5" pattern="[0-9]{4,5}" title="Zip code must be 4 or 5 digits">
                             </div>
                             <div class="input-group">
                                 <label for="old_password" class="form-label w-100">Old Password</label>
@@ -120,7 +120,8 @@ include_once "./assets/config.php"; // Include the DB connection file
                             <div class="input-group">
                                 <label for="password" class="form-label w-100">New Password</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password">
+                                    <input type="password" class="form-control" id="password" name="password"minlength="8" pattern=".{8,}" 
+                                    title="Password must be at least 8 characters long">
                                     <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
                                         <i class="fa fa-eye"></i>
                                     </span>

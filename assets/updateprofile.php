@@ -72,6 +72,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    // Check if the username already exists for another user
+    $sql_check_username = "SELECT user_id FROM users WHERE username = ? AND user_id != ?";
+    $stmt_check_username = $conn->prepare($sql_check_username);
+    $stmt_check_username->bind_param("si", $username, $user_id);
+    $stmt_check_username->execute();
+    $result_check_username = $stmt_check_username->get_result();
+
+    if ($result_check_username->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Username is already taken.']);
+        exit;
+    }
+
     // Verify old password if a new password is provided
     if (!empty($password)) {
         $sql_check = "SELECT password_hash FROM users WHERE user_id = ?";

@@ -189,9 +189,9 @@ function toggleSidebar() {
                                 <input type="text" class="form-control" id="zip_code" name="zip_code">
                             </div>
                             <div class="input-group">
-                                <label for="old_password" class="form-label w-100">Old Password</label>
+                                <label for="old_password" class="form-label w-100">Current Password</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="old_password" name="old_password">
+                                    <input type="password" class="form-control" id="old_password" name="old_password" required>
                                     <span class="input-group-text" id="toggleOldPassword" style="cursor: pointer;">
                                         <i class="fa fa-eye"></i>
                                     </span>
@@ -221,7 +221,9 @@ function toggleSidebar() {
                             <div class="input-group">
                                 <label for="password" class="form-label w-100">New Password</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password">
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           minlength="8" pattern=".{8,}" 
+                                           title="Password must be at least 8 characters long">
                                     <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
                                         <i class="fa fa-eye"></i>
                                     </span>
@@ -262,7 +264,7 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
             this.innerHTML = '<i class="fa fa-pencil"></i>';
 
             if (user && !user.error) {
-                // Populate modal fields
+                // Populate modal fields (removing old_password)
                 document.getElementById('first_name').value = user.first_name || '';
                 document.getElementById('middle_initial').value = user.middle_initial || '';
                 document.getElementById('last_name').value = user.last_name || '';
@@ -271,8 +273,10 @@ document.getElementById('editProfileBtn').addEventListener('click', function() {
                 document.getElementById('address').value = user.address || '';
                 document.getElementById('zip_code').value = user.zip_code || '';
                 document.getElementById('username').value = user.username || '';
+                // Remove password field population
+                document.getElementById('old_password').value = ''; // Clear old password
+                document.getElementById('password').value = ''; // Clear new password field
 
-                // Show modal using jQuery
                 $('#updateProfileModal').modal('show');
             } else {
                 Swal.fire('Error', user.error || 'Failed to fetch profile data', 'error');
@@ -322,8 +326,8 @@ function updateProfile() {
                     Swal.fire('Success', data.message, 'success').then(() => {
                         // Hide the modal
                         $('#updateProfileModal').modal('hide');
-                        // Redirect to Owner-panel.php
-                        window.location.href = 'User-panel.php';
+                        // Force reload the page to update the displayed information
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire('Error', data.message, 'error');

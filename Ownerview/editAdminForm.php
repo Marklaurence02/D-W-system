@@ -122,7 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
 
             <div class="form-group">
                 <label for="zip_code">ZIP Code:</label>
-                <input type="text" class="form-control" id="zip_code" name="zip_code" value="<?= htmlspecialchars($user['zip_code']); ?>" pattern="\d{5}" title="ZIP code must be exactly 5 digits.">
+                <input type="text" class="form-control" id="zip_code" name="zip_code" value="<?= htmlspecialchars($user['zip_code']); ?>" 
+                    minlength="4" maxlength="5" pattern="[0-9]{4,5}" title="Zip code must be 4 or 5 digits">
             </div>
 
             <!-- Hidden input for user ID -->

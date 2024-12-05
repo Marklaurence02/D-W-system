@@ -245,6 +245,7 @@ function showOrderDetails(element) {
 
         // Reservation Summary
         let reservationSummary = `
+            <p><strong>Reservation ID:</strong> ${order.reservation_id || 'N/A'}</p>
             <p><strong>Reservation Date:</strong> ${order.reservation_date || 'N/A'}</p>
             <p><strong>Table Number:</strong> ${order.table_number || 'N/A'}</p>
             <p><strong>Reservation Status:</strong> ${order.reservation_status || 'N/A'}</p>

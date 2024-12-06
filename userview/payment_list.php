@@ -333,15 +333,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
                 <h5 class="modal-title" id="infoModalLabel">Additional Information</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="text-white">&times;</span>
-                </button>
             </div>
-            <div class="modal-body">
-                <p>Please review your order and reservation details carefully before completing the payment.</p>
-                <ul>
+            <div class="modal-body" style="padding: 10px; font-size: 0.9rem;">
+            <p style="margin-bottom: 5px;">Please review your order and reservation details carefully before completing the payment.</p>
+                <ul style="padding-left: 20px; margin-bottom: 0;">
                     <li>Make sure the items and quantities are correct.</li>
                     <li>If there are any issues with the reservation, contact our support team.</li>
+                    <li>All sales are final. No refunds or exchanges.</li>
+                    <li>Products and services are sold "as-is" without warranties of any kind.</li>
+                    <li>By proceeding with the payment, you agree to accept these terms.</li>
+                    <li>For additional orders, please inform the restaurant counter.</li>
                 </ul>
             </div>
             <div class="modal-footer">
@@ -475,12 +476,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" >
-                <p>Please carefully read and understand our No Refund Policy:</p>
-                <ul>
+            <div class="modal-body" style="padding: 10px; font-size: 0.9rem;">
+                <p style="margin-bottom: 5px;">Please carefully read and understand our No Refund Policy:</p>
+                <ul style="padding-left: 20px; margin-bottom: 0;">
                     <li>All sales are final. No refunds or exchanges.</li>
                     <li>Products and services are sold "as-is" without warranties of any kind.</li>
                     <li>By proceeding with the payment, you agree to accept these terms.</li>
+                    <li>For additional orders, please inform the restaurant counter.</li>
                 </ul>
             </div>
             <div class="modal-footer">

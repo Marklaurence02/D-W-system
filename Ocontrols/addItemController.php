@@ -45,11 +45,11 @@ function logActivity($conn, $user_id, $action_type, $action_details) {
 // Insert a new product
 if (isset($_POST['upload'])) {
     // Sanitize and capture form inputs
-    $item_name = htmlspecialchars($_POST['item_name']);
+    $item_name = $_POST['item_name'];
     $item_type = htmlspecialchars($_POST['item_type']); // This is the category name
     $stock = intval($_POST['stock']);
     $price = floatval($_POST['price']);
-    $special_instructions = htmlspecialchars($_POST['special_instructions']);
+    $special_instructions = $_POST['special_instructions'];
 
     // Check if there's a gap in the product IDs
     $missing_id = getLowestAvailableID($conn);

@@ -490,7 +490,7 @@ function removeNewImage() {
 
 /* Table Container */
 .table-responsive {
-    overflow-x: hidden !important; /* Prevent horizontal scroll */
+    overflow-x: auto !important; /* Enable horizontal scrolling */
 }
 
 /* Table Layout */
@@ -1015,6 +1015,43 @@ select.no-padding {
 @media (max-width: 1024px) {
     .table-responsive {
         overflow-x: auto !important; /* Enable horizontal scrolling */
+    }
+}
+
+/* Responsive Table Adjustments */
+@media (max-width: 576px) { /* XS */
+    #productTable th, #productTable td {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) { /* S */
+    #productTable th, #productTable td {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) { /* MD */
+    #productTable th, #productTable td {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 993px) and (max-width: 1200px) { /* L */
+    #productTable th, #productTable td {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 1201px) { /* XL */
+    #productTable th, #productTable td {
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 1400px) { /* XXL */
+    #productTable th, #productTable td {
+        font-size: 22px;
     }
 }
 </style>

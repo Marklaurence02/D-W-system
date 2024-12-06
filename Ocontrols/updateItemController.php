@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $product_id = intval($_POST['product_id']);
-    $product_name = htmlspecialchars($_POST['product_name']);
+    $product_name = $_POST['product_name'];
     $category_id = intval($_POST['category_id']);
     $quantity = intval($_POST['quantity']);
     $price = floatval($_POST['price']);
-    $special_instructions = htmlspecialchars($_POST['special_instructions']);
+    $special_instructions = $_POST['special_instructions'];
 
     // Fetch current image
     $qry_fetch_image = "SELECT product_image FROM product_items WHERE product_id=?";
@@ -60,9 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $file_size = $_FILES['item_image']['size'];
         $file_type = mime_content_type($temp);
 
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $file_extension = pathinfo($name, PATHINFO_EXTENSION);
-        if (!in_array($file_type, $allowed_types) || !in_array($file_extension, ['jpeg', 'jpg', 'png', 'gif'])) {
+        // Allow both 'image/jpeg' and 'image/pjpeg' for JPEG files
+        $allowed_types = ['image/jpeg', 'image/jfif', 'image/png', 'image/gif'];
+        $file_extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $allowed_extensions = ['jpeg', 'jpg', 'png', 'gif','jfif'];
+
+        if (!in_array($file_type, $allowed_types) || !in_array($file_extension, $allowed_extensions)) {
             $response['status'] = 'error';
             $response['message'] = 'Invalid file type. Only JPG, PNG, and GIF are allowed.';
             echo json_encode($response);
@@ -76,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
-        $new_file_name = uniqid() . '_' . basename($name);
+        $new_file_name = uniqid() . '.' . $file_extension;
         $image_path = $upload_dir . $new_file_name;
 
         // Remove old image if necessary

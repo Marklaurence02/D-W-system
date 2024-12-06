@@ -17,6 +17,7 @@ $query_orders = "
     SELECT o.*, 
            DATE(o.order_time) AS order_date, 
            r.reservation_date, 
+           r.reservation_time, 
            r.table_id, 
            r.status AS reservation_status, 
            r.custom_note, 
@@ -52,24 +53,25 @@ foreach ($orders as $order) {
 
     if (!isset($orders_grouped[$receipt_id])) {
         $orders_grouped[$receipt_id] = [
-            'reservation_id' => $order['reservation_id'],
-            'order_date' => $order['order_date'],
-            'order_time' => $order['order_time'],
-            'reservation_date' => $order['reservation_date'],
-            'table_number' => $order['table_number'],
-            'status' => $order['status'],
-            'reservation_status' => $order['reservation_status'],
-            'custom_note' => $order['custom_note'],
-            'payment_method' => $order['payment_method'],
+            'reservation_id' => $order['reservation_id'] ?? 'N/A',
+            'order_date' => $order['order_date'] ?? 'N/A',
+            'order_time' => $order['order_time'] ?? 'N/A',
+            'reservation_date' => $order['reservation_date'] ?? 'N/A',
+            'reservation_time' => $order['reservation_time'] ?? 'N/A',
+            'table_number' => $order['table_number'] ?? 'N/A',
+            'status' => $order['status'] ?? 'N/A',
+            'reservation_status' => $order['reservation_status'] ?? 'N/A',
+            'custom_note' => $order['custom_note'] ?? 'N/A',
+            'payment_method' => $order['payment_method'] ?? 'N/A',
             'products' => []
         ];
     }
 
     $orders_grouped[$receipt_id]['products'][] = [
-        'product_name' => $order['product_name'],
-        'quantity' => $order['quantity'],
-        'item_total_price' => $order['item_total_price'],
-        'product_price' => $order['product_price'],
+        'product_name' => $order['product_name'] ?? 'N/A',
+        'quantity' => $order['quantity'] ?? 0,
+        'item_total_price' => $order['item_total_price'] ?? 0.00,
+        'product_price' => $order['product_price'] ?? 0.00,
     ];
 }
 ?>
@@ -206,7 +208,6 @@ foreach ($orders as $order) {
 </div>
 
 <script>
-
 function showOrderDetails(element) {
     try {
         const data = JSON.parse(element.getAttribute('data-receipt'));
@@ -223,7 +224,7 @@ function showOrderDetails(element) {
         let orderSummary = `
             <p><strong>Order ID:</strong> #${order.reservation_id || 'N/A'}</p>
             <p><strong>Total Amount:</strong> &#x20B1;${totalAmount.toFixed(2)}</p>
-            <p><strong>Order Time:</strong> <?= date('g:i A', strtotime($order['order']['order_time'])); ?></p>
+            <p><strong>Order Time:</strong> ${new Date(order.order_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) || 'N/A'}</p>
             <p><strong>Status:</strong> ${order.status || 'N/A'}</p>
             <p><strong>Payment Method:</strong> ${order.payment_method || 'N/A'}</p>
         `;
@@ -234,7 +235,7 @@ function showOrderDetails(element) {
             const productTotal = product.quantity * parseFloat(product.product_price);
             productDetails += `
                 <div class="d-flex justify-content-between">
-                    <div><strong>${product.product_name}</strong></div>
+                    <div><strong>${product.product_name || 'N/A'}</strong></div>
                     <div>Quantity: ${product.quantity}</div>
                     <div>&#x20B1;${productTotal.toFixed(2)}</div>
                 </div>
@@ -247,6 +248,7 @@ function showOrderDetails(element) {
         let reservationSummary = `
             <p><strong>Reservation ID:</strong> ${order.reservation_id || 'N/A'}</p>
             <p><strong>Reservation Date:</strong> ${order.reservation_date || 'N/A'}</p>
+            <p><strong>Reservation Time:</strong> ${new Date('1970-01-01T' + order.reservation_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) || 'N/A'}</p>
             <p><strong>Table Number:</strong> ${order.table_number || 'N/A'}</p>
             <p><strong>Reservation Status:</strong> ${order.reservation_status || 'N/A'}</p>
             <p><strong>Note:</strong> ${order.custom_note || 'N/A'}</p>
@@ -263,5 +265,4 @@ function showOrderDetails(element) {
         alert('Failed to load order details. Please try again.');
     }
 }
-
 </script>

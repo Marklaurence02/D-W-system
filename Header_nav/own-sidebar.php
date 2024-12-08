@@ -44,7 +44,7 @@ include_once "./assets/config.php"; // Include the DB connection file
     
     <!-- Navigation Items -->
     <ul class="nav nav-pills flex-column">
-        <li class="nav-item"><a href="Owner-panel.php" class="nav-link text-white"><i class="fa fa-cart-arrow-down sideicon"></i><span class="ml-2">Dashboard</span></a></li>
+        <li class="nav-item"><a href="Owner-panel.php" class="nav-link text-white"><i class="fa fa-chart-bar sideicon"></i><span class="ml-2">Dashboard</span></a></li>
         <li class="nav-item"><a href="#orders" onclick="showOrders()" class="nav-link text-white"><i class="fas fa-receipt sideicon"></i><span class="ml-2">Orders</span></a></li>
         <li class="nav-item"><a href="#reservation" onclick="showReservation()" class="nav-link text-white"><i class="fa fa-calendar-check-o sideicon"></i><span class="ml-2">Table Reservations</span></a></li>
         <li class="nav-item"><a href="#category" onclick="showCategory()" class="nav-link text-white"><i class="fa fa-line-chart sideicon"></i><span class="ml-2">Category</span></a></li>

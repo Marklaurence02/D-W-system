@@ -154,9 +154,7 @@ $conn->close();
                     </div>
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-primary btn-lg" onclick="updateReservation()">
-                            <i class="fas fa-save me-2"></i>Update Reservation
-                        </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-save me-2"></i> Update Reservation
                         </button>
                     </div>
                 </form>

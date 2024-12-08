@@ -177,7 +177,12 @@ $conn->close();
 
                     <div class="form-group">
                         <label for="editReservationDate">Date</label>
-                        <input type="date" class="form-control" id="editReservationDate" name="reservation_date" onchange="loadAvailableTimesForEdit()">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="date" class="form-control" id="editReservationDate" name="reservation_date" onchange="loadAvailableTimesForEdit()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="editReservationTime">Time</label>

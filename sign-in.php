@@ -8,6 +8,8 @@ include 'assets/process_log-in.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dine&Watch</title>
+    <link rel="icon" type="image/png" href="images/icon1.png">
+
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -213,8 +215,8 @@ include 'assets/process_log-in.php';
 
                         <!-- Links Section -->
                         <div class="small-text mt-3 d-flex justify-content-between">
-                            <a href="forgot_password.php">Forgot your password?</a>
-                            <a href="sign-up.php">Don't have an account?</a>
+                        <span>Forgot your password?<a href="forgot_password.php"> Reset Here</a></span>
+                        <span>Don't have an account?<a href="sign-up.php"> Sign-Up</a></span>
                         </div>
                     </form>
                 </div>

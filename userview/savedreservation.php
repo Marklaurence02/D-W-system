@@ -467,7 +467,7 @@ $(document).ready(function() {
 
                 // Disable the Payment button if no reservations exist
                 if (!response.has_reservations) {
-                    $('#proceedpayment, #return').attr('disabled', true).css({
+                    $('#CARDbutton, #return').attr('disabled', true).css({
                         'cursor': 'not-allowed',
                         'opacity': '0.5'
                     }).on('click', function(e) {
@@ -484,7 +484,6 @@ $(document).ready(function() {
         }
     });
 });
-
 
 </script>
 

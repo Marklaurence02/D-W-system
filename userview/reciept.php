@@ -107,6 +107,14 @@ foreach ($orders as $order) {
     .modal-body {
         padding: 20px;
         background-color: #f8f9fa;
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none;
     }
 
     .receipt-divider {

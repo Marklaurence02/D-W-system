@@ -33,7 +33,7 @@
         <div class="product-list">
             <!-- Product Table -->
             <div class="table-responsive">
-                <table id="productTable" class="table table-striped table-hover table-bordered display nowrap">
+                <table id="productTable" class="table table-striped table-hover table-bordered display nowrap" style="width:100%">
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
@@ -71,8 +71,19 @@
                             <td><?= htmlspecialchars($row["category_name"]) ?></td>
                             <td class="text-center"><?= htmlspecialchars($row["quantity"]) ?></td>
                             <td class="text-center">&#8369;<?= htmlspecialchars($row["price"]) ?></td>
-                            <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
-                        </tr>
+                            <td><?php 
+                                $instructions = htmlspecialchars($row["special_instructions"]);
+                                $words = explode(' ', $instructions);
+                                $formatted = '';
+                                
+                                for ($i = 0; $i < count($words); $i++) {
+                                    $formatted .= $words[$i] . ' ';
+                                    if (($i + 1) % 7 === 0 && $i !== count($words) - 1) {
+                                        $formatted .= "<br>";
+                                    }
+                                }
+                                echo trim($formatted);
+                            ?></td>                        </tr>
                         <?php
                                 $counter++;
                             }
@@ -464,7 +475,7 @@ function removeNewImage() {
 
 /* Table Container */
 .table-responsive {
-    overflow-x: hidden !important; /* Prevent horizontal scroll */
+    overflow-x: auto !important; /* Always enable horizontal scroll */
 }
 
 /* Table Layout */
@@ -970,5 +981,27 @@ select.no-padding {
     .table-responsive {
         overflow-x: auto !important; /* Enable horizontal scrolling */
     }
+}
+
+/* Add minimum widths for table columns */
+#productTable th,
+#productTable td {
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+#productTable th:first-child,
+#productTable td:first-child {
+    min-width: 50px;  /* No. column */
+}
+
+#productTable th:nth-child(2),
+#productTable td:nth-child(2) {
+    min-width: 80px;  /* Image column */
+}
+
+#productTable th:last-child,
+#productTable td:last-child {
+    min-width: 200px; /* Details column */
 }
 </style>

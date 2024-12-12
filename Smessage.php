@@ -321,7 +321,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="Js/Ownerpanel.js"></script>
-    <script src="Js/navb.js"></script>
     <script src="Js/Sviewmessage.js"></script>
 
     <script>
@@ -341,3 +340,4 @@
     </script>
 </body>
 </html>
+

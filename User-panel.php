@@ -24,23 +24,26 @@ if (!isset($_SESSION['first_name'])) {
 // Use the session-stored first name or username
 $username = htmlspecialchars($_SESSION['username'] ?? 'User');
 
-// Fetch the first reservation with table details
+// Fetch the first reservation with table details for the specific user
 $query_reservation = "
     SELECT dr.*, t.table_number, t.seating_capacity
     FROM data_reservations dr
     JOIN tables t ON dr.table_id = t.table_id
+    WHERE dr.user_id = ?
     ORDER BY dr.reservation_id ASC
     LIMIT 1
 ";
-$result_reservation = $conn->query($query_reservation);
+$stmt = $conn->prepare($query_reservation);
+$stmt->bind_param('i', $_SESSION['user_id']);
+$stmt->execute();
+$result_reservation = $stmt->get_result();
 $first_reservation = $result_reservation->fetch_assoc();
+$stmt->close();
 
 // Format the reservation time in 12-hour format with AM/PM
-if ($first_reservation && $first_reservation['reservation_time']) {
-    $formatted_time = 'Time: ' . date('g:i A', strtotime($first_reservation['reservation_time']));
-} else {
-    $formatted_time = 'Time:';
-}
+$formatted_time = $first_reservation && $first_reservation['reservation_time'] 
+    ? 'Time: ' . date('g:i A', strtotime($first_reservation['reservation_time']))
+    : 'Time: N/A';
 ?>
 
 
@@ -68,10 +71,10 @@ if ($first_reservation && $first_reservation['reservation_time']) {
 
           <!-- Table Navigation with dynamic labels -->
           <div class="table_nav">
-            <button class="table-nav"><?= $first_reservation ? 'Table Number: ' . $first_reservation['table_number'] : 'Table Number'; ?></button>
-            <button class="table-nav"><?= $first_reservation ? 'Capacity: ' . $first_reservation['seating_capacity'] : 'Capacity'; ?></button>
+            <button class="table-nav"><?= $first_reservation ? 'Table Number: ' . $first_reservation['table_number'] : 'Table Number: N/A'; ?></button>
+            <button class="table-nav"><?= $first_reservation ? 'Capacity: ' . $first_reservation['seating_capacity'] : 'Capacity: N/A'; ?></button>
             <button class="table-nav"><?= $formatted_time; ?></button>
-            <button class="table-nav"><?= $first_reservation ? 'Date: ' . $first_reservation['reservation_date'] : 'Date'; ?></button>
+            <button class="table-nav"><?= $first_reservation ? 'Date: ' . $first_reservation['reservation_date'] : 'Date: N/A'; ?></button>
         </div>
 
         <!-- Slider Section -->

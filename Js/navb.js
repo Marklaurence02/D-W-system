@@ -68,26 +68,35 @@ function setActiveLink(linkElement) {
 
 // Load the active link from localStorage on page load
 document.addEventListener("DOMContentLoaded", () => {
-  const savedActiveLink = localStorage.getItem("activeLink");
   const links = document.querySelectorAll(".nav-link");
   
-  if (savedActiveLink) {
-      const activeElement = document.querySelector(`a[href='${savedActiveLink}']`);
-      if (activeElement) {
-          activeElement.classList.add("active");
-      } else {
-          // If saved link not found, set first link as active
-          links[0]?.classList.add("active");
-      }
-  } else {
-      // If no saved link, set first link as active
-      links[0]?.classList.add("active");
+  // Get user role from PHP session
+  const userRole = document.body.dataset.userRole; // We'll need to add this to your HTML
+  const panelPage = `${userRole}-panel.php`;
+  const dashboardLink = document.querySelector(`a[href="${panelPage}"]`);
+  
+  // Always redirect to appropriate dashboard page based on role
+  if (window.location.pathname !== `/${panelPage}`) {
+    window.location.href = panelPage;
+    return;
+  }
+
+  // If on Dashboard page, ensure Dashboard link is active
+  if (dashboardLink) {
+    // Remove active class from all links
+    links.forEach(link => link.classList.remove("active"));
+    
+    // Add active class to Dashboard link
+    dashboardLink.classList.add("active");
+    
+    // Store Dashboard link in localStorage
+    localStorage.setItem("activeLink", panelPage);
   }
 
   // Add click event listeners to all nav links
   links.forEach(link => {
-      link.addEventListener("click", function () {
-          setActiveLink(this);
-      });
+    link.addEventListener("click", function () {
+      setActiveLink(this);
+    });
   });
 });

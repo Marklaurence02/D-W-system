@@ -237,6 +237,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             margin: 1.75rem auto;
         }
     }
+
+    /* Make scrollbars invisible */
+    .modal-body {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    }
+
+    .modal-body::-webkit-scrollbar { 
+        width: 0px; 
+        background: transparent; /* Chrome/Safari/Webkit */
+    }
 </style>
 
 <div class="progress-container">
@@ -614,14 +625,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // Autofill expiry date with the current month and year
     document.addEventListener('DOMContentLoaded', () => {
         const expiryDateInput = document.getElementById('expiryDate');
         const now = new Date();
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const year = String(now.getFullYear()).slice(-2); // Get last two digits of the year
-        expiryDateInput.value = `${month}/${year}`;
+        const currentMonth = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const currentYear = String(now.getFullYear()).slice(-2); // Get last two digits of the year
+
+        // Set the initial value to the current month and year
+        expiryDateInput.value = `${currentMonth}/${currentYear}`;
+
+        // Add event listener for validation
+        expiryDateInput.addEventListener('input', function() {
+            validateExpiryDate(this);
+        });
     });
+
+    function validateExpiryDate(input) {
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1; // JavaScript months are zero-based
+        const currentYear = now.getFullYear() % 100; // Get last two digits of the year
+
+        // Remove any non-digit characters
+        let value = input.value.replace(/[^\d]/g, '');
+
+        // Ensure proper formatting
+        if (value.length > 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2);
+        }
+
+        // Validate month
+        let month = parseInt(value.slice(0, 2), 10);
+        let year = parseInt(value.slice(3), 10);
+
+        // Ensure month is between 01 and 12
+        if (month < 1 || month > 12) {
+            month = currentMonth;
+        }
+
+        // Format month with leading zero if needed
+        const formattedMonth = String(month).padStart(2, '0');
+
+        // Validate year
+        if (isNaN(year) || year < currentYear) {
+            year = currentYear;
+        }
+
+        // Check if the card is expired
+        if (year === currentYear && month < currentMonth) {
+            month = currentMonth;
+        }
+
+        // Set the formatted value
+        input.value = `${formattedMonth}/${String(year).padStart(2, '0')}`;
+
+        // Optional: Add visual feedback for expiration
+        const expiryDateError = document.getElementById('expiryDateError');
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+            input.classList.add('is-invalid');
+            expiryDateError.textContent = 'Card has expired';
+        } else {
+            input.classList.remove('is-invalid');
+            expiryDateError.textContent = '';
+        }
+    }
+
+    // Modify the existing validation function to include expiry date check
+    function validatePaymentForm() {
+        let isValid = true;
+        const cardNumberInput = document.getElementById("cardNumber");
+        const expiryDateInput = document.getElementById("expiryDate");
+        const cvvInput = document.getElementById("cvv");
+
+        const cardNumber = cardNumberInput.value.trim();
+        const expiryDate = expiryDateInput.value.trim();
+        const cvv = cvvInput.value.trim();
+
+        const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
+        const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        const cvvRegex = /^\d{3,4}$/;
+
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear() % 100;
+
+        // Clear previous error highlights and messages
+        cardNumberInput.classList.remove("is-invalid");
+        expiryDateInput.classList.remove("is-invalid");
+        cvvInput.classList.remove("is-invalid");
+        document.getElementById("cardNumberError").textContent = "";
+        document.getElementById("expiryDateError").textContent = "";
+        document.getElementById("cvvError").textContent = "";
+
+        // Validate card number (existing code)
+        if (!cardNumberRegex.test(cardNumber)) {
+            document.getElementById("cardNumberError").textContent = "Enter a valid 16-digit card number.";
+            cardNumberInput.classList.add("is-invalid");
+            isValid = false;
+        }
+
+        // Validate expiry date with additional checks
+        if (!expiryDateRegex.test(expiryDate)) {
+            document.getElementById("expiryDateError").textContent = "Enter a valid expiry date in MM/YY format.";
+            expiryDateInput.classList.add("is-invalid");
+            isValid = false;
+        } else {
+            const month = parseInt(expiryDate.slice(0, 2), 10);
+            const year = parseInt(expiryDate.slice(3), 10);
+
+            if (year < currentYear || (year === currentYear && month < currentMonth)) {
+                document.getElementById("expiryDateError").textContent = "Card has expired";
+                expiryDateInput.classList.add("is-invalid");
+                isValid = false;
+            }
+        }
+
+        // Validate CVV (existing code)
+        if (!cvvRegex.test(cvv)) {
+            document.getElementById("cvvError").textContent = "Enter a valid 3 or 4-digit CVV.";
+            cvvInput.classList.add("is-invalid");
+            isValid = false;
+        }
+
+        return isValid;
+    }
 
     // Use SweetAlert for notifications
     function showAlert(message, type = 'info') {
@@ -657,71 +783,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         cardNumberInput.value = selectedOption.getAttribute("data-card-number") || "";
         cvvInput.value = selectedOption.getAttribute("data-cvv") || "";
     }
-
-    function validatePaymentForm() {
-    let isValid = true;
-    const cardNumberInput = document.getElementById("cardNumber");
-    const expiryDateInput = document.getElementById("expiryDate");
-    const cvvInput = document.getElementById("cvv");
-
-    const cardNumber = cardNumberInput.value.trim();
-    const expiryDate = expiryDateInput.value.trim();
-    const cvv = cvvInput.value.trim();
-
-    const cardNumberRegex = /^\d{4} \d{4} \d{4} \d{4}$/;
-    const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-    const cvvRegex = /^\d{3,4}$/;
-
-    // Predefined card numbers and their corresponding CVVs
-    const validCards = {
-        "4111 1111 1111 1111": "123", // Visa
-        "5555 5555 5555 4444": "456", // MasterCard
-        "3782 822463 10005": "789",   // American Express
-        "6019 1234 5678 9012": "012"  // GCash Card
-    };
-
-    // Clear previous error highlights and messages
-    cardNumberInput.classList.remove("is-invalid");
-    expiryDateInput.classList.remove("is-invalid");
-    cvvInput.classList.remove("is-invalid");
-    document.getElementById("cardNumberError").textContent = "";
-    document.getElementById("expiryDateError").textContent = "";
-    document.getElementById("cvvError").textContent = "";
-
-    // Validate card number
-    if (!cardNumberRegex.test(cardNumber)) {
-        document.getElementById("cardNumberError").textContent = "Enter a valid 16-digit card number.";
-        cardNumberInput.classList.add("is-invalid");
-        isValid = false;
-    } else if (!validCards.hasOwnProperty(cardNumber)) {
-        document.getElementById("cardNumberError").textContent = "Invalid card number. Please enter a valid card.";
-        cardNumberInput.classList.add("is-invalid");
-        isValid = false;
-    }
-
-    // Validate expiry date
-    if (!expiryDateRegex.test(expiryDate)) {
-        document.getElementById("expiryDateError").textContent = "Enter a valid expiry date in MM/YY format.";
-        expiryDateInput.classList.add("is-invalid");
-        isValid = false;
-    }
-
-    // Validate CVV
-    if (!cvvRegex.test(cvv)) {
-        document.getElementById("cvvError").textContent = "Enter a valid 3 or 4-digit CVV.";
-        cvvInput.classList.add("is-invalid");
-        isValid = false;
-    } else if (validCards[cardNumber] && validCards[cardNumber] !== cvv) {
-        document.getElementById("cvvError").textContent = "Invalid CVV. Please enter the correct CVV for the card.";
-        cvvInput.classList.add("is-invalid");
-        isValid = false;
-    }
-
-    return isValid;
-}
-
-
-
 
     function showPasswordModal() {
         $('#passwordModal').modal('show');

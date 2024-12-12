@@ -93,93 +93,87 @@ include_once "assets/config.php"; // Database connection
     <div id="main-content" class="container-fluid allContent-section py-4 text-center " >
         <h1 class="text-center">Dashboard</h1>
         <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
-           <!-- Total Sales -->
-<div class="col-lg-3 col-md-6 col-12 mb-4">
-    <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
-        <div class="card-body">
-            <i class="fa fa-dollar"></i>
-            <p class="text-title">Total Sales</p>
-            <h5 id="totalSales">
-                <?php
-                    // Query to get the sum of total_amount for orders with status 'paid in advance' and 'completed'
-                    $sql = "SELECT SUM(orders.total_amount) AS total_sales 
-                            FROM orders 
-                            WHERE orders.status IN ('paid in advance', 'completed','In-Progress')";
-                    $result = $conn->query($sql);
+                <!-- Total Sales -->
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #5cb85c; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-dollar mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Sales</p>
+                            <h5 id="totalSales" class="mt-auto">
+                                <?php
+                                    $sql = "SELECT SUM(orders.total_amount) AS total_sales 
+                                            FROM orders 
+                                            WHERE orders.status IN ('paid in advance', 'completed')";
+                                    $result = $conn->query($sql);
+                                    if ($result && $row = $result->fetch_assoc()) {
+                                        $totalSales = $row['total_sales'] ?? 0;
+                                        echo '&#x20B1;' . number_format($totalSales, 2);
+                                    } else {
+                                        echo '&#x20B1;0.00';
+                                    }
+                                ?>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
 
-                    // Check if the query was successful and handle NULL values
-                    if ($result && $row = $result->fetch_assoc()) {
-                        // Use 0 if no sales are found or if NULL
-                        $totalSales = $row['total_sales'] ?? 0;
-                        echo '&#x20B1;' . number_format($totalSales, 2);
-                    } else {
-                        // If there is an error or no sales found
-                        echo '&#x20B1;0.00';
-                    }
-                ?>
-            </h5>
-        </div>
-    </div>
-</div>
+                <!-- Total Orders -->
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #f0ad4e; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-list mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Orders</p>
+                            <h5 id="totalOrders" class="mt-auto">
+                                <?php
+                                    $sql = "SELECT COUNT(orders.order_id) AS total_orders FROM orders WHERE orders.status != 'Canceled'";
+                                    $result = $conn->query($sql);
+                                    echo $result && $row = $result->fetch_assoc() ? $row['total_orders'] ?? 0 : '0';
+                                ?>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Total Sold -->
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #5bc0de; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-bar-chart mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Sold</p>
+                            <h5 id="totalSold" class="mt-auto">
+                                <?php
+                                    $sql = "
+                                        SELECT SUM(receipt_items.item_total_price) AS total_sold 
+                                        FROM receipt_items 
+                                        JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
+                                        JOIN orders ON receipts.order_id = orders.order_id 
+                                        WHERE orders.status IN ('Completed', 'paid in advance')
+                                    ";
+                                    $result = $conn->query($sql);
+                                    echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sold'] ?? 0, 2) : '0.00');
+                                ?>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Total Orders -->
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-                <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
-                    <div class="card-body">
-                        <i class="fa fa-list"></i>
-                        <p class="text-title">Total Orders</p>
-                        <h5 id="totalOrders">
-                            <?php
-                                $sql = "SELECT COUNT(orders.order_id) AS total_orders FROM orders WHERE orders.status != 'Canceled'";
-                                $result = $conn->query($sql);
-                                echo $result && $row = $result->fetch_assoc() ? $row['total_orders'] ?? 0 : '0';
-                            ?>
-                        </h5>
+                <!-- Total Customers -->
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #337ab7; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-users mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Customers</p>
+                            <h5 id="totalCustomers" class="mt-auto">
+                                <?php
+                                    $sql = "SELECT COUNT(DISTINCT orders.user_id) AS total_customers FROM orders";
+                                    $result = $conn->query($sql);
+                                    echo $result && $row = $result->fetch_assoc() ? $row['total_customers'] ?? 0 : '0';
+                                ?>
+                            </h5>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Total Sold -->
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-                <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
-                    <div class="card-body">
-                        <i class="fa fa-bar-chart"></i>
-                        <p class="text-title">Total Sold</p>
-                        <h5 id="totalSold">
-                            <?php
-                                $sql = "
-                                    SELECT SUM(receipt_items.item_total_price) AS total_sold 
-                                    FROM receipt_items 
-                                    JOIN receipts ON receipt_items.receipt_id = receipts.receipt_id 
-                                    JOIN orders ON receipts.order_id = orders.order_id 
-                                    WHERE orders.status IN ('Completed', 'paid in advance')
-                                ";
-                                $result = $conn->query($sql);
-                                echo '&#x20B1;' . ($result && $row = $result->fetch_assoc() ? number_format($row['total_sold'] ?? 0, 2) : '0.00');
-                            ?>
-                        </h5>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Customers -->
-            <div class="col-lg-3 col-md-6 col-12 mb-4">
-                <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
-                    <div class="card-body">
-                        <i class="fa fa-users"></i>
-                        <p class="text-title">Total Customers</p>
-                        <h5 id="totalCustomers">
-                            <?php
-                                $sql = "SELECT COUNT(DISTINCT orders.user_id) AS total_customers FROM orders";
-                                $result = $conn->query($sql);
-                                echo $result && $row = $result->fetch_assoc() ? $row['total_customers'] ?? 0 : '0';
-                            ?>
-                        </h5>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Charts Section -->
         <div class="row mt-5">
@@ -507,3 +501,4 @@ fetch('../assets/fetch_data.php')
 
 
 </script>
+<body data-user-role="<?php echo $_SESSION['role']; ?>"></body>

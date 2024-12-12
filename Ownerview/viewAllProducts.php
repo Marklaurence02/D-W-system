@@ -84,8 +84,19 @@
                             <td><?= htmlspecialchars($row["category_name"]) ?></td>
                             <td class="text-center"><?= htmlspecialchars($row["quantity"]) ?></td>
                             <td class="text-center">&#8369;<?= htmlspecialchars($row["price"]) ?></td>
-                            <td><?= htmlspecialchars($row["special_instructions"]) ?></td>
-                            <td class="text-center">
+                            <td><?php 
+                                $instructions = htmlspecialchars($row["special_instructions"]);
+                                $words = explode(' ', $instructions);
+                                $formatted = '';
+                                
+                                for ($i = 0; $i < count($words); $i++) {
+                                    $formatted .= $words[$i] . ' ';
+                                    if (($i + 1) % 7 === 0 && $i !== count($words) - 1) {
+                                        $formatted .= "<br>";
+                                    }
+                                }
+                                echo trim($formatted);
+                            ?></td>                            <td class="text-center">
                                 <button class="btn btn-primary btn-sm" onclick="itemEditForm('<?= $row['product_id'] ?>')">Edit</button>
                             </td>
                             <td class="text-center">

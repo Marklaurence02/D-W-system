@@ -90,12 +90,12 @@ include_once "assets/config.php"; // Database connection
             <h1 class="text-center">Dashboard</h1>
             <div class="row" style="background-color: #ADADAD; border-radius: 10px; margin: 20px; padding: 10px;">
                 <!-- Total Sales -->
-                <div class="col-lg-3 col-md-6 col-12 mb-4">
-                    <div class="card text-center text-white shadow-sm" style="background-color: #5cb85c; border-radius: 10px;">
-                        <div class="card-body">
-                            <i class="fa fa-dollar"></i>
-                            <p class="text-title">Total Sales</p>
-                            <h5 id="totalSales">
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #5cb85c; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-dollar mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Sales</p>
+                            <h5 id="totalSales" class="mt-auto">
                                 <?php
                                     $sql = "SELECT SUM(orders.total_amount) AS total_sales 
                                             FROM orders 
@@ -114,12 +114,12 @@ include_once "assets/config.php"; // Database connection
                 </div>
 
                 <!-- Total Orders -->
-                <div class="col-lg-3 col-md-6 col-12 mb-4">
-                    <div class="card text-center text-white shadow-sm" style="background-color: #f0ad4e; border-radius: 10px;">
-                        <div class="card-body">
-                            <i class="fa fa-list"></i>
-                            <p class="text-title">Total Orders</p>
-                            <h5 id="totalOrders">
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #f0ad4e; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-list mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Orders</p>
+                            <h5 id="totalOrders" class="mt-auto">
                                 <?php
                                     $sql = "SELECT COUNT(orders.order_id) AS total_orders FROM orders WHERE orders.status != 'Canceled'";
                                     $result = $conn->query($sql);
@@ -131,12 +131,12 @@ include_once "assets/config.php"; // Database connection
                 </div>
 
                 <!-- Total Sold -->
-                <div class="col-lg-3 col-md-6 col-12 mb-4">
-                    <div class="card text-center text-white shadow-sm" style="background-color: #5bc0de; border-radius: 10px;">
-                        <div class="card-body">
-                            <i class="fa fa-bar-chart"></i>
-                            <p class="text-title">Total Sold</p>
-                            <h5 id="totalSold">
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #5bc0de; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-bar-chart mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Sold</p>
+                            <h5 id="totalSold" class="mt-auto">
                                 <?php
                                     $sql = "
                                         SELECT SUM(receipt_items.item_total_price) AS total_sold 
@@ -154,12 +154,12 @@ include_once "assets/config.php"; // Database connection
                 </div>
 
                 <!-- Total Customers -->
-                <div class="col-lg-3 col-md-6 col-12 mb-4">
-                    <div class="card text-center text-white shadow-sm" style="background-color: #337ab7; border-radius: 10px;">
-                        <div class="card-body">
-                            <i class="fa fa-users"></i>
-                            <p class="text-title">Total Customers</p>
-                            <h5 id="totalCustomers">
+                <div class="col-lg-3 col-md-6 col-12 mb-4 d-flex">
+                    <div class="card text-center text-white shadow-sm w-100" style="background-color: #337ab7; border-radius: 10px;">
+                        <div class="card-body d-flex flex-column">
+                            <i class="fa fa-users mb-3"></i>
+                            <p class="text-title flex-grow-1">Total Customers</p>
+                            <h5 id="totalCustomers" class="mt-auto">
                                 <?php
                                     $sql = "SELECT COUNT(DISTINCT orders.user_id) AS total_customers FROM orders";
                                     $result = $conn->query($sql);
@@ -489,3 +489,4 @@ fetch('../assets/fetch_data.php')
 
 
 </script>
+<body data-user-role="<?php echo $_SESSION['role']; ?>"></body>

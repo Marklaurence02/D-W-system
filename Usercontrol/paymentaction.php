@@ -206,7 +206,13 @@ if (isset($_POST['user_id']) && isset($_POST['totalPayment'])) {
     $user_id = intval($_POST['user_id']);
     $totalPayment = floatval($_POST['totalPayment']);
 
-    if ($user_id > 0 && $totalPayment > 0) {
+    // Check if total payment is less than 60.00
+    if ($totalPayment < 60.00) {
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Minimum order total is 60.00 PHP. Please add more items to your order.'
+        ]);
+    } elseif ($user_id > 0 && $totalPayment > 0) {
         handleSuccessfulPayment($conn, $user_id, $totalPayment);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid data provided.']);

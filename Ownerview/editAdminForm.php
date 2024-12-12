@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'], $_POST['use
 
             <div class="form-group">
                 <label for="role">Role:</label>
-                <select class="form-control" id="role" name="role" required>
+                <select class="form-control" id="role" name="role" required style="padding: 0;">
                     <option value="Admin" <?= $user['role'] == 'Admin' ? 'selected' : ''; ?>>Admin</option>
                     <option value="Staff" <?= $user['role'] == 'Staff' ? 'selected' : ''; ?>>Staff</option>
                 </select>

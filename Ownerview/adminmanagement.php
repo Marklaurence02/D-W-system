@@ -115,7 +115,7 @@ session_start();
                         </div>
                         <div class="form-group col-md-6">
                             <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role" required>
+                            <select class="form-control" id="role" name="role" required style="padding: 0;">
                                 <option value="Admin">Admin</option>
                                 <option value="Staff">Staff</option>
                             </select>

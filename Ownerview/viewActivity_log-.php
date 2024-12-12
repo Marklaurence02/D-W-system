@@ -112,6 +112,8 @@ $(document).ready(function() {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow-x: auto;
+    width: 100%;
 }
 
 /* Search Box Styling */

@@ -61,6 +61,10 @@ function getTableImages($conn, $tableId) {
     .progress-line.active {
         background-color: #007bff; /* Change to blue */
     }
+    .btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
 </style>
 
 <div class="progress-container">

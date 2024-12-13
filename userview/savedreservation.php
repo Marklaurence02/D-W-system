@@ -59,6 +59,10 @@ $result = $stmt->get_result();
     .progress-line.active {
         background-color: #007bff; /* Change to blue */
     }
+    .btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
 </style>
 
 <div class="progress-container">
@@ -70,7 +74,7 @@ $result = $stmt->get_result();
     <div class="progress-line active"></div>
     <div class="progress-step active" >4</div>
     <div class="progress-line "></div>
-    <div class="progress-step " onclick="paymentlist()">5</div>
+    <div class="progress-step ">5</div>
 </div>
 
 <?php
